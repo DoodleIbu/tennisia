@@ -4,8 +4,8 @@ const Renderer = preload("res://Renderer.gd")
 
 export var MAX_SPEED = 250
 export var PIVOT_TRANSITION_SPEED = 1
-export var ACCEL_TRANSITION_SPEED = 6
-export var STOP_TRANSITION_SPEED = 10
+export var ACCEL_TRANSITION_SPEED = 2.5
+export var STOP_TRANSITION_SPEED = 3
 var EPSILON = 1
 
 # For simplicity, make the following Vector2s and convert to Vector3 when necessary.
@@ -14,32 +14,42 @@ var EPSILON = 1
 # Position of player on the court without transformations.
 # (0, 0) = top left corner of court and (360, 780) = bottom right corner of court
 var actual_position = Vector2()
+
+# Current velocity of the player.
 var velocity = Vector2()
+
+# Stored for LERP.
+var velocity_from = Vector2()
+var velocity_to = Vector2()
+var time_to_velocity_to = 0 # 1 if at velocity_to
 
 var team = 1
 var team_player = 1
-
 
 func _ready():
     pass
 
 func update_velocity(delta):
     var desired_velocity = get_desired_velocity()
-    var movement_dot = velocity.dot(desired_velocity)
-    var new_velocity = Vector2()
+
+    # Check if the current desired velocity has changed.
+    if velocity_to != desired_velocity:
+        velocity_from = velocity
+        velocity_to = desired_velocity
+        time_to_velocity_to = 0
+
+    # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
+    var movement_dot = velocity.dot(velocity_to)
 
     # Use linear interpolation for calculating new velocity.
-    # Stopping
-    if desired_velocity.length() == 0:
-        new_velocity = velocity * (1 - delta * STOP_TRANSITION_SPEED) + desired_velocity * (delta * STOP_TRANSITION_SPEED)
-    # Moving towards where you're currently moving
-    elif movement_dot > 0:
-        new_velocity = velocity * (1 - delta * ACCEL_TRANSITION_SPEED) + desired_velocity * (delta * ACCEL_TRANSITION_SPEED)
-    # Moving away from where you're currently moving
+    if velocity_to.length() == 0:
+        time_to_velocity_to = min(time_to_velocity_to + delta * STOP_TRANSITION_SPEED, 1.0)
+    elif movement_dot >= 0:
+        time_to_velocity_to = min(time_to_velocity_to + delta * ACCEL_TRANSITION_SPEED, 1.0)
     else:
-        new_velocity = velocity * (1 - delta * PIVOT_TRANSITION_SPEED) + desired_velocity * (delta * PIVOT_TRANSITION_SPEED)
+        time_to_velocity_to = min(time_to_velocity_to + delta * PIVOT_TRANSITION_SPEED, 1.0)
 
-    velocity = new_velocity
+    velocity = velocity_from * (1 - time_to_velocity_to) + velocity_to * time_to_velocity_to
 
 func update_actual_position(delta):
     actual_position += velocity * delta
