@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://assets/court/yoshi.png" type="Texture" id=1]
+
+[node name="Court" type="Node2D"]
+
+[node name="Court" type="Sprite" parent="."]
+position = Vector2( 129.539, 128.991 )
+texture = ExtResource( 1 )
+offset = Vector2( -2, -1 )
