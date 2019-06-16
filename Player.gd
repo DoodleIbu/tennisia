@@ -2,11 +2,11 @@ extends Node2D
 
 const Renderer = preload("res://Renderer.gd")
 
-export var MAX_SPEED = 250
-export var PIVOT_ACCEL = 10
-export var RUN_ACCEL = 20
-export var STOP_ACCEL = 30
-var EPSILON = 1
+const MAX_SPEED = 250
+const PIVOT_ACCEL = 10
+const RUN_ACCEL = 20
+const STOP_ACCEL = 20
+const EPSILON = 1
 
 # For simplicity, make the following Vector2s and convert to Vector3 when necessary.
 # The following vectors represent (x, z).
