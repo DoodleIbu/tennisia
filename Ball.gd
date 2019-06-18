@@ -14,15 +14,16 @@ var velocity = Vector3(0, 0, 0)
 func _ready():
     position = Vector2(0, 0)
 
+func _process(delta):
+    $Ball.position = Renderer.get_render_position(actual_position)
+    $"Ball Shadow".position = Renderer.get_render_position(Vector3(actual_position.x, 0, actual_position.z))
+
 # Fire shot from the other side of the court.
 func fire():
     actual_position = Vector3(180, -40, 0)
     velocity = Vector3(rand_range(-100, 100), rand_range(-160, -80), rand_range(600, 800))
 
-func _process(delta):
-    $Ball.position = Renderer.get_render_position(actual_position)
-    $"Ball Shadow".position = Renderer.get_render_position(Vector3(actual_position.x, 0, actual_position.z))
-
+func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
         fire()
 

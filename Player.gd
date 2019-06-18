@@ -100,7 +100,9 @@ func display_run_animation():
             $AnimationPlayer.play("run_upright")
 
 func _process(delta):
-    update_velocity(delta)
-    update_actual_position(delta)
     update_rendered_position()
     display_run_animation()
+
+func _physics_process(delta):
+    update_velocity(delta)
+    update_actual_position(delta)
