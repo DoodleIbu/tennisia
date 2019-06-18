@@ -3,9 +3,9 @@ extends Node2D
 const Renderer = preload("res://Renderer.gd")
 
 const MAX_SPEED = 250
-const PIVOT_ACCEL = 10
-const RUN_ACCEL = 20
-const STOP_ACCEL = 20
+const PIVOT_ACCEL = 250
+const RUN_ACCEL = 500
+const STOP_ACCEL = 500
 const EPSILON = 1
 
 # For simplicity, make the following Vector2s and convert to Vector3 when necessary.
@@ -28,22 +28,22 @@ func update_velocity(delta):
     var desired_velocity = get_desired_velocity()
 
     # Accelerate towards the desired velocity vector.
-    var velocity_distance = desired_velocity - velocity
-    var accel_direction = velocity_distance.normalized()
+    var to_goal = desired_velocity - velocity
+    var accel_direction = to_goal.normalized()
 
     # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
     var movement_dot = velocity.dot(desired_velocity)
     var velocity_delta
 
     if desired_velocity.length() == 0:
-        velocity_delta = accel_direction * STOP_ACCEL
+        velocity_delta = accel_direction * STOP_ACCEL * delta
     elif movement_dot >= 0:
-        velocity_delta = accel_direction * RUN_ACCEL
+        velocity_delta = accel_direction * RUN_ACCEL * delta
     else:
-        velocity_delta = accel_direction * PIVOT_ACCEL
+        velocity_delta = accel_direction * PIVOT_ACCEL * delta
 
     # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
-    if velocity_delta.length() > velocity_distance.length():
+    if velocity_delta.length() > to_goal.length():
         velocity = desired_velocity
     else:
         velocity = velocity + velocity_delta

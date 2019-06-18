@@ -10,6 +10,8 @@
 
 [node name="Ball" parent="." instance=ExtResource( 2 )]
 position = Vector2( 182, 163 )
+z_index = 10
 
 [node name="Player" parent="." instance=ExtResource( 3 )]
 position = Vector2( 130.3, 183.8 )
+z_index = 10
