@@ -2,8 +2,8 @@ extends Node2D
 
 export (PackedScene) var Bounce
 
-const Renderer = preload("res://Renderer.gd")
-const Integrator = preload("res://Integrator.gd")
+const Renderer = preload("res://utils/Renderer.gd")
+const Integrator = preload("res://utils/Integrator.gd")
 
 const BALL_RADIUS = 1.1
 const DAMPING = 0.5

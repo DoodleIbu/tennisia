@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/yoshi.png-417612f1904bd86d0c0e156a261c5181.stex"
+path="res://.import/yoshi.png-0c730337023a2efdb8259fd4cdcd86f7.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/court/yoshi.png"
-dest_files=[ "res://.import/yoshi.png-417612f1904bd86d0c0e156a261c5181.stex" ]
+source_file="res://assets/courts/yoshi.png"
+dest_files=[ "res://.import/yoshi.png-0c730337023a2efdb8259fd4cdcd86f7.stex" ]
 
 [params]
 

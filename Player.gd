@@ -1,6 +1,6 @@
 extends Node2D
 
-const Renderer = preload("res://Renderer.gd")
+const Renderer = preload("res://utils/Renderer.gd")
 
 const MAX_SPEED = 250
 const PIVOT_ACCEL = 250
