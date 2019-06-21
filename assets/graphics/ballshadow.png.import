@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ballshadow.png-f7d2cb79e1687c0bb2ad0e227513b9c8.stex"
+path="res://.import/ballshadow.png-a2f86370df455c5b1911e64726f714d0.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ballshadow.png"
-dest_files=[ "res://.import/ballshadow.png-f7d2cb79e1687c0bb2ad0e227513b9c8.stex" ]
+source_file="res://assets/graphics/ballshadow.png"
+dest_files=[ "res://.import/ballshadow.png-a2f86370df455c5b1911e64726f714d0.stex" ]
 
 [params]
 

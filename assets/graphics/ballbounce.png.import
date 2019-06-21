@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/yoshi.png-0c730337023a2efdb8259fd4cdcd86f7.stex"
+path="res://.import/ballbounce.png-237c0b810814d2a5c6f2f00e57959592.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/courts/yoshi.png"
-dest_files=[ "res://.import/yoshi.png-0c730337023a2efdb8259fd4cdcd86f7.stex" ]
+source_file="res://assets/graphics/ballbounce.png"
+dest_files=[ "res://.import/ballbounce.png-237c0b810814d2a5c6f2f00e57959592.stex" ]
 
 [params]
 

@@ -3,9 +3,9 @@ extends Node2D
 const Renderer = preload("res://utils/Renderer.gd")
 
 const MAX_SPEED = 250
-const PIVOT_ACCEL = 250
-const RUN_ACCEL = 500
-const STOP_ACCEL = 500
+const PIVOT_ACCEL = 300
+const RUN_ACCEL = 800
+const STOP_ACCEL = 800
 const EPSILON = 1
 
 # For simplicity, make the following Vector2s and convert to Vector3 when necessary.
