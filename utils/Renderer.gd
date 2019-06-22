@@ -10,7 +10,7 @@ static func get_render_position(court_position):
     # Transform court position for mapping in one-point perspective.
     var court_coordinates = Vector3()
     court_coordinates.x = court_position.x - 180
-    court_coordinates.y = court_position.y + y
+    court_coordinates.y = -1 * court_position.y + y
     court_coordinates.z = court_position.z * -1 + 780
 
     var transformed_coordinates = Vector2()

@@ -5,12 +5,13 @@ export (PackedScene) var Bounce
 const Renderer = preload("res://utils/Renderer.gd")
 const Integrator = preload("res://utils/Integrator.gd")
 
-const GRAVITY = 322
+const GRAVITY = -322
 const BALL_RADIUS = 1.1
 const DAMPING = 0.5
 
 enum ShotType { FLAT, TOP, SLICE, LOB, DROP }
 
+# y is positive above the ground.
 var spin = 0
 var actual_position = Vector3()
 var velocity = Vector3()
@@ -43,38 +44,33 @@ func get_total_gravity():
 func fire(shot_type):
 
     # Parameters per shot type.
-    var goal = Vector3(80, 0, 750)
+    actual_position = Vector3(180, 100, 0)
+    var goal = Vector3(80, BALL_RADIUS, 400)
 
     # Get the distance to cover in the xz-plane.
     var xz_distance_to_goal = Vector2(goal.x, goal.z).distance_to(Vector2(actual_position.x, actual_position.z))
     var xz_direction = Vector2(goal.x - actual_position.x, goal.z - actual_position.z).normalized()
 
-    actual_position = Vector3(180, -100, 0)
-
-    # TODO: Rederive these equations just to make sure I understand the random sign flips...
     if shot_type == ShotType.FLAT:
         spin = 0
-        var power = 800
-        var peak = -1 * get_total_gravity() * pow(xz_distance_to_goal, 2) / (8 * pow(power, 2)) + actual_position.y / 2 + goal.y / 2
-        var velocity_y = -1 * (3 * actual_position.y - 4 * peak - BALL_RADIUS) * power / xz_distance_to_goal
-
-        velocity = Vector3(power * xz_direction.x, velocity_y, power * xz_direction.y)
     elif shot_type == ShotType.TOP:
-        # Figure out the minimum power that causes a flat. Anything stronger should have more spin.
-        spin = 200
-        var power = 400
-        var peak = -1 * get_total_gravity() * pow(xz_distance_to_goal, 2) / (8 * pow(power, 2)) + actual_position.y / 2 + goal.y / 2
-        var velocity_y = -1 * (3 * actual_position.y - 4 * peak - BALL_RADIUS) * power / xz_distance_to_goal
+        spin = -200
+    elif shot_type == ShotType.SLICE:
+        spin = 100
 
-        velocity = Vector3(power * xz_direction.x, velocity_y, power * xz_direction.y)
-    else:
-        var peak = -60
-        var power = 800
-        var total_gravity = 4 * (actual_position.y - 2 * peak - BALL_RADIUS) * pow(power, 2) / pow(xz_distance_to_goal, 2)
-        spin = total_gravity - GRAVITY
-        var velocity_y = -1 * (3 * actual_position.y - 4 * peak - BALL_RADIUS) * power / xz_distance_to_goal
+    # Constraints
+    var max_peak = actual_position.y + 100
+    var max_power = 800
 
-        velocity = Vector3(power * xz_direction.x, velocity_y, power * xz_direction.y)
+    var shot_peak
+    var shot_power
+
+    # Get the ball's peak if we were to shoot it at the specified spin and power.
+    var peak_at_max_power = -1 * get_total_gravity() * pow(xz_distance_to_goal, 2) / (8 * pow(max_power, 2)) + (actual_position.y + goal.y) / 2
+
+    # If the peak at max power is too high, then fire to max_peak. This is so that we don't deal with random moonballs due to weak shots.
+    var velocity_y = -1 * (3 * actual_position.y - 4 * peak_at_max_power + goal.y) * max_power / xz_distance_to_goal
+    velocity = Vector3(max_power * xz_direction.x, velocity_y, max_power * xz_direction.y)
 
 func update_position_and_velocity(delta):
     var integration_result = Integrator.midpoint(actual_position, velocity, Vector3(0, get_total_gravity(), 0), delta)
@@ -83,14 +79,14 @@ func update_position_and_velocity(delta):
     var midpoint_velocity = integration_result[2] # Used for deriving bounce position.
 
     # Ball has collided with the court. Also avoid division by 0.
-    if new_position.y >= -BALL_RADIUS and midpoint_velocity.y > 0:
-        var time_percent_before_bounce = abs((actual_position.y + BALL_RADIUS) / (midpoint_velocity.y * delta))
+    if new_position.y <= BALL_RADIUS and midpoint_velocity.y < 0:
+        var time_percent_before_bounce = abs((actual_position.y - BALL_RADIUS) / (midpoint_velocity.y * delta))
         var time_percent_after_bounce = 1 - time_percent_before_bounce
 
         bounce_position = actual_position + time_percent_before_bounce * midpoint_velocity * delta
-        create_bounce = midpoint_velocity.y > 100
+        create_bounce = midpoint_velocity.y < -100
 
-        var bounce_normal = Vector3(0, -1, 0)
+        var bounce_normal = Vector3(0, 1, 0)
         var bounce_velocity = new_velocity.bounce(bounce_normal) * DAMPING
         var bounce_midpoint_velocity = midpoint_velocity.bounce(bounce_normal) * DAMPING
 
@@ -103,7 +99,6 @@ func update_position_and_velocity(delta):
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
-        actual_position = Vector3(180, -100, 0)
         fire(ShotType.TOP)
 
     update_position_and_velocity(delta)
