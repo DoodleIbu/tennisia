@@ -19,6 +19,8 @@ var velocity = Vector3()
 var bounce_position = Vector3()
 var create_bounce = false
 
+var debug = 0
+
 func _ready():
     position = Vector2(0, 0)
 
@@ -45,7 +47,7 @@ func fire(shot_type):
 
     # Parameters per shot type.
     actual_position = Vector3(180, 100, 0)
-    var goal = Vector3(80, BALL_RADIUS, 400)
+    var goal = Vector3(80, BALL_RADIUS, 750)
 
     # Get the distance to cover in the xz-plane.
     var xz_distance_to_goal = Vector2(goal.x, goal.z).distance_to(Vector2(actual_position.x, actual_position.z))
@@ -58,19 +60,38 @@ func fire(shot_type):
     elif shot_type == ShotType.SLICE:
         spin = 100
 
-    # Constraints
-    var max_peak = actual_position.y + 100
-    var max_power = 800
+    # Constraints.
+    # height_mid represents the shot's height at the halfway point. Note that this doesn't represent the peak of the shot, which can be earlier,
+    # if the ball
+    # TODO: Find the highest point in the shot's arc to determine when to lower the shot and then adjust the height from that.
+    # TODO: How would you pick a max_peak?
+    var max_height_mid = actual_position.y + 100 # Should depend on the shot type.
+    var max_power = 200 + 100 * debug
+    debug += 1
 
-    var shot_peak
+    var shot_height_mid
     var shot_power
 
     # Get the ball's peak if we were to shoot it at the specified spin and power.
-    var peak_at_max_power = -1 * get_total_gravity() * pow(xz_distance_to_goal, 2) / (8 * pow(max_power, 2)) + (actual_position.y + goal.y) / 2
+    var height_mid_at_max_power = -1 * get_total_gravity() * pow(xz_distance_to_goal, 2) / (8 * pow(max_power, 2)) + (actual_position.y + goal.y) / 2
+
+    # If the ball ends up hitting the net, then adjust the shot's height_mid to clear the net and then adjust the power.
+
 
     # If the peak at max power is too high, then fire to max_peak. This is so that we don't deal with random moonballs due to weak shots.
-    var velocity_y = -1 * (3 * actual_position.y - 4 * peak_at_max_power + goal.y) * max_power / xz_distance_to_goal
-    velocity = Vector3(max_power * xz_direction.x, velocity_y, max_power * xz_direction.y)
+    # We may want to find this by the shot's overall height instead of the halfway point though.
+    if height_mid_at_max_power > max_height_mid:
+        shot_height_mid = max_height_mid
+        shot_power = max_power
+    else:
+        shot_height_mid = height_mid_at_max_power
+        shot_power = max_power
+
+    # TODO: How does this handle in the case that shot_power is too low and shot_height_mid has been adjusted?
+    #       It's probably not a big deal though.
+    var velocity_y = -1 * (3 * actual_position.y - 4 * shot_height_mid + goal.y) * shot_power / xz_distance_to_goal
+    print(shot_power, " ", velocity_y)
+    velocity = Vector3(shot_power * xz_direction.x, velocity_y, shot_power * xz_direction.y)
 
 func update_position_and_velocity(delta):
     var integration_result = Integrator.midpoint(actual_position, velocity, Vector3(0, get_total_gravity(), 0), delta)
