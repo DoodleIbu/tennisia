@@ -48,8 +48,8 @@ func get_total_gravity():
 func fire(shot_type):
 
     # Parameters per shot type.
-    actual_position = Vector3(180, BALL_RADIUS, 0)
-    var goal = Vector3(80, BALL_RADIUS, 650)
+    actual_position = Vector3(180, BALL_RADIUS, 360)
+    var goal = Vector3(80, BALL_RADIUS, 780)
 
     # Get the distance to cover in the xz-plane.
     var xz_direction = Vector2(goal.x - actual_position.x, goal.z - actual_position.z).normalized()
@@ -64,10 +64,8 @@ func fire(shot_type):
         spin = 100
 
     # Constraints.
-    # height_mid represents the shot's height at the halfway point. Note that this doesn't represent the peak of the shot, which can be earlier,
-    # if the ball
-    # TODO: Find the highest point in the shot's arc to determine when to lower the shot and then adjust the height from that.
-    # TODO: How would you pick a max_peak?
+    # height_mid represents the shot's height at the halfway point. Note that this doesn't represent the peak of the shot.
+    # TODO: How would you pick a max height_mid?
     var max_height_mid = actual_position.y + 100 # Should depend on the shot type.
     var max_power = 200 + 100 * debug
     debug += 1
@@ -91,8 +89,8 @@ func fire(shot_type):
                           + actual_position.y
         shot_power = sqrt(-1 * get_total_gravity()) * xz_distance_to_goal / (2 * sqrt(2 * shot_height_mid - actual_position.y - goal.y))
 
-    # If the peak at max power is too high, then fire to max_peak. This is so that we don't deal with random moonballs due to weak shots.
-    # TODO: We may want to find this by the shot's peak height instead of the halfway point though.
+    # If the peak at max power is too high, then fire at max_peak. This is so that we don't deal with random moonballs due to weak shots.
+    # TODO: This might actually cause the ball to hit the net *again* if you limit shot height. We may want to *reduce* the xz_distance_to_goal as well.
     # TODO: Figure out the spin afterwards.
     if shot_height_mid > max_height_mid:
         shot_height_mid = max_height_mid
