@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Node2D",
 "class": "ZSortable",
 "language": "GDScript",
-"path": "res://ZSortable.gd"
+"path": "res://scripts/ZSortable.gd"
 } ]
 _global_script_class_icons={
 "ZSortable": ""

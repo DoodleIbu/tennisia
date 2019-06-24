@@ -1,6 +1,6 @@
 extends ZSortable
 
-const Renderer = preload("res://utils/Renderer.gd")
+const Renderer = preload("res://scripts/utils/Renderer.gd")
 
 const MAX_SPEED = 250
 const PIVOT_ACCEL = 300

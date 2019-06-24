@@ -2,8 +2,8 @@ extends ZSortable
 
 export (PackedScene) var Bounce
 
-const Renderer = preload("res://utils/Renderer.gd")
-const Integrator = preload("res://utils/Integrator.gd")
+const Renderer = preload("res://scripts/utils/Renderer.gd")
+const Integrator = preload("res://scripts/utils/Integrator.gd")
 
 const NET_CLEARANCE = 40
 const NET_POSITION_Z = 390
