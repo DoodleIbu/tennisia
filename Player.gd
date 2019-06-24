@@ -1,4 +1,4 @@
-extends Node2D
+extends ZSortable
 
 const Renderer = preload("res://utils/Renderer.gd")
 
@@ -21,8 +21,8 @@ var velocity = Vector2()
 var team = 1
 var team_player = 1
 
-func _ready():
-    pass
+func get_z_position():
+    return actual_position.y
 
 func update_velocity(delta):
     var desired_velocity = get_desired_velocity()

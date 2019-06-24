@@ -1,23 +1,14 @@
 extends Node2D
 
-const NET_POSITION_Z = 390
+const BASE_Z_INDEX = 100
 
 # Handle z-index rendering of ball, player and net.
-# TODO: There should be a cleaner way to do this. Smells bad, especially with all the z-indices set everywhere.
 func _process(delta):
-    if $Player.actual_position.y >= NET_POSITION_Z:
-        $Player.set_z_index(150)
-    else:
-        $Player.set_z_index(50)
+    var z_sortables = [$Player, $Ball, $Net]
+    z_sortables.sort_custom(self, "z_sortables_comparison")
 
-    if $Ball.actual_position.z >= NET_POSITION_Z:
-        if $Ball.actual_position.z >= $Player.actual_position.y:
-            $Ball.set_z_index(155)
-        else:
-            $Ball.set_z_index(145)
-    else:
-        if $Ball.actual_position.z >= $Player.actual_position.y:
-            $Ball.set_z_index(55)
-        else:
-            $Ball.set_z_index(45)
+    for i in range(0, z_sortables.size()):
+        z_sortables[i].set_z_index(BASE_Z_INDEX + i)
 
+func z_sortables_comparison(a, b):
+    return a.get_z_position() < b.get_z_position()

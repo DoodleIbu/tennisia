@@ -1,4 +1,4 @@
-extends Node2D
+extends ZSortable
 
 export (PackedScene) var Bounce
 
@@ -23,21 +23,13 @@ var create_bounce = false
 
 var debug = 0
 
-func _ready():
-    position = Vector2(0, 0)
+func get_z_position():
+    return actual_position.z
 
 func create_bounce():
     var bounce = Bounce.instance()
     bounce.position = Renderer.get_render_position(bounce_position)
     add_child(bounce)
-
-func _process(delta):
-    $Ball.position = Renderer.get_render_position(actual_position)
-    $Shadow.position = Renderer.get_render_position(Vector3(actual_position.x, 0, actual_position.z))
-
-    if create_bounce == true:
-        create_bounce()
-        create_bounce = false
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
 func get_total_gravity():
@@ -127,6 +119,14 @@ func update_position_and_velocity(delta):
     # Assign properties to ball.
     actual_position = new_position
     velocity = new_velocity
+
+func _process(delta):
+    $Ball.position = Renderer.get_render_position(actual_position)
+    $Shadow.position = Renderer.get_render_position(Vector3(actual_position.x, 0, actual_position.z))
+
+    if create_bounce == true:
+        create_bounce()
+        create_bounce = false
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):

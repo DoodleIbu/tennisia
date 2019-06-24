@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://assets/graphics/courts/yoshi.png" type="Texture" id=2]
-[ext_resource path="res://assets/graphics/courts/yoshinet.png" type="Texture" id=3]
+[ext_resource path="res://Net.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Ball.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/audio/music/test.ogg" type="AudioStream" id=6]
@@ -14,18 +14,14 @@ script = ExtResource( 1 )
 texture = ExtResource( 2 )
 centered = false
 
-[node name="Net" type="Sprite" parent="."]
-z_index = 100
-texture = ExtResource( 3 )
-centered = false
-offset = Vector2( 49, 115 )
+[node name="Net" parent="." instance=ExtResource( 3 )]
+position = Vector2( 49, 115 )
 
 [node name="Ball" parent="." instance=ExtResource( 4 )]
-position = Vector2( 182, 163 )
 z_index = 100
 
 [node name="Player" parent="." instance=ExtResource( 5 )]
-position = Vector2( 130.3, 183.8 )
+position = Vector2( 0, 0 )
 z_index = 100
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]

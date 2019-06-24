@@ -10,6 +10,8 @@ script = ExtResource( 1 )
 Bounce = ExtResource( 2 )
 
 [node name="Shadow" type="Sprite" parent="."]
+z_index = 10
+z_as_relative = false
 texture = ExtResource( 3 )
 
 [node name="Ball" type="Sprite" parent="."]
