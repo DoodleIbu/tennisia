@@ -45,7 +45,7 @@ func get_total_gravity():
     return GRAVITY + spin
 
 # If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power and end position.
-func adjust_for_net(shot_power, shot_height_mid, start_position, end_position):
+func get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_position):
 
     # Get the distance to cover in the xz-plane.
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
@@ -65,23 +65,24 @@ func adjust_for_net(shot_power, shot_height_mid, start_position, end_position):
                                   / (pow(xz_distance_to_end, 2) * xz_distance_to_net - xz_distance_to_end * pow(xz_distance_to_net, 2)) \
                                   * xz_distance_to_end / 2 \
                                   + start_position.y
+
         var new_shot_power = sqrt(-1 * get_total_gravity()) * xz_distance_to_end / (2 * sqrt(2 * new_shot_height_mid - start_position.y - end_position.y))
         return [new_shot_power, new_shot_height_mid]
     else:
         return [shot_power, shot_height_mid]
 
 # Fire shot from the other side of the court.
+# TODO: Incorporate a max height_mid to prevent the ball from going too high.
+#       If the ball exceeds the max height, then shorten the distance or change power.
 func fire(shot_type):
-
-    # Parameters per shot type.
     var start_position = actual_position
     var end_position = Vector3(80, BALL_RADIUS, 780)
-
-    # Get the distance to cover in the xz-plane.
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
     var xz_distance_to_end = Vector2(start_position.x, start_position.z).distance_to(Vector2(end_position.x, end_position.z))
     var xz_distance_to_net = (xz_direction * abs(start_position.z - NET_POSITION_Z) / xz_direction.y).length()
 
+    var max_power = 200 + 100 * debug
+    debug += 1
     if shot_type == ShotType.FLAT:
         spin = 0
     elif shot_type == ShotType.TOP:
@@ -89,32 +90,15 @@ func fire(shot_type):
     elif shot_type == ShotType.SLICE:
         spin = 100
 
-    # Constraints.
-    # height_mid represents the shot's height at the halfway point. Note that this doesn't represent the peak of the shot.
-    # TODO: How would you pick a max height_mid?
-    var max_height_mid = start_position.y + 100 # Should depend on the shot type.
-    var max_power = 200 + 100 * debug
-    debug += 1
-
-    # Get the ball's height_mid if we were to shoot it at the specified spin and power.
+    # Shoot the ball at max power and spin.
     var shot_power = max_power
     var shot_height_mid = -1 * get_total_gravity() * pow(xz_distance_to_end, 2) / (8 * pow(max_power, 2)) + (start_position.y + end_position.y) / 2
 
-    # If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power.
-    var net_adjustment_result = adjust_for_net(shot_power, shot_height_mid, start_position, end_position)
+    # If the ball will hit the net, adjust the shot to clear the net.
+    var net_adjustment_result = get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_position)
     shot_power = net_adjustment_result[0]
     shot_height_mid = net_adjustment_result[1]
 
-    print(shot_power)
-
-    # If the peak at max power is too high, then fire at max_peak. This is so that we don't deal with random moonballs due to weak shots.
-    # TODO: This might actually cause the ball to hit the net *again* if you limit shot height. We may want to *reduce* the xz_distance_to_goal as well.
-    # TODO: Figure out the spin afterwards.
-    if shot_height_mid > max_height_mid:
-        shot_height_mid = max_height_mid
-
-    # TODO: How does this handle in the case that shot_power is too low and shot_height_mid has been adjusted? This might cause stuff to hit net since the
-    #       xz_distance_to_goal should be shorter than expected.
     var velocity_y = -1 * (3 * start_position.y - 4 * shot_height_mid + end_position.y) * shot_power / xz_distance_to_end
     velocity = Vector3(shot_power * xz_direction.x, velocity_y, shot_power * xz_direction.y)
 
@@ -148,6 +132,6 @@ func update_position_and_velocity(delta):
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
         actual_position = Vector3(180, BALL_RADIUS, 360)
-        fire(ShotType.TOP)
+        fire(ShotType.SLICE)
 
     update_position_and_velocity(delta)
