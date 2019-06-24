@@ -44,17 +44,43 @@ func _process(delta):
 func get_total_gravity():
     return GRAVITY + spin
 
+# If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power and end position.
+func adjust_for_net(shot_power, shot_height_mid, start_position, end_position):
+
+    # Get the distance to cover in the xz-plane.
+    var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
+    var xz_distance_to_end = Vector2(start_position.x, start_position.z).distance_to(Vector2(end_position.x, end_position.z))
+    var xz_distance_to_net = (xz_direction * abs(start_position.z - NET_POSITION_Z) / xz_direction.y).length()
+
+    # If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power.
+    var velocity_y = -1 * (3 * start_position.y - 4 * shot_height_mid + end_position.y) * shot_power / xz_distance_to_end
+    var shot_height_net = start_position.y + velocity_y * (xz_distance_to_net / shot_power) + get_total_gravity() / 2 * pow(xz_distance_to_net / shot_power, 2)
+
+    if shot_height_net <= NET_CLEARANCE:
+        # https://www.wolframalpha.com/input/?i=A*n%5E2+%2B+B*n+%2B+y+%3D+c,+A*d%5E2+%2B+B*d+%2B+y+%3D+h,+solve+for+A,+B
+        var new_shot_height_mid = (-1 * NET_CLEARANCE * xz_distance_to_end + start_position.y * (xz_distance_to_end - xz_distance_to_net) + end_position.y * xz_distance_to_net) \
+                                  / (xz_distance_to_end * xz_distance_to_net * (xz_distance_to_end - xz_distance_to_net)) \
+                                  * pow(xz_distance_to_end / 2, 2) \
+                                  + (NET_CLEARANCE * pow(xz_distance_to_end, 2) - pow(xz_distance_to_end, 2) * start_position.y - end_position.y * pow(xz_distance_to_net, 2) + pow(xz_distance_to_net, 2) * start_position.y) \
+                                  / (pow(xz_distance_to_end, 2) * xz_distance_to_net - xz_distance_to_end * pow(xz_distance_to_net, 2)) \
+                                  * xz_distance_to_end / 2 \
+                                  + start_position.y
+        var new_shot_power = sqrt(-1 * get_total_gravity()) * xz_distance_to_end / (2 * sqrt(2 * new_shot_height_mid - start_position.y - end_position.y))
+        return [new_shot_power, new_shot_height_mid]
+    else:
+        return [shot_power, shot_height_mid]
+
 # Fire shot from the other side of the court.
 func fire(shot_type):
 
     # Parameters per shot type.
-    actual_position = Vector3(180, BALL_RADIUS, 360)
-    var goal = Vector3(80, BALL_RADIUS, 780)
+    var start_position = actual_position
+    var end_position = Vector3(80, BALL_RADIUS, 780)
 
     # Get the distance to cover in the xz-plane.
-    var xz_direction = Vector2(goal.x - actual_position.x, goal.z - actual_position.z).normalized()
-    var xz_distance_to_goal = Vector2(actual_position.x, actual_position.z).distance_to(Vector2(goal.x, goal.z))
-    var xz_distance_to_net = (xz_direction * abs(actual_position.z - NET_POSITION_Z) / xz_direction.y).length()
+    var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
+    var xz_distance_to_end = Vector2(start_position.x, start_position.z).distance_to(Vector2(end_position.x, end_position.z))
+    var xz_distance_to_net = (xz_direction * abs(start_position.z - NET_POSITION_Z) / xz_direction.y).length()
 
     if shot_type == ShotType.FLAT:
         spin = 0
@@ -66,28 +92,20 @@ func fire(shot_type):
     # Constraints.
     # height_mid represents the shot's height at the halfway point. Note that this doesn't represent the peak of the shot.
     # TODO: How would you pick a max height_mid?
-    var max_height_mid = actual_position.y + 100 # Should depend on the shot type.
+    var max_height_mid = start_position.y + 100 # Should depend on the shot type.
     var max_power = 200 + 100 * debug
     debug += 1
 
     # Get the ball's height_mid if we were to shoot it at the specified spin and power.
     var shot_power = max_power
-    var shot_height_mid = -1 * get_total_gravity() * pow(xz_distance_to_goal, 2) / (8 * pow(max_power, 2)) + (actual_position.y + goal.y) / 2
+    var shot_height_mid = -1 * get_total_gravity() * pow(xz_distance_to_end, 2) / (8 * pow(max_power, 2)) + (start_position.y + end_position.y) / 2
 
     # If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power.
-    var velocity_y = -1 * (3 * actual_position.y - 4 * shot_height_mid + goal.y) * shot_power / xz_distance_to_goal
-    var shot_height_net = actual_position.y + velocity_y * (xz_distance_to_net / shot_power) + get_total_gravity() / 2 * pow(xz_distance_to_net / shot_power, 2)
+    var net_adjustment_result = adjust_for_net(shot_power, shot_height_mid, start_position, end_position)
+    shot_power = net_adjustment_result[0]
+    shot_height_mid = net_adjustment_result[1]
 
-    if shot_height_net <= NET_CLEARANCE:
-        # https://www.wolframalpha.com/input/?i=A*n%5E2+%2B+B*n+%2B+y+%3D+c,+A*d%5E2+%2B+B*d+%2B+y+%3D+h,+solve+for+A,+B
-        shot_height_mid = (-1 * NET_CLEARANCE * xz_distance_to_goal + actual_position.y * (xz_distance_to_goal - xz_distance_to_net) + goal.y * xz_distance_to_net) \
-                          / (xz_distance_to_goal * xz_distance_to_net * (xz_distance_to_goal - xz_distance_to_net)) \
-                          * pow(xz_distance_to_goal / 2, 2) \
-                          + (NET_CLEARANCE * pow(xz_distance_to_goal, 2) - pow(xz_distance_to_goal, 2) * actual_position.y - goal.y * pow(xz_distance_to_net, 2) + pow(xz_distance_to_net, 2) * actual_position.y) \
-                          / (pow(xz_distance_to_goal, 2) * xz_distance_to_net - xz_distance_to_goal * pow(xz_distance_to_net, 2)) \
-                          * xz_distance_to_goal / 2 \
-                          + actual_position.y
-        shot_power = sqrt(-1 * get_total_gravity()) * xz_distance_to_goal / (2 * sqrt(2 * shot_height_mid - actual_position.y - goal.y))
+    print(shot_power)
 
     # If the peak at max power is too high, then fire at max_peak. This is so that we don't deal with random moonballs due to weak shots.
     # TODO: This might actually cause the ball to hit the net *again* if you limit shot height. We may want to *reduce* the xz_distance_to_goal as well.
@@ -97,7 +115,7 @@ func fire(shot_type):
 
     # TODO: How does this handle in the case that shot_power is too low and shot_height_mid has been adjusted? This might cause stuff to hit net since the
     #       xz_distance_to_goal should be shorter than expected.
-    velocity_y = -1 * (3 * actual_position.y - 4 * shot_height_mid + goal.y) * shot_power / xz_distance_to_goal
+    var velocity_y = -1 * (3 * start_position.y - 4 * shot_height_mid + end_position.y) * shot_power / xz_distance_to_end
     velocity = Vector3(shot_power * xz_direction.x, velocity_y, shot_power * xz_direction.y)
 
     print("Power: ", shot_power, " Y vel: ", velocity_y, " Y mid: ", shot_height_mid)
@@ -129,6 +147,7 @@ func update_position_and_velocity(delta):
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
+        actual_position = Vector3(180, BALL_RADIUS, 360)
         fire(ShotType.TOP)
 
     update_position_and_velocity(delta)
