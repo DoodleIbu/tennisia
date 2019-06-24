@@ -29,7 +29,6 @@ func _ready():
 func create_bounce():
     var bounce = Bounce.instance()
     bounce.position = Renderer.get_render_position(bounce_position)
-    bounce.set_z_index(-1)
     add_child(bounce)
 
 func _process(delta):
