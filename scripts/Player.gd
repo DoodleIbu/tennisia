@@ -24,8 +24,8 @@ var team_player = 1
 func get_z_position():
     return actual_position.y
 
-func update_velocity(delta):
-    var desired_velocity = get_desired_velocity()
+func _update_velocity(delta):
+    var desired_velocity = _get_desired_velocity()
 
     # Accelerate towards the desired velocity vector.
     var to_goal = desired_velocity - velocity
@@ -48,7 +48,7 @@ func update_velocity(delta):
     else:
         velocity = velocity + velocity_delta
 
-func update_actual_position(delta):
+func _update_actual_position(delta):
     actual_position += velocity * delta
 
     if team == 1:
@@ -57,11 +57,11 @@ func update_actual_position(delta):
         actual_position.y = min(actual_position.y, 370)
 
 # Render the player in the one-point perspective.
-func update_rendered_position():
+func _update_rendered_position():
     var actual_position_v3 = Vector3(actual_position.x, 0, actual_position.y)
     position = Renderer.get_render_position(actual_position_v3)
 
-func get_desired_velocity():
+func _get_desired_velocity():
     var desired_velocity = Vector2()
 
     if Input.is_action_pressed("ui_right"):
@@ -75,7 +75,7 @@ func get_desired_velocity():
 
     return desired_velocity.normalized() * MAX_SPEED
 
-func display_run_animation():
+func _display_run_animation():
     if velocity.length() < EPSILON and get_desired_velocity().length() == 0:
         $AnimationPlayer.play("idle_up")
     else:
@@ -100,9 +100,9 @@ func display_run_animation():
             $AnimationPlayer.play("run_upright")
 
 func _process(delta):
-    update_rendered_position()
-    display_run_animation()
+    _update_rendered_position()
+    _display_run_animation()
 
 func _physics_process(delta):
-    update_velocity(delta)
-    update_actual_position(delta)
+    _update_velocity(delta)
+    _update_actual_position(delta)
