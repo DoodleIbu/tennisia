@@ -76,7 +76,7 @@ func _get_desired_velocity():
     return desired_velocity.normalized() * MAX_SPEED
 
 func _display_run_animation():
-    if velocity.length() < EPSILON and get_desired_velocity().length() == 0:
+    if velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
         $AnimationPlayer.play("idle_up")
     else:
         var angle_rad = velocity.angle()

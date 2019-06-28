@@ -18,9 +18,6 @@ var spin = 0
 var actual_position = Vector3(0, 100, 0)
 var velocity = Vector3()
 
-var bounce_position = Vector3()
-var create_bounce = false
-
 var debug = 0
 
 func get_z_position():
@@ -104,8 +101,7 @@ func _update_position_and_velocity(delta):
         var time_percent_before_bounce = abs((actual_position.y - BALL_RADIUS) / (midpoint_velocity.y * delta))
         var time_percent_after_bounce = 1 - time_percent_before_bounce
 
-        bounce_position = actual_position + time_percent_before_bounce * midpoint_velocity * delta
-
+        var bounce_position = actual_position + time_percent_before_bounce * midpoint_velocity * delta
         var bounce_normal = Vector3(0, 1, 0)
         var bounce_velocity = new_velocity.bounce(bounce_normal) * DAMPING
         var bounce_midpoint_velocity = midpoint_velocity.bounce(bounce_normal) * DAMPING
