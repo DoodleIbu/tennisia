@@ -1,4 +1,4 @@
-extends ZSortable
+extends Node2D
 
 const Renderer = preload("res://scripts/utils/Renderer.gd")
 

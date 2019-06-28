@@ -1,6 +1,6 @@
-extends ZSortable
+extends Node2D
 
-export (PackedScene) var Bounce
+signal bounce
 
 const Renderer = preload("res://scripts/utils/Renderer.gd")
 const Integrator = preload("res://scripts/utils/Integrator.gd")
@@ -15,7 +15,7 @@ enum ShotType { FLAT, TOP, SLICE, LOB, DROP }
 
 # y is positive above the ground.
 var spin = 0
-var actual_position = Vector3()
+var actual_position = Vector3(0, 100, 0)
 var velocity = Vector3()
 
 var bounce_position = Vector3()
@@ -26,17 +26,15 @@ var debug = 0
 func get_z_position():
     return actual_position.z
 
-func create_bounce():
-    var bounce = Bounce.instance()
-    bounce.position = Renderer.get_render_position(bounce_position)
-    add_child(bounce)
+func get_simulated_ball_trajectory():
+    pass
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
-func get_total_gravity():
+func _get_total_gravity():
     return GRAVITY + spin
 
 # If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power and end position.
-func get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_position):
+func _get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_position):
 
     # Get the distance to cover in the xz-plane.
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
@@ -45,7 +43,7 @@ func get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_pos
 
     # If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power.
     var velocity_y = -1 * (3 * start_position.y - 4 * shot_height_mid + end_position.y) * shot_power / xz_distance_to_end
-    var shot_height_net = start_position.y + velocity_y * (xz_distance_to_net / shot_power) + get_total_gravity() / 2 * pow(xz_distance_to_net / shot_power, 2)
+    var shot_height_net = start_position.y + velocity_y * (xz_distance_to_net / shot_power) + _get_total_gravity() / 2 * pow(xz_distance_to_net / shot_power, 2)
 
     if shot_height_net <= NET_CLEARANCE:
         # https://www.wolframalpha.com/input/?i=A*n%5E2+%2B+B*n+%2B+y+%3D+c,+A*d%5E2+%2B+B*d+%2B+y+%3D+h,+solve+for+A,+B
@@ -57,7 +55,7 @@ func get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_pos
                                   * xz_distance_to_end / 2 \
                                   + start_position.y
 
-        var new_shot_power = sqrt(-1 * get_total_gravity()) * xz_distance_to_end / (2 * sqrt(2 * new_shot_height_mid - start_position.y - end_position.y))
+        var new_shot_power = sqrt(-1 * _get_total_gravity()) * xz_distance_to_end / (2 * sqrt(2 * new_shot_height_mid - start_position.y - end_position.y))
         return [new_shot_power, new_shot_height_mid]
     else:
         return [shot_power, shot_height_mid]
@@ -65,7 +63,7 @@ func get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_pos
 # Fire shot from the other side of the court.
 # TODO: Incorporate a max height_mid to prevent the ball from going too high.
 #       If the ball exceeds the max height, then shorten the distance or change power.
-func fire(shot_type):
+func _fire(shot_type):
     var start_position = actual_position
     var end_position = Vector3(80, BALL_RADIUS, 780)
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
@@ -83,10 +81,10 @@ func fire(shot_type):
 
     # Shoot the ball at max power and spin.
     var shot_power = max_power
-    var shot_height_mid = -1 * get_total_gravity() * pow(xz_distance_to_end, 2) / (8 * pow(max_power, 2)) + (start_position.y + end_position.y) / 2
+    var shot_height_mid = -1 * _get_total_gravity() * pow(xz_distance_to_end, 2) / (8 * pow(max_power, 2)) + (start_position.y + end_position.y) / 2
 
     # If the ball will hit the net, adjust the shot to clear the net.
-    var net_adjustment_result = get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_position)
+    var net_adjustment_result = _get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_position)
     shot_power = net_adjustment_result[0]
     shot_height_mid = net_adjustment_result[1]
 
@@ -95,8 +93,8 @@ func fire(shot_type):
 
     print("Power: ", shot_power, " Y vel: ", velocity_y, " Y mid: ", shot_height_mid)
 
-func update_position_and_velocity(delta):
-    var integration_result = Integrator.midpoint(actual_position, velocity, Vector3(0, get_total_gravity(), 0), delta)
+func _update_position_and_velocity(delta):
+    var integration_result = Integrator.midpoint(actual_position, velocity, Vector3(0, _get_total_gravity(), 0), delta)
     var new_position = integration_result[0]
     var new_velocity = integration_result[1]
     var midpoint_velocity = integration_result[2] # Used for deriving bounce position.
@@ -107,7 +105,6 @@ func update_position_and_velocity(delta):
         var time_percent_after_bounce = 1 - time_percent_before_bounce
 
         bounce_position = actual_position + time_percent_before_bounce * midpoint_velocity * delta
-        create_bounce = midpoint_velocity.y < -100
 
         var bounce_normal = Vector3(0, 1, 0)
         var bounce_velocity = new_velocity.bounce(bounce_normal) * DAMPING
@@ -116,21 +113,25 @@ func update_position_and_velocity(delta):
         new_position = bounce_position + time_percent_after_bounce * bounce_midpoint_velocity * delta
         new_velocity = bounce_velocity
 
+        if midpoint_velocity.y < -100:
+            emit_signal("bounce", bounce_position)
+
     # Assign properties to ball.
     actual_position = new_position
     velocity = new_velocity
+
+# Simulate ball trajectory until the ball comes to a complete stop.
+# This will cache the simulated ball trajectory.
+func _simulate_ball_trajectory():
+    pass
 
 func _process(delta):
     $Ball.position = Renderer.get_render_position(actual_position)
     $Shadow.position = Renderer.get_render_position(Vector3(actual_position.x, 0, actual_position.z))
 
-    if create_bounce == true:
-        create_bounce()
-        create_bounce = false
-
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
         actual_position = Vector3(180, BALL_RADIUS, 360)
-        fire(ShotType.SLICE)
+        _fire(ShotType.SLICE)
 
-    update_position_and_velocity(delta)
+    _update_position_and_velocity(delta)
