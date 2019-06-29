@@ -15,27 +15,27 @@ const DAMPING = 0.5
 var TIME_STEP = 1.0 / ProjectSettings.get_setting("physics/common/physics_fps")
 
 # y is positive above the ground.
-var spin = 0
+var _spin = 0
 
 # Court position and velocity.
-var real_position = Vector3(0, 100, 0)
-var velocity = Vector3()
+var _position = Vector3(0, 100, 0)
+var _velocity = Vector3()
 
 # Cached ball trajectory.
-var simulated_ball_positions = []
-var simulated_ball_velocities = []
+var _simulated_ball_positions = []
+var _simulated_ball_velocities = []
 
 var debug = 0
 
 func get_z_position():
-    return real_position.z
+    return _position.z
 
 func get_simulated_ball_trajectory():
-    return [simulated_ball_positions, simulated_ball_velocities]
+    return [_simulated_ball_positions, _simulated_ball_velocities]
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
 func _get_total_gravity():
-    return GRAVITY + spin
+    return GRAVITY + _spin
 
 # If the ball will hit the net, adjust the shot's height_mid to clear the net and then adjust the power and end position.
 func _get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_position):
@@ -68,7 +68,7 @@ func _get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_po
 # TODO: Incorporate a max height_mid to prevent the ball from going too high.
 #       If the ball exceeds the max height, then shorten the distance or change power.
 func _fire(shot_type):
-    var start_position = real_position
+    var start_position = _position
     var end_position = Vector3(80, BALL_RADIUS, 780)
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
     var xz_distance_to_end = Vector2(start_position.x, start_position.z).distance_to(Vector2(end_position.x, end_position.z))
@@ -78,11 +78,11 @@ func _fire(shot_type):
     debug += 1
 
     if shot_type == ShotType.FLAT:
-        spin = 0
+        _spin = 0
     elif shot_type == ShotType.TOP:
-        spin = -200
+        _spin = -200
     elif shot_type == ShotType.SLICE:
-        spin = 100
+        _spin = 100
 
     # Shoot the ball at max power and spin.
     var shot_power = max_power
@@ -96,7 +96,7 @@ func _fire(shot_type):
     var velocity_y = -1 * (3 * start_position.y - 4 * shot_height_mid + end_position.y) * shot_power / xz_distance_to_end
     print("Power: ", shot_power, " Y vel: ", velocity_y, " Y mid: ", shot_height_mid)
 
-    velocity = Vector3(shot_power * xz_direction.x, velocity_y, shot_power * xz_direction.y)
+    _velocity = Vector3(shot_power * xz_direction.x, velocity_y, shot_power * xz_direction.y)
 
 func _get_new_position_and_velocity(old_position, old_velocity, delta):
     var integration_result = Integrator.midpoint(old_position, old_velocity, Vector3(0, _get_total_gravity(), 0), delta)
@@ -124,8 +124,8 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
 
 # Simulate and cache ball trajectory for other nodes to use.
 func _simulate_ball_trajectory(old_position, old_velocity):
-    simulated_ball_positions = [old_position]
-    simulated_ball_velocities = [old_velocity]
+    _simulated_ball_positions = [old_position]
+    _simulated_ball_velocities = [old_velocity]
 
     var max_steps = 600
     var current_step = 1
@@ -136,22 +136,24 @@ func _simulate_ball_trajectory(old_position, old_velocity):
         var result = _get_new_position_and_velocity(current_position, current_velocity, TIME_STEP)
         current_position = result[0]
         current_velocity = result[1]
-        simulated_ball_positions.append(current_position)
-        simulated_ball_velocities.append(current_velocity)
+
+        _simulated_ball_positions.append(current_position)
+        _simulated_ball_velocities.append(current_velocity)
+
         current_step += 1
 
 func _process(delta):
-    $Ball.position = Renderer.get_render_position(real_position)
-    $Shadow.position = Renderer.get_render_position(Vector3(real_position.x, 0, real_position.z))
+    $Ball.position = Renderer.get_render_position(_position)
+    $Shadow.position = Renderer.get_render_position(Vector3(_position.x, 0, _position.z))
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
-        real_position = Vector3(180, BALL_RADIUS, 360)
+        _position = Vector3(180, BALL_RADIUS, 360)
         _fire(ShotType.SLICE)
-        _simulate_ball_trajectory(real_position, velocity)
+        _simulate_ball_trajectory(_position, _velocity)
 
     # TODO: Optimization - update position and velocity using the cached results.
     #       Should we use delta or a fixed timestep when it comes down to online play?
-    var result = _get_new_position_and_velocity(real_position, velocity, delta)
-    real_position = result[0]
-    velocity = result[1]
+    var result = _get_new_position_and_velocity(_position, _velocity, delta)
+    _position = result[0]
+    _velocity = result[1]

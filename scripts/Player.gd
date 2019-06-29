@@ -13,24 +13,24 @@ const EPSILON = 1
 
 # Position of player on the court without transformations.
 # (0, 0) = top left corner of court and (360, 780) = bottom right corner of court
-var real_position = Vector2()
-var velocity = Vector2()
+var _position = Vector2()
+var _velocity = Vector2()
 
-var team = 1
-var team_player = 1
+var _team = 1
+var _team_player = 1
 
 func get_z_position():
-    return real_position.y
+    return _position.y
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()
 
     # Accelerate towards the desired velocity vector.
-    var to_goal = desired_velocity - velocity
+    var to_goal = desired_velocity - _velocity
     var accel_direction = to_goal.normalized()
 
     # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
-    var movement_dot = velocity.dot(desired_velocity)
+    var movement_dot = _velocity.dot(desired_velocity)
     var velocity_delta
 
     if desired_velocity.length() == 0:
@@ -42,21 +42,21 @@ func _update_velocity(delta):
 
     # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
     if velocity_delta.length() > to_goal.length():
-        velocity = desired_velocity
+        _velocity = desired_velocity
     else:
-        velocity = velocity + velocity_delta
+        _velocity += velocity_delta
 
 func _update_real_position(delta):
-    real_position += velocity * delta
+    _position += _velocity * delta
 
-    if team == 1:
-        real_position.y = max(real_position.y, 410)
-    elif team == 2:
-        real_position.y = min(real_position.y, 370)
+    if _team == 1:
+        _position.y = max(_position.y, 410)
+    elif _team == 2:
+        _position.y = min(_position.y, 370)
 
 # Render the player in the one-point perspective.
 func _update_rendered_position():
-    var real_position_v3 = Vector3(real_position.x, 0, real_position.y)
+    var real_position_v3 = Vector3(_position.x, 0, _position.y)
     position = Renderer.get_render_position(real_position_v3)
 
 func _get_desired_velocity():
@@ -74,10 +74,10 @@ func _get_desired_velocity():
     return desired_velocity.normalized() * MAX_SPEED
 
 func _display_run_animation():
-    if velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
+    if _velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
         $AnimationPlayer.play("idle_up")
     else:
-        var angle_rad = velocity.angle()
+        var angle_rad = _velocity.angle()
         var angle_degrees = angle_rad * 180 / PI
 
         if angle_degrees >= -22.5 and angle_degrees <= 22.5:
