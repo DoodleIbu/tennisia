@@ -13,16 +13,14 @@ const EPSILON = 1
 
 # Position of player on the court without transformations.
 # (0, 0) = top left corner of court and (360, 780) = bottom right corner of court
-var actual_position = Vector2()
-
-# Current velocity of the player.
+var real_position = Vector2()
 var velocity = Vector2()
 
 var team = 1
 var team_player = 1
 
 func get_z_position():
-    return actual_position.y
+    return real_position.y
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()
@@ -48,18 +46,18 @@ func _update_velocity(delta):
     else:
         velocity = velocity + velocity_delta
 
-func _update_actual_position(delta):
-    actual_position += velocity * delta
+func _update_real_position(delta):
+    real_position += velocity * delta
 
     if team == 1:
-        actual_position.y = max(actual_position.y, 410)
+        real_position.y = max(real_position.y, 410)
     elif team == 2:
-        actual_position.y = min(actual_position.y, 370)
+        real_position.y = min(real_position.y, 370)
 
 # Render the player in the one-point perspective.
 func _update_rendered_position():
-    var actual_position_v3 = Vector3(actual_position.x, 0, actual_position.y)
-    position = Renderer.get_render_position(actual_position_v3)
+    var real_position_v3 = Vector3(real_position.x, 0, real_position.y)
+    position = Renderer.get_render_position(real_position_v3)
 
 func _get_desired_velocity():
     var desired_velocity = Vector2()
@@ -105,4 +103,4 @@ func _process(delta):
 
 func _physics_process(delta):
     _update_velocity(delta)
-    _update_actual_position(delta)
+    _update_real_position(delta)
