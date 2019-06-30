@@ -1,6 +1,7 @@
 extends Node2D
 
-signal bounced
+signal bounced(bounce_position)
+signal fired(simulated_ball_positions)
 
 const Renderer = preload("res://scripts/utils/Renderer.gd")
 const Integrator = preload("res://scripts/utils/Integrator.gd")
@@ -29,9 +30,6 @@ var debug = 0
 
 func get_z_position():
     return _position.z
-
-func get_simulated_ball_trajectory():
-    return [_simulated_ball_positions, _simulated_ball_velocities]
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
 func _get_total_gravity():
@@ -151,6 +149,7 @@ func _physics_process(delta):
         _position = Vector3(180, BALL_RADIUS, 360)
         _fire(ShotType.SLICE)
         _simulate_ball_trajectory(_position, _velocity)
+        emit_signal("fired", _simulated_ball_positions)
 
     # TODO: Optimization - update position and velocity using the cached results.
     #       Should we use delta or a fixed timestep when it comes down to online play?

@@ -4,9 +4,6 @@ const Renderer = preload("res://scripts/utils/Renderer.gd")
 
 const BASE_Z_INDEX = 100
 
-func _ready():
-    $Ball.connect("bounced", self, "_on_Ball_bounced")
-
 # Handle z-index rendering of ball, player and net.
 func _process(delta):
     var z_sortables = [$Player, $Ball, $Net]

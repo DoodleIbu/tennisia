@@ -2,25 +2,38 @@ extends Node2D
 
 const Renderer = preload("res://scripts/utils/Renderer.gd")
 
-const MAX_SPEED = 250
+const MAX_NEUTRAL_SPEED = 250
+const MAX_CHARGE_SPEED = 20
 const PIVOT_ACCEL = 300
 const RUN_ACCEL = 800
 const STOP_ACCEL = 800
 const EPSILON = 1
 
+enum State { NEUTRAL, CHARGE, HIT, LUNGE, SERVE_NEUTRAL, SERVE_TOSS, SERVE_HIT, WIN, LOSE }
+enum Direction { UP, DOWN, LEFT, RIGHT }
+
+var _state = State.NEUTRAL
+var _is_ball_hittable = false
+
+# For determining which direction to charge in.
+var _charge_direction
+var _simulated_ball_positions
+
 # For simplicity, make the following Vector2s and convert to Vector3 when necessary.
 # The following vectors represent (x, z).
-
 # Position of player on the court without transformations.
 # (0, 0) = top left corner of court and (360, 780) = bottom right corner of court
-var _position = Vector2()
+var _position = Vector2(360, 780)
 var _velocity = Vector2()
 
 var _team = 1
-var _team_player = 1
 
 func get_z_position():
     return _position.y
+
+func _on_Ball_fired(simulated_ball_positions):
+    _is_ball_hittable = true # Note: Set this to either true or false if the player hits it.
+    _simulated_ball_positions = simulated_ball_positions
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()
@@ -46,7 +59,7 @@ func _update_velocity(delta):
     else:
         _velocity += velocity_delta
 
-func _update_real_position(delta):
+func _update_position(delta):
     _position += _velocity * delta
 
     if _team == 1:
@@ -71,9 +84,12 @@ func _get_desired_velocity():
     if Input.is_action_pressed("ui_up"):
         desired_velocity.y -= 1
 
-    return desired_velocity.normalized() * MAX_SPEED
+    if _state == State.NEUTRAL:
+        return desired_velocity.normalized() * MAX_NEUTRAL_SPEED
+    elif _state == State.CHARGE:
+        return desired_velocity.normalized() * MAX_CHARGE_SPEED
 
-func _display_run_animation():
+func _display_neutral_animation():
     if _velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
         $AnimationPlayer.play("idle_up")
     else:
@@ -97,10 +113,56 @@ func _display_run_animation():
         elif angle_degrees >= -67.5 and angle_degrees <= -22.5:
             $AnimationPlayer.play("run_upright")
 
+func _display_charge_animation():
+    if _charge_direction == Direction.LEFT:
+        $AnimationPlayer.play("charge_left")
+    elif _charge_direction == Direction.RIGHT:
+        $AnimationPlayer.play("charge_right")
+
+func _get_charge_direction():
+    var charge_direction = Direction.LEFT # Default to left.
+    var index = 0
+
+    while index < _simulated_ball_positions.size() - 1:
+        var first_position = _simulated_ball_positions[index]
+        var second_position = _simulated_ball_positions[index + 1]
+
+        # TODO: Depends on team.
+        if first_position.z <= _position.y and second_position.z >= _position.y:
+            var ball_x_position = lerp(first_position.x, second_position.x, (_position.y - first_position.z) / (second_position.z - first_position.z))
+
+            if ball_x_position <= _position.x:
+                charge_direction = Direction.LEFT
+            else:
+                charge_direction = Direction.RIGHT
+            break
+
+        index += 1
+
+    return charge_direction
+
+func _state_transition():
+    if _is_ball_hittable:
+        if _state == State.NEUTRAL:
+            if Input.is_action_just_pressed("ui_select"):
+                _state = State.CHARGE
+                _charge_direction = _get_charge_direction()
+
+        elif _state == State.CHARGE:
+            if Input.is_action_just_pressed("ui_cancel"):
+                _state = State.NEUTRAL
+    else:
+        pass
+
 func _process(delta):
     _update_rendered_position()
-    _display_run_animation()
+
+    if _state == State.NEUTRAL:
+        _display_neutral_animation()
+    elif _state == State.CHARGE:
+        _display_charge_animation()
 
 func _physics_process(delta):
+    _state_transition()
     _update_velocity(delta)
-    _update_real_position(delta)
+    _update_position(delta)
