@@ -1,57 +1,6 @@
-extends Node2D
+extends Node
 
 const Renderer = preload("res://scripts/utils/Renderer.gd")
-
-const MAX_NEUTRAL_SPEED = 250
-const MAX_CHARGE_SPEED = 20
-const PIVOT_ACCEL = 300
-const RUN_ACCEL = 800
-const STOP_ACCEL = 800
-
-enum State { NEUTRAL, CHARGE, HIT, LUNGE, SERVE_NEUTRAL, SERVE_TOSS, SERVE_HIT, WIN, LOSE }
-var _state = State.NEUTRAL
-
-# For simplicity, make the following Vector2s and convert to Vector3 when necessary.
-# The following vectors represent (x, z).
-# Position of player on the court without transformations.
-# (0, 0) = top left corner of court and (360, 780) = bottom right corner of court
-var _position = Vector3(360, 0, 780)
-var _velocity = Vector3()
-
-var _team = 1
-
-func get_position():
-    return _position
-
-func set_position(value):
-    _position = value
-
-func get_velocity():
-    return _velocity
-
-func set_velocity(value):
-    _velocity = value
-
-func set_render_position(value):
-    position = value
-
-func get_team():
-    return _team
-
-func _set_state(state):
-    if _state:
-        _state.exit()
-
-    match state:
-        State.NEUTRAL:
-            _state = NeutralState.new(self)
-        State.CHARGE:
-            _state = ChargeState.new(self)
-        _:
-            assert(false)
-
-    if _state:
-        _state.enter()
 
 class StateBase:
     var _player = null
@@ -70,7 +19,6 @@ class StateBase:
         assert(false)
 
 class NeutralState extends StateBase:
-
     const EPSILON = 1
 
     func _init(player).(player):
@@ -135,11 +83,11 @@ class NeutralState extends StateBase:
         var velocity_delta
 
         if desired_velocity.length() == 0:
-            velocity_delta = accel_direction * STOP_ACCEL * delta
+            velocity_delta = accel_direction * self._player.get_stop_accel() * delta
         elif movement_dot >= 0:
-            velocity_delta = accel_direction * RUN_ACCEL * delta
+            velocity_delta = accel_direction * self._player.get_run_accel() * delta
         else:
-            velocity_delta = accel_direction * PIVOT_ACCEL * delta
+            velocity_delta = accel_direction * self._player.get_pivot_accel() * delta
 
         # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
         if velocity_delta.length() > to_goal.length():
@@ -148,13 +96,12 @@ class NeutralState extends StateBase:
             self._player.set_velocity(self._player.get_velocity() + velocity_delta)
 
     func _update_position(delta):
-        self._player.set_position(self._player.get_position() + self._player.get_velocity() * delta)
+        var new_position = self._player.get_position() + self._player.get_velocity() * delta
+
         if self._player.get_team() == 1:
-            var new_position = self._player.get_position()
             new_position.z = max(new_position.z, 410)
             self._player.set_position(new_position)
         elif self._player.get_team() == 2:
-            var new_position = self._player.get_position()
             new_position.z = min(new_position.z, 370)
             self._player.set_position(new_position)
 
@@ -171,7 +118,7 @@ class NeutralState extends StateBase:
         if Input.is_action_pressed("ui_up"):
             desired_velocity.z -= 1
 
-        return desired_velocity.normalized() * self._player.MAX_NEUTRAL_SPEED
+        return desired_velocity.normalized() * self._player.get_max_neutral_speed()
 
 class ChargeState extends StateBase:
     func _init(player).(player):
@@ -186,15 +133,3 @@ class ChargeState extends StateBase:
         pass
     func physics_process(delta):
         pass
-
-func _ready():
-    _set_state(State.NEUTRAL)
-
-func _process(delta):
-    _state.process(delta)
-
-func _physics_process(delta):
-    _state.physics_process(delta)
-
-func _input(event):
-    _state.input(event)

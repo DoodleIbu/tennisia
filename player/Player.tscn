@@ -1,7 +1,8 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://scripts/Player.gd" type="Script" id=1]
+[ext_resource path="res://player/Player.gd" type="Script" id=1]
 [ext_resource path="res://assets/graphics/characters/yoshi.png" type="Texture" id=2]
+[ext_resource path="res://player/State.gd" type="Script" id=3]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -465,3 +466,6 @@ offset = Vector2( -6, 0 )
 flip_h = true
 hframes = 50
 frame = 45
+
+[node name="State" type="Node" parent="."]
+script = ExtResource( 3 )
