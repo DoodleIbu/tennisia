@@ -31,138 +31,154 @@ var _team = 1
 func get_z_position():
     return _position.y
 
-func _on_Ball_fired(simulated_ball_positions):
-    _is_ball_hittable = true # Note: Set this to either true or false if the player hits it.
-    _simulated_ball_positions = simulated_ball_positions
+func get_team():
+    return _team
 
-func _update_velocity(delta):
-    var desired_velocity = _get_desired_velocity()
+func _set_state(state):
+    if _state:
+        _state.exit()
 
-    # Accelerate towards the desired velocity vector.
-    var to_goal = desired_velocity - _velocity
-    var accel_direction = to_goal.normalized()
+    match state:
+        State.NEUTRAL:
+            _state = NeutralState.new(self)
+        State.CHARGE:
+            _state = ChargeState.new(self)
+        _:
+            assert(false)
 
-    # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
-    var movement_dot = _velocity.dot(desired_velocity)
-    var velocity_delta
+    if _state:
+        _state.enter()
 
-    if desired_velocity.length() == 0:
-        velocity_delta = accel_direction * STOP_ACCEL * delta
-    elif movement_dot >= 0:
-        velocity_delta = accel_direction * RUN_ACCEL * delta
-    else:
-        velocity_delta = accel_direction * PIVOT_ACCEL * delta
+class StateBase:
+    var _player = null
 
-    # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
-    if velocity_delta.length() > to_goal.length():
-        _velocity = desired_velocity
-    else:
-        _velocity += velocity_delta
+    func _init(player):
+        self._player = player
+    func enter():
+        assert(false)
+    func exit():
+        assert(false)
+    func input(event):
+        assert(false)
+    func process(delta):
+        assert(false)
+    func physics_process(delta):
+        assert(false)
 
-func _update_position(delta):
-    _position += _velocity * delta
+class NeutralState extends StateBase:
 
-    if _team == 1:
-        _position.y = max(_position.y, 410)
-    elif _team == 2:
-        _position.y = min(_position.y, 370)
-
-# Render the player in the one-point perspective.
-func _update_rendered_position():
-    var real_position_v3 = Vector3(_position.x, 0, _position.y)
-    position = Renderer.get_render_position(real_position_v3)
-
-func _get_desired_velocity():
-    var desired_velocity = Vector2()
-
-    if Input.is_action_pressed("ui_right"):
-        desired_velocity.x += 1
-    if Input.is_action_pressed("ui_left"):
-        desired_velocity.x -= 1
-    if Input.is_action_pressed("ui_down"):
-        desired_velocity.y += 1
-    if Input.is_action_pressed("ui_up"):
-        desired_velocity.y -= 1
-
-    if _state == State.NEUTRAL:
-        return desired_velocity.normalized() * MAX_NEUTRAL_SPEED
-    elif _state == State.CHARGE:
-        return desired_velocity.normalized() * MAX_CHARGE_SPEED
-
-func _display_neutral_animation():
-    if _velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
-        $AnimationPlayer.play("idle_up")
-    else:
-        var angle_rad = _velocity.angle()
-        var angle_degrees = angle_rad * 180 / PI
-
-        if angle_degrees >= -22.5 and angle_degrees <= 22.5:
-            $AnimationPlayer.play("run_right")
-        elif angle_degrees >= 22.5 and angle_degrees <= 67.5:
-            $AnimationPlayer.play("run_downright")
-        elif angle_degrees >= 67.5 and angle_degrees <= 112.5:
-            $AnimationPlayer.play("run_down")
-        elif angle_degrees >= 112.5 and angle_degrees <= 157.5:
-            $AnimationPlayer.play("run_downleft")
-        elif angle_degrees >= 157.5 or angle_degrees <= -157.5:
-            $AnimationPlayer.play("run_left")
-        elif angle_degrees >= -157.5 and angle_degrees <= -112.5:
-            $AnimationPlayer.play("run_upleft")
-        elif angle_degrees >= -112.5 and angle_degrees <= -67.5:
-            $AnimationPlayer.play("run_up")
-        elif angle_degrees >= -67.5 and angle_degrees <= -22.5:
-            $AnimationPlayer.play("run_upright")
-
-func _display_charge_animation():
-    if _charge_direction == Direction.LEFT:
-        $AnimationPlayer.play("charge_left")
-    elif _charge_direction == Direction.RIGHT:
-        $AnimationPlayer.play("charge_right")
-
-func _get_charge_direction():
-    var charge_direction = Direction.LEFT # Default to left.
-    var index = 0
-
-    while index < _simulated_ball_positions.size() - 1:
-        var first_position = _simulated_ball_positions[index]
-        var second_position = _simulated_ball_positions[index + 1]
-
-        # TODO: Depends on team.
-        if first_position.z <= _position.y and second_position.z >= _position.y:
-            var ball_x_position = lerp(first_position.x, second_position.x, (_position.y - first_position.z) / (second_position.z - first_position.z))
-
-            if ball_x_position <= _position.x:
-                charge_direction = Direction.LEFT
-            else:
-                charge_direction = Direction.RIGHT
-            break
-
-        index += 1
-
-    return charge_direction
-
-func _state_transition():
-    if _is_ball_hittable:
-        if _state == State.NEUTRAL:
-            if Input.is_action_just_pressed("ui_select"):
-                _state = State.CHARGE
-                _charge_direction = _get_charge_direction()
-
-        elif _state == State.CHARGE:
-            if Input.is_action_just_pressed("ui_cancel"):
-                _state = State.NEUTRAL
-    else:
+    func _init(player).(player):
         pass
 
-func _process(delta):
-    _update_rendered_position()
+    func enter():
+        pass
 
-    if _state == State.NEUTRAL:
-        _display_neutral_animation()
-    elif _state == State.CHARGE:
-        _display_charge_animation()
+    func exit():
+        pass
+
+    func input(event):
+        pass
+
+    func process(delta):
+        if self._player._velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
+            self._player.get_node("AnimationPlayer").play("idle_up")
+        else:
+            var angle_rad = self._player._velocity.angle()
+            var angle_degrees = angle_rad * 180 / PI
+
+            if angle_degrees >= -22.5 and angle_degrees <= 22.5:
+                self._player.get_node("AnimationPlayer").play("run_right")
+            elif angle_degrees >= 22.5 and angle_degrees <= 67.5:
+                self._player.get_node("AnimationPlayer").play("run_downright")
+            elif angle_degrees >= 67.5 and angle_degrees <= 112.5:
+                self._player.get_node("AnimationPlayer").play("run_down")
+            elif angle_degrees >= 112.5 and angle_degrees <= 157.5:
+                self._player.get_node("AnimationPlayer").play("run_downleft")
+            elif angle_degrees >= 157.5 or angle_degrees <= -157.5:
+                self._player.get_node("AnimationPlayer").play("run_left")
+            elif angle_degrees >= -157.5 and angle_degrees <= -112.5:
+                self._player.get_node("AnimationPlayer").play("run_upleft")
+            elif angle_degrees >= -112.5 and angle_degrees <= -67.5:
+                self._player.get_node("AnimationPlayer").play("run_up")
+            elif angle_degrees >= -67.5 and angle_degrees <= -22.5:
+                self._player.get_node("AnimationPlayer").play("run_upright")
+
+        var real_position_v3 = Vector3(self._player._position.x, 0, self._player._position.y)
+        self._player.position = Renderer.get_render_position(real_position_v3)
+
+    func physics_process(delta):
+        _update_velocity(delta)
+        _update_position(delta)
+
+    func _update_velocity(delta):
+        var desired_velocity = _get_desired_velocity()
+
+        # Accelerate towards the desired velocity vector.
+        var to_goal = desired_velocity - self._player._velocity
+        var accel_direction = to_goal.normalized()
+
+        # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
+        var movement_dot = self._player._velocity.dot(desired_velocity)
+        var velocity_delta
+
+        if desired_velocity.length() == 0:
+            velocity_delta = accel_direction * STOP_ACCEL * delta
+        elif movement_dot >= 0:
+            velocity_delta = accel_direction * RUN_ACCEL * delta
+        else:
+            velocity_delta = accel_direction * PIVOT_ACCEL * delta
+
+        # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
+        if velocity_delta.length() > to_goal.length():
+            self._player._velocity = desired_velocity
+        else:
+            self._player._velocity += velocity_delta
+
+    func _update_position(delta):
+        self._player._position += self._player._velocity * delta
+
+        if self._player.get_team() == 1:
+            self._player._position.y = max(self._player._position.y, 410)
+        elif self.player._team == 2:
+            self._player._position.y = min(self._player._position.y, 370)
+
+    func _get_desired_velocity():
+        # TODO: Modify this code to instead read inputs from input().
+        var desired_velocity = Vector2()
+
+        if Input.is_action_pressed("ui_right"):
+            desired_velocity.x += 1
+        if Input.is_action_pressed("ui_left"):
+            desired_velocity.x -= 1
+        if Input.is_action_pressed("ui_down"):
+            desired_velocity.y += 1
+        if Input.is_action_pressed("ui_up"):
+            desired_velocity.y -= 1
+
+        return desired_velocity.normalized() * self._player.MAX_NEUTRAL_SPEED
+
+class ChargeState extends StateBase:
+    func _init(player).(player):
+        pass
+    func enter():
+        pass
+    func exit():
+        pass
+    func input(event):
+        pass
+    func process(delta):
+        pass
+    func physics_process(delta):
+        pass
+
+func _ready():
+    _set_state(State.NEUTRAL)
+
+func _process(delta):
+    _state.process(delta)
 
 func _physics_process(delta):
-    _state_transition()
-    _update_velocity(delta)
-    _update_position(delta)
+    _state.physics_process(delta)
+
+func _input(event):
+    _state.input(event)
