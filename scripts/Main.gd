@@ -13,7 +13,7 @@ func _process(delta):
         z_sortables[i].set_z_index(BASE_Z_INDEX + i)
 
 func _z_sortables_comparison(a, b):
-    return a.get_z_position() < b.get_z_position()
+    return a.get_position().z < b.get_position().z
 
 func _on_Ball_bounced(bounce_position):
     var bounce = Bounce.instance()

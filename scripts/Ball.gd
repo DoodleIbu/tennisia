@@ -28,8 +28,8 @@ var _simulated_ball_velocities = []
 
 var debug = 0
 
-func get_z_position():
-    return _position.z
+func get_position():
+    return _position
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
 func _get_total_gravity():

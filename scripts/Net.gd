@@ -1,4 +1,4 @@
 extends Node2D
 
-func get_z_position():
-    return 390
+func get_position():
+    return Vector3(0, 0, 390)
