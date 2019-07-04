@@ -54,11 +54,11 @@ func get_run_accel():
 func get_stop_accel():
     return _STOP_ACCEL
 
-func _set_state(state):
+func _set_state(value):
     if _state:
         _state.exit()
 
-    match state:
+    match value:
         State.NEUTRAL:
             _state = _neutral_state
         State.CHARGE:
@@ -83,3 +83,7 @@ func _physics_process(delta):
 
 func _input(event):
     _state.input(event)
+
+# Delegate signal from Player to ChargeState.
+func _on_Ball_fired(simulated_ball_positions):
+    _charge_state.set_simulated_ball_positions(simulated_ball_positions)

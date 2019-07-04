@@ -15,7 +15,8 @@ func _process(delta):
 func _z_sortables_comparison(a, b):
     return a.get_position().z < b.get_position().z
 
-func _on_Ball_bounced(bounce_position):
-    var bounce = Bounce.instance()
-    bounce.position = Renderer.get_render_position(bounce_position)
-    add_child(bounce)
+func _on_Ball_bounced(bounce_position, bounce_velocity):
+    if bounce_velocity.y < -100:
+        var bounce = Bounce.instance()
+        bounce.position = Renderer.get_render_position(bounce_position)
+        add_child(bounce)

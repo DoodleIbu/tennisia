@@ -102,12 +102,17 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
     var new_velocity = integration_result[1]
     var midpoint_velocity = integration_result[2] # Used for deriving bounce position.
 
+    var has_bounced = false
+    var bounce_position
+
     # Ball has collided with the court. Also avoid division by 0.
     if new_position.y <= BALL_RADIUS and midpoint_velocity.y < 0:
+        has_bounced = true
+
         var time_percent_before_bounce = abs((old_position.y - BALL_RADIUS) / (midpoint_velocity.y * delta))
         var time_percent_after_bounce = 1 - time_percent_before_bounce
 
-        var bounce_position = old_position + time_percent_before_bounce * midpoint_velocity * delta
+        bounce_position = old_position + time_percent_before_bounce * midpoint_velocity * delta
         var bounce_normal = Vector3(0, 1, 0)
         var bounce_velocity = new_velocity.bounce(bounce_normal) * DAMPING
         var bounce_midpoint_velocity = midpoint_velocity.bounce(bounce_normal) * DAMPING
@@ -115,10 +120,15 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
         new_position = bounce_position + time_percent_after_bounce * bounce_midpoint_velocity * delta
         new_velocity = bounce_velocity
 
-        if midpoint_velocity.y < -100:
-            emit_signal("bounced", bounce_position)
+    var return_value = {
+        "position": new_position,
+        "velocity": new_velocity
+    }
 
-    return [new_position, new_velocity]
+    if has_bounced:
+        return_value["bounce_position"] = bounce_position
+
+    return return_value
 
 # Simulate and cache ball trajectory for other nodes to use.
 func _simulate_ball_trajectory(old_position, old_velocity):
@@ -132,8 +142,8 @@ func _simulate_ball_trajectory(old_position, old_velocity):
 
     while current_step < max_steps:
         var result = _get_new_position_and_velocity(current_position, current_velocity, TIME_STEP)
-        current_position = result[0]
-        current_velocity = result[1]
+        current_position = result["position"]
+        current_velocity = result["velocity"]
 
         _simulated_ball_positions.append(current_position)
         _simulated_ball_velocities.append(current_velocity)
@@ -154,5 +164,7 @@ func _physics_process(delta):
     # TODO: Optimization - update position and velocity using the cached results.
     #       Should we use delta or a fixed timestep when it comes down to online play?
     var result = _get_new_position_and_velocity(_position, _velocity, delta)
-    _position = result[0]
-    _velocity = result[1]
+    if result.has("bounce_position"):
+        emit_signal("bounced", result["bounce_position"], _velocity)
+    _position = result["position"]
+    _velocity = result["velocity"]
