@@ -32,4 +32,4 @@ stream = ExtResource( 7 )
 volume_db = -8.0
 autoplay = true
 [connection signal="bounced" from="Ball" to="." method="_on_Ball_bounced"]
-[connection signal="fired" from="Ball" to="Player" method="_on_Ball_fired"]
+[connection signal="fired" from="Ball" to="Player/States" method="_on_Ball_fired"]

@@ -1,5 +1,8 @@
 extends Node2D
 
+const NeutralState = preload("NeutralState.gd")
+const ChargeState = preload("ChargeState.gd")
+
 export var _MAX_NEUTRAL_SPEED = 250
 export var _MAX_CHARGE_SPEED = 20
 export var _PIVOT_ACCEL = 300
@@ -68,8 +71,9 @@ func _set_state(state):
         _state.enter()
 
 func _ready():
-    _neutral_state = get_node("State").NeutralState.new(self)
-    _charge_state = get_node("State").ChargeState.new(self)
+    # I don't know what the best way of organizing these states is, but this should be good for now.
+    _neutral_state = NeutralState.new(self)
+    _charge_state = ChargeState.new(self)
 
     _set_state(State.NEUTRAL)
 
