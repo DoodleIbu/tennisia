@@ -1,8 +1,9 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Ball.gd" type="Script" id=1]
+[ext_resource path="res://objects/ball/Ball.gd" type="Script" id=1]
 [ext_resource path="res://assets/graphics/ballshadow.png" type="Texture" id=2]
 [ext_resource path="res://assets/graphics/ball.png" type="Texture" id=3]
+
 
 
 [node name="Ball" type="Node2D"]
