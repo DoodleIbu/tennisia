@@ -1,6 +1,6 @@
 extends Node2D
 export (PackedScene) var Bounce
-const Renderer = preload("res://scripts/utils/Renderer.gd")
+const Renderer = preload("res://utils/Renderer.gd")
 
 const BASE_Z_INDEX = 100
 

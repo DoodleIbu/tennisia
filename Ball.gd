@@ -3,8 +3,8 @@ extends Node2D
 signal bounced(bounce_position)
 signal fired(simulated_ball_positions)
 
-const Renderer = preload("res://scripts/utils/Renderer.gd")
-const Integrator = preload("res://scripts/utils/Integrator.gd")
+const Renderer = preload("res://utils/Renderer.gd")
+const Integrator = preload("res://utils/Integrator.gd")
 
 enum ShotType { FLAT, TOP, SLICE, LOB, DROP }
 

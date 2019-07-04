@@ -1,6 +1,6 @@
 extends "StateBase.gd"
 
-const Renderer = preload("res://scripts/utils/Renderer.gd")
+const Renderer = preload("res://utils/Renderer.gd")
 
 const EPSILON = 1
 
