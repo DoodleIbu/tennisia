@@ -6,7 +6,7 @@ func enter():
     assert(false)
 func exit():
     assert(false)
-func input(event):
+func input():
     assert(false)
 func process(delta):
     assert(false)

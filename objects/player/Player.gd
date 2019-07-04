@@ -2,17 +2,19 @@ extends Node2D
 
 const NeutralState = preload("NeutralState.gd")
 const ChargeState = preload("ChargeState.gd")
+const State = preload("States.gd").State
 
 export var _MAX_NEUTRAL_SPEED = 250
 export var _MAX_CHARGE_SPEED = 20
-export var _PIVOT_ACCEL = 300
+export var _PIVOT_ACCEL = 1000
 export var _RUN_ACCEL = 800
 export var _STOP_ACCEL = 800
 
-enum State { NEUTRAL, CHARGE, HIT, LUNGE, SERVE_NEUTRAL, SERVE_TOSS, SERVE_HIT, WIN, LOSE }
 var _state = State.NEUTRAL
 var _neutral_state
 var _charge_state
+
+var _can_hit_ball = false
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
@@ -54,7 +56,10 @@ func get_run_accel():
 func get_stop_accel():
     return _STOP_ACCEL
 
-func _set_state(value):
+func can_hit_ball():
+    return _can_hit_ball
+
+func set_state(value):
     if _state:
         _state.exit()
 
@@ -73,17 +78,17 @@ func _ready():
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self)
 
-    _set_state(State.NEUTRAL)
+    set_state(State.NEUTRAL)
 
 func _process(delta):
     _state.process(delta)
 
+# TODO: Handle input separately. For now this is fine.
 func _physics_process(delta):
+    _state.input()
     _state.physics_process(delta)
-
-func _input(event):
-    _state.input(event)
 
 # Delegate signal from Player to ChargeState.
 func _on_Ball_fired(simulated_ball_positions):
+    _can_hit_ball = true
     _charge_state.set_simulated_ball_positions(simulated_ball_positions)
