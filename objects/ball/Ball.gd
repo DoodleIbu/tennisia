@@ -5,6 +5,7 @@ signal fired(simulated_ball_positions)
 
 const Renderer = preload("res://utils/Renderer.gd")
 const Integrator = preload("res://utils/Integrator.gd")
+const TimeStep = preload("res://utils/TimeStep.gd")
 
 enum ShotType { FLAT, TOP, SLICE, LOB, DROP }
 
@@ -13,7 +14,6 @@ const NET_POSITION_Z = 390
 const GRAVITY = -322
 const BALL_RADIUS = 1.1
 const DAMPING = 0.5
-var TIME_STEP = 1.0 / ProjectSettings.get_setting("physics/common/physics_fps")
 
 # y is positive above the ground.
 var _spin = 0
@@ -131,7 +131,7 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
     return return_value
 
 # Simulate and cache ball trajectory for other nodes to use.
-func _simulate_ball_trajectory(old_position, old_velocity):
+func _simulate_ball_trajectory(old_position, old_velocity, delta):
     _simulated_ball_positions = [old_position]
     _simulated_ball_velocities = [old_velocity]
 
@@ -141,7 +141,7 @@ func _simulate_ball_trajectory(old_position, old_velocity):
     var current_velocity = old_velocity
 
     while current_step < max_steps:
-        var result = _get_new_position_and_velocity(current_position, current_velocity, TIME_STEP)
+        var result = _get_new_position_and_velocity(current_position, current_velocity, delta)
         current_position = result["position"]
         current_velocity = result["velocity"]
 
@@ -158,12 +158,10 @@ func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
         _position = Vector3(180, BALL_RADIUS, 360)
         _fire(ShotType.SLICE)
-        _simulate_ball_trajectory(_position, _velocity)
+        _simulate_ball_trajectory(_position, _velocity, TimeStep.get_time_step())
         emit_signal("fired", _simulated_ball_positions)
 
-    # TODO: Optimization - update position and velocity using the cached results.
-    #       Should we use delta or a fixed timestep when it comes down to online play?
-    var result = _get_new_position_and_velocity(_position, _velocity, delta)
+    var result = _get_new_position_and_velocity(_position, _velocity, TimeStep.get_time_step())
     if result.has("bounce_position"):
         emit_signal("bounced", result["bounce_position"], _velocity)
     _position = result["position"]

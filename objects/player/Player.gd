@@ -3,6 +3,7 @@ extends Node2D
 const NeutralState = preload("NeutralState.gd")
 const ChargeState = preload("ChargeState.gd")
 const State = preload("States.gd").State
+const TimeStep = preload("res://utils/TimeStep.gd")
 
 export var _MAX_NEUTRAL_SPEED = 250
 export var _MAX_CHARGE_SPEED = 20
@@ -14,14 +15,12 @@ var _state = State.NEUTRAL
 var _neutral_state
 var _charge_state
 
-var _can_hit_ball = false
-
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
-
 var _team = 1
+var _can_hit_ball = false
 
 func get_position():
     return _position
@@ -86,7 +85,7 @@ func _process(delta):
 # TODO: Handle input separately. For now this is fine.
 func _physics_process(delta):
     _state.input()
-    _state.physics_process(delta)
+    _state.physics_process(TimeStep.get_time_step())
 
 # Delegate signal from Player to ChargeState.
 func _on_Ball_fired(simulated_ball_positions):
