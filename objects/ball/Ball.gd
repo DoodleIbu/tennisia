@@ -1,7 +1,7 @@
 extends Node2D
 
 signal bounced(bounce_position)
-signal fired(simulated_ball_positions)
+signal fired()
 
 const Renderer = preload("res://utils/Renderer.gd")
 const Integrator = preload("res://utils/Integrator.gd")
@@ -30,6 +30,9 @@ var debug = 0
 
 func get_position():
     return _position
+
+func get_simulated_ball_positions():
+    return _simulated_ball_positions
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
 func _get_total_gravity():
@@ -159,7 +162,7 @@ func _physics_process(delta):
         _position = Vector3(180, BALL_RADIUS, 360)
         _fire(ShotType.SLICE)
         _simulate_ball_trajectory(_position, _velocity, TimeStep.get_time_step())
-        emit_signal("fired", _simulated_ball_positions)
+        emit_signal("fired")
 
     var result = _get_new_position_and_velocity(_position, _velocity, TimeStep.get_time_step())
     if result.has("bounce_position"):

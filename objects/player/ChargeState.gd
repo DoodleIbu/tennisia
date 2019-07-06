@@ -5,20 +5,21 @@ const State = preload("States.gd").State
 
 enum Direction { UP, DOWN, LEFT, RIGHT }
 
+var _ball
 var _charge_direction
-var _simulated_ball_positions = []
 
-func _init(player).(player):
-    pass
+func _init(player, ball).(player):
+    _ball = ball
 
 func enter():
     # Set charge direction.
-    _charge_direction = Direction.LEFT # Default to left.
+    _charge_direction = Direction.LEFT
+    var simulated_ball_positions = _ball.get_simulated_ball_positions()
     var index = 0
 
-    while index < _simulated_ball_positions.size() - 1:
-        var first_position = _simulated_ball_positions[index]
-        var second_position = _simulated_ball_positions[index + 1]
+    while index < simulated_ball_positions.size() - 1:
+        var first_position = simulated_ball_positions[index]
+        var second_position = simulated_ball_positions[index + 1]
 
         # TODO: Depends on team.
         var player_position = self._player.get_position()
@@ -61,9 +62,6 @@ func process(delta):
 func physics_process(delta):
     _update_velocity(delta)
     _update_position(delta)
-
-func set_simulated_ball_positions(value):
-    _simulated_ball_positions = value
 
 func _update_animation():
     var animation_player = self._player.get_node("AnimationPlayer")

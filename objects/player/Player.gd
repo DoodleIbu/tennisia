@@ -5,6 +5,9 @@ const ChargeState = preload("ChargeState.gd")
 const State = preload("States.gd").State
 const TimeStep = preload("res://utils/TimeStep.gd")
 
+export (NodePath) var _ball_path
+onready var _ball = get_node(_ball_path)
+
 export var _MAX_NEUTRAL_SPEED = 250
 export var _MAX_CHARGE_SPEED = 20
 export var _PIVOT_ACCEL = 1000
@@ -75,7 +78,7 @@ func set_state(value):
 
 func _ready():
     _neutral_state = NeutralState.new(self)
-    _charge_state = ChargeState.new(self)
+    _charge_state = ChargeState.new(self, _ball)
 
     set_state(State.NEUTRAL)
 
@@ -88,6 +91,5 @@ func _physics_process(delta):
     _state.physics_process(TimeStep.get_time_step())
 
 # Delegate signal from Player to ChargeState.
-func _on_Ball_fired(simulated_ball_positions):
+func _on_Ball_fired():
     _can_hit_ball = true
-    _charge_state.set_simulated_ball_positions(simulated_ball_positions)
