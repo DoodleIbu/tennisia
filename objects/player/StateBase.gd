@@ -6,7 +6,7 @@ func enter():
     assert(false)
 func exit():
     assert(false)
-func input():
+func get_state_transition():
     assert(false)
 func process(delta):
     assert(false)

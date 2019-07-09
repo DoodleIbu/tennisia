@@ -14,9 +14,9 @@ func enter():
 func exit():
     pass
 
-func input():
+func get_state_transition():
     if Input.is_action_just_pressed("ui_cancel") and _player.can_hit_ball():
-        _player.set_state(State.CHARGE)
+        return State.CHARGE
 
 func process(delta):
     _update_animation()

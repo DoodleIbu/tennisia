@@ -48,9 +48,22 @@ func enter():
 func exit():
     pass
 
-func input():
+func get_state_transition():
+    # Handle inputs first...
     if Input.is_action_just_pressed("ui_cancel"):
-        _player.set_state(State.NEUTRAL)
+        return State.NEUTRAL
+
+    # Then handle non-input state transitions.
+    var frames = _get_frames_until_ball_passes()
+
+    # Lunge
+    if frames != 1 and frames <= 4:
+        pass
+    # Hit
+    if frames <= 1:
+        return State.HIT
+
+    return null
 
 func process(delta):
     _update_animation()
@@ -59,8 +72,6 @@ func process(delta):
 func physics_process(delta):
     _update_velocity(delta)
     _update_position(delta)
-
-    _check_hit()
 
 func _update_animation():
     var animation_player = _player.get_node("AnimationPlayer")
@@ -121,16 +132,6 @@ func _get_desired_velocity():
         desired_velocity.z -= 1
 
     return desired_velocity.normalized() * _player.get_max_charge_speed()
-
-func _check_hit():
-    var frames = _get_frames_until_ball_passes()
-
-    # Lunge
-    if frames != 1 and frames <= 4:
-        pass
-    # Hit
-    if frames <= 1:
-        pass
 
 # Count the number of frames until the ball passes the activation plane.
 # The player by default takes 2 frames to hit, but lunges can take more frames to hit.

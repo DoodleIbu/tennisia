@@ -14,6 +14,14 @@ export var _PIVOT_ACCEL = 1000
 export var _RUN_ACCEL = 800
 export var _STOP_ACCEL = 800
 
+# From the middle of the character.
+export var _SIDE_VERTICAL_RANGE = 40
+export var _SIDE_HORIZONTAL_RANGE = 40
+
+# From the middle of the character.
+export var _OVERHEAD_VERTICAL_RANGE = 80
+export var _OVERHEAD_HORIZONTAL_RANGE = 40
+
 var _state = State.NEUTRAL
 var _neutral_state
 var _charge_state
@@ -61,7 +69,7 @@ func get_stop_accel():
 func can_hit_ball():
     return _can_hit_ball
 
-func set_state(value):
+func _set_state(value):
     if _state:
         _state.exit()
 
@@ -80,14 +88,17 @@ func _ready():
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self, _ball)
 
-    set_state(State.NEUTRAL)
+    _set_state(State.NEUTRAL)
 
 func _process(delta):
     _state.process(delta)
 
 # TODO: Handle input separately. For now this is fine.
 func _physics_process(delta):
-    _state.input()
+    var new_state = _state.get_state_transition()
+    if new_state:
+        _set_state(new_state)
+
     _state.physics_process(TimeStep.get_time_step())
 
 func _on_Ball_fired():
