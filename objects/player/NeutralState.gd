@@ -15,8 +15,8 @@ func exit():
     pass
 
 func input():
-    if Input.is_action_just_pressed("ui_cancel") and self._player.can_hit_ball():
-        self._player.set_state(State.CHARGE)
+    if Input.is_action_just_pressed("ui_cancel") and _player.can_hit_ball():
+        _player.set_state(State.CHARGE)
 
 func process(delta):
     _update_animation()
@@ -27,12 +27,12 @@ func physics_process(delta):
     _update_position(delta)
 
 func _update_animation():
-    var animation_player = self._player.get_node("AnimationPlayer")
+    var animation_player = _player.get_node("AnimationPlayer")
 
-    if self._player.get_velocity().length() < EPSILON and _get_desired_velocity().length() == 0:
+    if _player.get_velocity().length() < EPSILON and _get_desired_velocity().length() == 0:
         animation_player.play("idle_up")
     else:
-        var velocity_2d = Vector2(self._player.get_velocity().x, self._player.get_velocity().z)
+        var velocity_2d = Vector2(_player.get_velocity().x, _player.get_velocity().z)
         var angle_rad = velocity_2d.angle()
         var angle_degrees = angle_rad * 180 / PI
 
@@ -54,41 +54,41 @@ func _update_animation():
             animation_player.play("run_upright")
 
 func _update_render_position():
-    self._player.set_render_position(Renderer.get_render_position(self._player.get_position()))
+    _player.set_render_position(Renderer.get_render_position(_player.get_position()))
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()
 
     # Accelerate towards the desired velocity vector.
-    var to_goal = desired_velocity - self._player.get_velocity()
+    var to_goal = desired_velocity - _player.get_velocity()
     var accel_direction = to_goal.normalized()
 
     # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
-    var movement_dot = self._player.get_velocity().dot(desired_velocity)
+    var movement_dot = _player.get_velocity().dot(desired_velocity)
     var velocity_delta
 
     if desired_velocity.length() == 0:
-        velocity_delta = accel_direction * self._player.get_stop_accel() * delta
+        velocity_delta = accel_direction * _player.get_stop_accel() * delta
     elif movement_dot >= 0:
-        velocity_delta = accel_direction * self._player.get_run_accel() * delta
+        velocity_delta = accel_direction * _player.get_run_accel() * delta
     else:
-        velocity_delta = accel_direction * self._player.get_pivot_accel() * delta
+        velocity_delta = accel_direction * _player.get_pivot_accel() * delta
 
     # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
     if velocity_delta.length() > to_goal.length():
-        self._player.set_velocity(desired_velocity)
+        _player.set_velocity(desired_velocity)
     else:
-        self._player.set_velocity(self._player.get_velocity() + velocity_delta)
+        _player.set_velocity(_player.get_velocity() + velocity_delta)
 
 func _update_position(delta):
-    var new_position = self._player.get_position() + self._player.get_velocity() * delta
+    var new_position = _player.get_position() + _player.get_velocity() * delta
 
-    if self._player.get_team() == 1:
+    if _player.get_team() == 1:
         new_position.z = max(new_position.z, 410)
-        self._player.set_position(new_position)
-    elif self._player.get_team() == 2:
+        _player.set_position(new_position)
+    elif _player.get_team() == 2:
         new_position.z = min(new_position.z, 370)
-        self._player.set_position(new_position)
+        _player.set_position(new_position)
 
 func _get_desired_velocity():
     # TODO: Modify this code to instead read inputs from input().
@@ -103,4 +103,4 @@ func _get_desired_velocity():
     if Input.is_action_pressed("ui_up"):
         desired_velocity.z -= 1
 
-    return desired_velocity.normalized() * self._player.get_max_neutral_speed()
+    return desired_velocity.normalized() * _player.get_max_neutral_speed()

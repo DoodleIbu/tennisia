@@ -90,6 +90,5 @@ func _physics_process(delta):
     _state.input()
     _state.physics_process(TimeStep.get_time_step())
 
-# Delegate signal from Player to ChargeState.
 func _on_Ball_fired():
     _can_hit_ball = true

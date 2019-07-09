@@ -15,15 +15,14 @@ func enter():
     # Set charge direction.
     _charge_direction = Direction.LEFT
     var simulated_ball_positions = _ball.get_simulated_ball_positions()
-    var index = 0
 
-    while index < simulated_ball_positions.size() - 1:
+    for index in range(0, simulated_ball_positions.size() - 1):
         var first_position = simulated_ball_positions[index]
         var second_position = simulated_ball_positions[index + 1]
 
         # TODO: Depends on team.
-        var player_position = self._player.get_position()
-        var player_team = self._player.get_team()
+        var player_position = _player.get_position()
+        var player_team = _player.get_team()
 
         if player_team == 1:
             if first_position.z <= player_position.z and second_position.z >= player_position.z:
@@ -46,14 +45,12 @@ func enter():
                     _charge_direction = Direction.RIGHT
                 break
 
-        index += 1
-
 func exit():
     pass
 
 func input():
     if Input.is_action_just_pressed("ui_cancel"):
-        self._player.set_state(State.NEUTRAL)
+        _player.set_state(State.NEUTRAL)
 
 func process(delta):
     _update_animation()
@@ -63,8 +60,10 @@ func physics_process(delta):
     _update_velocity(delta)
     _update_position(delta)
 
+    _check_hit()
+
 func _update_animation():
-    var animation_player = self._player.get_node("AnimationPlayer")
+    var animation_player = _player.get_node("AnimationPlayer")
 
     if _charge_direction == Direction.LEFT:
         animation_player.play("charge_left")
@@ -72,41 +71,41 @@ func _update_animation():
         animation_player.play("charge_right")
 
 func _update_render_position():
-    self._player.set_render_position(Renderer.get_render_position(self._player.get_position()))
+    _player.set_render_position(Renderer.get_render_position(_player.get_position()))
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()
 
     # Accelerate towards the desired velocity vector.
-    var to_goal = desired_velocity - self._player.get_velocity()
+    var to_goal = desired_velocity - _player.get_velocity()
     var accel_direction = to_goal.normalized()
 
     # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
-    var movement_dot = self._player.get_velocity().dot(desired_velocity)
+    var movement_dot = _player.get_velocity().dot(desired_velocity)
     var velocity_delta
 
     if desired_velocity.length() == 0:
-        velocity_delta = accel_direction * self._player.get_stop_accel() * delta
+        velocity_delta = accel_direction * _player.get_stop_accel() * delta
     elif movement_dot >= 0:
-        velocity_delta = accel_direction * self._player.get_run_accel() * delta
+        velocity_delta = accel_direction * _player.get_run_accel() * delta
     else:
-        velocity_delta = accel_direction * self._player.get_pivot_accel() * delta
+        velocity_delta = accel_direction * _player.get_pivot_accel() * delta
 
     # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
     if velocity_delta.length() > to_goal.length():
-        self._player.set_velocity(desired_velocity)
+        _player.set_velocity(desired_velocity)
     else:
-        self._player.set_velocity(self._player.get_velocity() + velocity_delta)
+        _player.set_velocity(_player.get_velocity() + velocity_delta)
 
 func _update_position(delta):
-    var new_position = self._player.get_position() + self._player.get_velocity() * delta
+    var new_position = _player.get_position() + _player.get_velocity() * delta
 
-    if self._player.get_team() == 1:
+    if _player.get_team() == 1:
         new_position.z = max(new_position.z, 410)
-        self._player.set_position(new_position)
-    elif self._player.get_team() == 2:
+        _player.set_position(new_position)
+    elif _player.get_team() == 2:
         new_position.z = min(new_position.z, 370)
-        self._player.set_position(new_position)
+        _player.set_position(new_position)
 
 func _get_desired_velocity():
     # TODO: Modify this code to instead read inputs from input().
@@ -121,4 +120,41 @@ func _get_desired_velocity():
     if Input.is_action_pressed("ui_up"):
         desired_velocity.z -= 1
 
-    return desired_velocity.normalized() * self._player.get_max_charge_speed()
+    return desired_velocity.normalized() * _player.get_max_charge_speed()
+
+func _check_hit():
+    var frames = _get_frames_until_ball_passes()
+
+    # Lunge
+    if frames != 1 and frames <= 4:
+        pass
+    # Hit
+    if frames <= 1:
+        pass
+
+# Count the number of frames until the ball passes the activation plane.
+# The player by default takes 2 frames to hit, but lunges can take more frames to hit.
+# Returns -1 if the ball isn't in the current frame.
+# Returns 0 if the ball will move past the activation plane in the current frame. At this point, the player should swing.
+# Returns > 1 if the ball will move past the activation plane in a future frame.
+# We may want to move the activation frame a bit ahead of the player, but let's experiment for now.
+# TODO: Add this to the neutral state when trying to hit...
+func _get_frames_until_ball_passes():
+    var frames_to_check = 10
+    var simulated_ball_positions = _ball.get_simulated_ball_positions()
+    var current_frame = _ball.get_current_frame()
+
+    for index in range(0, frames_to_check):
+        var checked_frame = current_frame + index
+        if checked_frame + 1 >= simulated_ball_positions.size():
+            break
+
+        var first_position = simulated_ball_positions[checked_frame]
+        var second_position = simulated_ball_positions[checked_frame + 1]
+
+        var plane = Plane(Vector3(0, 0, 1), _player.get_position().z)
+
+        if plane.intersects_segment(first_position, second_position):
+            return index
+
+    return -1

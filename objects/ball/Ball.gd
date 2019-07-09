@@ -23,6 +23,7 @@ var _position = Vector3(0, 100, 0)
 var _velocity = Vector3()
 
 # Cached ball trajectory.
+var _current_frame = 0
 var _simulated_ball_positions = []
 var _simulated_ball_velocities = []
 
@@ -30,6 +31,9 @@ var debug = 0
 
 func get_position():
     return _position
+
+func get_current_frame():
+    return _current_frame
 
 func get_simulated_ball_positions():
     return _simulated_ball_positions
@@ -162,6 +166,7 @@ func _physics_process(delta):
         _position = Vector3(180, BALL_RADIUS, 360)
         _fire(ShotType.SLICE)
         _simulate_ball_trajectory(_position, _velocity, TimeStep.get_time_step())
+        _current_frame = 0
         emit_signal("fired")
 
     var result = _get_new_position_and_velocity(_position, _velocity, TimeStep.get_time_step())
@@ -169,3 +174,4 @@ func _physics_process(delta):
         emit_signal("bounced", result["bounce_position"], _velocity)
     _position = result["position"]
     _velocity = result["velocity"]
+    _current_frame += 1
