@@ -18,6 +18,8 @@ func get_state_transition():
     if Input.is_action_just_pressed("ui_cancel") and _player.can_hit_ball():
         return State.CHARGE
 
+    return null
+
 func process(delta):
     _update_animation()
     _update_render_position()

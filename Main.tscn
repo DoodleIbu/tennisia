@@ -34,3 +34,4 @@ volume_db = -30.049
 autoplay = true
 [connection signal="bounced" from="Ball" to="." method="_on_Ball_bounced"]
 [connection signal="fired" from="Ball" to="Player" method="_on_Ball_fired"]
+[connection signal="hit_ball" from="Player" to="Ball" method="_on_Player_hit_ball"]

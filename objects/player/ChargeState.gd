@@ -54,14 +54,36 @@ func get_state_transition():
         return State.NEUTRAL
 
     # Then handle non-input state transitions.
-    var frames = _get_frames_until_ball_passes()
+    var result = _get_activation_plane_intersection()
+    var frames_until_intersection = result["frames_until_intersection"]
 
     # Lunge
-    if frames != 1 and frames <= 4:
-        pass
+    if frames_until_intersection != -1 and frames_until_intersection <= 4:
+        var intersection_point = result["intersection_point"]
+        var horizontal_distance = abs(intersection_point.x - _player.get_position().x)
+        var vertical_distance = intersection_point.y
+
+        # Lunge if not in range. Otherwise don't change state.
+        if horizontal_distance <= _player.get_side_horizontal_reach() and vertical_distance <= _player.get_side_vertical_reach():
+            pass
+        elif horizontal_distance <= _player.get_overhead_horizontal_reach() and vertical_distance <= _player.get_overhead_vertical_reach():
+            pass
+        else:
+            return State.HIT_SIDE # return State.LUNGE
+
     # Hit
-    if frames <= 1:
-        return State.HIT
+    if frames_until_intersection != -1 and frames_until_intersection <= 1:
+        var intersection_point = result["intersection_point"]
+        var horizontal_distance = abs(intersection_point.x - _player.get_position().x)
+        var vertical_distance = intersection_point.y
+
+        # Hit side if in range, hit overhead if too high. If neither apply, just whiff a side.
+        if horizontal_distance <= _player.get_side_horizontal_reach() and vertical_distance <= _player.get_side_vertical_reach():
+            return State.HIT_SIDE
+        elif horizontal_distance <= _player.get_overhead_horizontal_reach() and vertical_distance <= _player.get_overhead_vertical_reach():
+            return State.HIT_SIDE # return State.HIT_OVERHEAD
+        else:
+            return State.HIT_SIDE
 
     return null
 
@@ -140,7 +162,7 @@ func _get_desired_velocity():
 # Returns > 1 if the ball will move past the activation plane in a future frame.
 # We may want to move the activation frame a bit ahead of the player, but let's experiment for now.
 # TODO: Add this to the neutral state when trying to hit...
-func _get_frames_until_ball_passes():
+func _get_activation_plane_intersection():
     var frames_to_check = 10
     var simulated_ball_positions = _ball.get_simulated_ball_positions()
     var current_frame = _ball.get_current_frame()
@@ -154,8 +176,14 @@ func _get_frames_until_ball_passes():
         var second_position = simulated_ball_positions[checked_frame + 1]
 
         var plane = Plane(Vector3(0, 0, 1), _player.get_position().z)
+        var intersection = plane.intersects_segment(first_position, second_position)
 
-        if plane.intersects_segment(first_position, second_position):
-            return index
+        if intersection:
+            return {
+                "frames_until_intersection": index,
+                "intersection_point": intersection
+            }
 
-    return -1
+    return {
+        "frames_until_intersection": -1
+    }

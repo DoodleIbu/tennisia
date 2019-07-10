@@ -1,7 +1,10 @@
 extends Node2D
 
+signal hit_ball(max_power, max_spin, goal) # TODO: is there a way to define this in the state and not player?
+
 const NeutralState = preload("NeutralState.gd")
 const ChargeState = preload("ChargeState.gd")
+const HitSideState = preload("HitSideState.gd")
 const State = preload("States.gd").State
 const TimeStep = preload("res://utils/TimeStep.gd")
 
@@ -15,16 +18,19 @@ export var _RUN_ACCEL = 800
 export var _STOP_ACCEL = 800
 
 # From the middle of the character.
-export var _SIDE_VERTICAL_RANGE = 40
-export var _SIDE_HORIZONTAL_RANGE = 40
+export var _SIDE_VERTICAL_REACH = 40
+export var _SIDE_HORIZONTAL_REACH = 40
+export var _SIDE_DEPTH = 20
 
 # From the middle of the character.
-export var _OVERHEAD_VERTICAL_RANGE = 80
-export var _OVERHEAD_HORIZONTAL_RANGE = 40
+export var _OVERHEAD_VERTICAL_REACH = 80
+export var _OVERHEAD_HORIZONTAL_REACH = 40
+export var _OVERHEAD_DEPTH = 20
 
 var _state = State.NEUTRAL
 var _neutral_state
 var _charge_state
+var _hit_side_state
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
@@ -57,6 +63,24 @@ func get_max_neutral_speed():
 func get_max_charge_speed():
     return _MAX_CHARGE_SPEED
 
+func get_side_vertical_reach():
+    return _SIDE_VERTICAL_REACH
+
+func get_side_horizontal_reach():
+    return _SIDE_HORIZONTAL_REACH
+
+func get_side_depth():
+    return _SIDE_DEPTH
+
+func get_overhead_vertical_reach():
+    return _OVERHEAD_VERTICAL_REACH
+
+func get_overhead_horizontal_reach():
+    return _OVERHEAD_HORIZONTAL_REACH
+
+func get_overhead_depth():
+    return _OVERHEAD_DEPTH
+
 func get_pivot_accel():
     return _PIVOT_ACCEL
 
@@ -78,6 +102,8 @@ func _set_state(value):
             _state = _neutral_state
         State.CHARGE:
             _state = _charge_state
+        State.HIT_SIDE:
+            _state = _hit_side_state
         _:
             assert(false)
 
@@ -87,6 +113,7 @@ func _set_state(value):
 func _ready():
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self, _ball)
+    _hit_side_state = HitSideState.new(self, _ball)
 
     _set_state(State.NEUTRAL)
 
@@ -96,10 +123,13 @@ func _process(delta):
 # TODO: Handle input separately. For now this is fine.
 func _physics_process(delta):
     var new_state = _state.get_state_transition()
-    if new_state:
+    if new_state != null:
         _set_state(new_state)
 
     _state.physics_process(TimeStep.get_time_step())
+
+func fire(max_speed, max_spin, goal):
+    emit_signal("hit_ball", max_speed, max_spin, goal)
 
 func _on_Ball_fired():
     _can_hit_ball = true

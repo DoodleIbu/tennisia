@@ -72,22 +72,16 @@ func _get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_po
 # Fire shot from the other side of the court.
 # TODO: Incorporate a max height_mid to prevent the ball from going too high.
 #       If the ball exceeds the max height, then shorten the distance or change power.
-func _fire(shot_type):
+func _fire(max_power, max_spin, goal):
     var start_position = _position
-    var end_position = Vector3(80, BALL_RADIUS, 780)
+    var end_position = Vector3(goal.x, BALL_RADIUS, goal.z)
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
     var xz_distance_to_end = Vector2(start_position.x, start_position.z).distance_to(Vector2(end_position.x, end_position.z))
     var xz_distance_to_net = (xz_direction * abs(start_position.z - NET_POSITION_Z) / xz_direction.y).length()
 
-    var max_power = 200 + 100 * debug
     debug += 1
 
-    if shot_type == ShotType.FLAT:
-        _spin = 0
-    elif shot_type == ShotType.TOP:
-        _spin = -200
-    elif shot_type == ShotType.SLICE:
-        _spin = 100
+    _spin = max_spin
 
     # Shoot the ball at max power and spin.
     var shot_power = max_power
@@ -164,7 +158,7 @@ func _process(delta):
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
         _position = Vector3(180, BALL_RADIUS, 360)
-        _fire(ShotType.SLICE)
+        _fire(800, -200, Vector3(200, 0, 700))
         _simulate_ball_trajectory(_position, _velocity, TimeStep.get_time_step())
         _current_frame = 0
         emit_signal("fired")
@@ -175,3 +169,6 @@ func _physics_process(delta):
     _position = result["position"]
     _velocity = result["velocity"]
     _current_frame += 1
+
+func _on_Player_hit_ball(max_power, max_spin, goal):
+    _fire(max_power, max_spin, goal)
