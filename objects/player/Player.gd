@@ -39,6 +39,9 @@ var _velocity = Vector3()
 var _team = 1
 var _can_hit_ball = false
 
+func get_animation_player():
+    return $AnimationPlayer
+
 func get_position():
     return _position
 
@@ -111,6 +114,8 @@ func _set_state(value):
         _state.enter()
 
 func _ready():
+    $AnimationPlayer.set_animation_process_mode(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
+
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self, _ball)
     _hit_side_state = HitSideState.new(self, _ball)

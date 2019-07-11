@@ -10,15 +10,13 @@ func _init(player, ball).(player):
 
 func enter():
     _ball_hit = false
-
-    var animation_player = _player.get_node("AnimationPlayer")
-    animation_player.play("run_right") # TODO: replace
+    _player.get_animation_player().play("hit_side_right_long")
 
 func exit():
     pass
 
 func get_state_transition():
-    if Input.is_action_just_pressed("ui_cancel"):
+    if not _player.get_animation_player().is_playing():
         return State.NEUTRAL
 
     return null
@@ -28,6 +26,6 @@ func process(delta):
 
 func physics_process(delta):
     if not _ball_hit:
-        _player.fire(800, -200, Vector3(80, 0, 200))
+        _player.fire(800, 100, Vector3(80, 0, 50))
         print("hit_ball")
     _ball_hit = true
