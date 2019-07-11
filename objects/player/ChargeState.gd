@@ -1,19 +1,17 @@
 extends "StateBase.gd"
 
 const Renderer = preload("res://utils/Renderer.gd")
+const Direction = preload("res://enums/Direction.gd").Direction
 const State = preload("States.gd").State
 
-enum Direction { UP, DOWN, LEFT, RIGHT }
-
 var _ball
-var _charge_direction
 
 func _init(player, ball).(player):
     _ball = ball
 
 func enter():
     # Set charge direction.
-    _charge_direction = Direction.LEFT
+    _player.set_facing(Direction.LEFT)
     var simulated_ball_positions = _ball.get_simulated_ball_positions()
 
     for index in range(0, simulated_ball_positions.size() - 1):
@@ -30,9 +28,9 @@ func enter():
                                            (player_position.z - first_position.z) / (second_position.z - first_position.z))
 
                 if ball_x_position <= player_position.x:
-                    _charge_direction = Direction.LEFT
+                    _player.set_facing(Direction.LEFT)
                 else:
-                    _charge_direction = Direction.RIGHT
+                    _player.set_facing(Direction.RIGHT)
                 break
         else:
             if first_position.z >= player_position.z and second_position.z <= player_position.z:
@@ -40,9 +38,9 @@ func enter():
                                            (player_position.z - first_position.z) / (second_position.z - first_position.z))
 
                 if ball_x_position <= player_position.x:
-                    _charge_direction = Direction.LEFT
+                    _player.set_facing(Direction.LEFT)
                 else:
-                    _charge_direction = Direction.RIGHT
+                    _player.set_facing(Direction.RIGHT)
                 break
 
 func exit():
@@ -98,10 +96,12 @@ func physics_process(delta):
 func _update_animation():
     var animation_player = _player.get_node("AnimationPlayer")
 
-    if _charge_direction == Direction.LEFT:
+    if _player.get_facing() == Direction.LEFT:
         animation_player.play("charge_left")
-    elif _charge_direction == Direction.RIGHT:
+    elif _player.get_facing() == Direction.RIGHT:
         animation_player.play("charge_right")
+    else:
+        assert(false)
 
 func _update_render_position():
     _player.set_render_position(Renderer.get_render_position(_player.get_position()))

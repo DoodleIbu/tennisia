@@ -36,6 +36,7 @@ var _hit_side_state
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
+var _facing
 var _team = 1
 var _can_hit_ball = false
 
@@ -53,6 +54,13 @@ func get_velocity():
 
 func set_velocity(value):
     _velocity = value
+
+# Used for charging.
+func get_facing():
+    return _facing
+
+func set_facing(value):
+    _facing = value
 
 func set_render_position(value):
     position = value
