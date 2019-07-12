@@ -77,29 +77,20 @@ func set_render_position(value):
 func get_team():
     return _team
 
+func get_side_hitbox():
+    return Vector3(_SIDE_HORIZONTAL_REACH, _SIDE_VERTICAL_REACH, _SIDE_DEPTH)
+
+func get_overhead_hitbox():
+    return Vector3(_OVERHEAD_HORIZONTAL_REACH, _OVERHEAD_VERTICAL_REACH, _OVERHEAD_DEPTH)
+
+func get_lunge_hitbox():
+    return Vector3(_LUNGE_HORIZONTAL_REACH, _LUNGE_VERTICAL_REACH, _LUNGE_DEPTH)
+
 func get_max_neutral_speed():
     return _MAX_NEUTRAL_SPEED
 
 func get_max_charge_speed():
     return _MAX_CHARGE_SPEED
-
-func get_side_vertical_reach():
-    return _SIDE_VERTICAL_REACH
-
-func get_side_horizontal_reach():
-    return _SIDE_HORIZONTAL_REACH
-
-func get_side_depth():
-    return _SIDE_DEPTH
-
-func get_overhead_vertical_reach():
-    return _OVERHEAD_VERTICAL_REACH
-
-func get_overhead_horizontal_reach():
-    return _OVERHEAD_HORIZONTAL_REACH
-
-func get_overhead_depth():
-    return _OVERHEAD_DEPTH
 
 func get_pivot_accel():
     return _PIVOT_ACCEL

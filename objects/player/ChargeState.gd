@@ -63,7 +63,7 @@ func get_state_transition():
 
         # Lunge if not in range of either the max horizontal range. Otherwise don't change state.
         # Note that this can cause the overhead to whiff, but normally you wouldn't lunge at an overhead shot anyway.
-        if horizontal_distance <= _player.get_side_horizontal_reach():
+        if horizontal_distance <= _player.get_side_hitbox().x:
             pass
         else:
             return State.LUNGE
@@ -75,7 +75,7 @@ func get_state_transition():
         var vertical_distance = intersection_point.y
 
         # Hit side if low enough, hit overhead if too high.
-        if vertical_distance <= _player.get_side_vertical_reach():
+        if vertical_distance <= _player.get_side_hitbox().y:
             return State.HIT_SIDE
         else:
             return State.HIT_OVERHEAD
