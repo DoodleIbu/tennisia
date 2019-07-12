@@ -2,14 +2,15 @@ extends Node2D
 
 signal hit_ball(max_power, max_spin, goal) # TODO: is there a way to define this in the state and not player?
 
+const Renderer = preload("res://utils/Renderer.gd")
+const TimeStep = preload("res://utils/TimeStep.gd")
+
 const State = preload("States.gd").State
 const NeutralState = preload("NeutralState.gd")
 const ChargeState = preload("ChargeState.gd")
 const HitSideState = preload("HitSideState.gd")
 const HitOverheadState = preload("HitOverheadState.gd")
 const LungeState = preload("LungeState.gd")
-
-const TimeStep = preload("res://utils/TimeStep.gd")
 
 export (NodePath) var _ball_path
 onready var _ball = get_node(_ball_path)
@@ -22,15 +23,15 @@ export var _STOP_ACCEL = 800
 
 # From the middle of the character.
 export var _SIDE_VERTICAL_REACH = 40
-export var _SIDE_HORIZONTAL_REACH = 40
+export var _SIDE_HORIZONTAL_REACH = 35
 export var _SIDE_DEPTH = 20
 
 export var _OVERHEAD_VERTICAL_REACH = 80
-export var _OVERHEAD_HORIZONTAL_REACH = 20
+export var _OVERHEAD_HORIZONTAL_REACH = 25
 export var _OVERHEAD_DEPTH = 20
 
 export var _LUNGE_VERTICAL_REACH = 40
-export var _LUNGE_HORIZONTAL_REACH = 40
+export var _LUNGE_HORIZONTAL_REACH = 55
 export var _LUNGE_DEPTH = 20
 
 var _state = State.NEUTRAL
@@ -147,8 +148,31 @@ func _physics_process(delta):
 
     _state.physics_process(TimeStep.get_time_step())
 
+# Signals
+func _on_Ball_fired():
+    _can_hit_ball = true
+
+# Common helper methods called from states. There might be a better way to organize these.
 func fire(max_speed, max_spin, goal):
     emit_signal("hit_ball", max_speed, max_spin, goal)
 
-func _on_Ball_fired():
-    _can_hit_ball = true
+func render_hitbox(hitbox):
+    var result = hitbox.get_render_position()
+    var hitbox_display = get_node("HitboxDisplay")
+    hitbox_display.set_global_position(result["position"])
+    hitbox_display.set_size(result["size"])
+    hitbox_display.set_visible(true)
+
+func clear_hitbox():
+    get_node("HitboxDisplay").set_visible(false)
+
+func update_position(delta):
+    var new_position = _position + _velocity * delta
+    if _team == 1:
+        new_position.z = max(new_position.z, 410)
+    elif _team == 2:
+        new_position.z = min(new_position.z, 370)
+    _position = new_position
+
+func update_render_position():
+    set_render_position(Renderer.get_render_position(_position))

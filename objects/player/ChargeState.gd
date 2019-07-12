@@ -84,11 +84,11 @@ func get_state_transition():
 
 func process(delta):
     _update_animation()
-    _update_render_position()
+    _player.update_render_position()
 
 func physics_process(delta):
     _update_velocity(delta)
-    _update_position(delta)
+    _player.update_position(delta)
 
 func _update_animation():
     var animation_player = _player.get_node("AnimationPlayer")
@@ -99,9 +99,6 @@ func _update_animation():
         animation_player.play("charge_right")
     else:
         assert(false)
-
-func _update_render_position():
-    _player.set_render_position(Renderer.get_render_position(_player.get_position()))
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()
@@ -126,16 +123,6 @@ func _update_velocity(delta):
         _player.set_velocity(desired_velocity)
     else:
         _player.set_velocity(_player.get_velocity() + velocity_delta)
-
-func _update_position(delta):
-    var new_position = _player.get_position() + _player.get_velocity() * delta
-
-    if _player.get_team() == 1:
-        new_position.z = max(new_position.z, 410)
-        _player.set_position(new_position)
-    elif _player.get_team() == 2:
-        new_position.z = min(new_position.z, 370)
-        _player.set_position(new_position)
 
 func _get_desired_velocity():
     # TODO: Modify this code to instead read inputs from input().
