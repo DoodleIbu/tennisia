@@ -14,9 +14,9 @@ func enter():
 
     _player.set_velocity(Vector3(0, 0, 0))
     if _player.get_facing() == Direction.LEFT:
-        _player.get_animation_player().play("hit_side_left_long")
+        _player.get_animation_player().play("hit_overhead_left_long")
     elif _player.get_facing() == Direction.RIGHT:
-        _player.get_animation_player().play("hit_side_right_long")
+        _player.get_animation_player().play("hit_overhead_right_long")
     else:
         assert(false)
 
@@ -37,13 +37,13 @@ func physics_process(delta):
         var aabb_start
 
         if _player.get_facing() == Direction.LEFT:
-            aabb_start = _player.get_position() - Vector3(_player.get_side_horizontal_reach(), 0, _player.get_side_depth() / 2)
+            aabb_start = _player.get_position() - Vector3(_player.get_overhead_horizontal_reach(), 0, _player.get_overhead_depth() / 2)
         elif _player.get_facing() == Direction.RIGHT:
-            aabb_start = _player.get_position() - Vector3(0, 0, _player.get_side_depth() / 2)
+            aabb_start = _player.get_position() - Vector3(0, 0, _player.get_overhead_depth() / 2)
         else:
             assert(false)
 
-        var aabb = AABB(aabb_start, Vector3(_player.get_side_horizontal_reach(), _player.get_side_vertical_reach(), _player.get_side_depth()))
+        var aabb = AABB(aabb_start, Vector3(_player.get_overhead_horizontal_reach(), _player.get_overhead_vertical_reach(), _player.get_overhead_depth()))
         if aabb.intersects_segment(_ball.get_previous_position(), _ball.get_position()):
             _player.fire(1000, 100, Vector3(80, 0, 50))
             _ball_hit = true

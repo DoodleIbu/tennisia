@@ -2,10 +2,13 @@ extends Node2D
 
 signal hit_ball(max_power, max_spin, goal) # TODO: is there a way to define this in the state and not player?
 
+const State = preload("States.gd").State
 const NeutralState = preload("NeutralState.gd")
 const ChargeState = preload("ChargeState.gd")
 const HitSideState = preload("HitSideState.gd")
-const State = preload("States.gd").State
+const HitOverheadState = preload("HitOverheadState.gd")
+const LungeState = preload("LungeState.gd")
+
 const TimeStep = preload("res://utils/TimeStep.gd")
 
 export (NodePath) var _ball_path
@@ -22,15 +25,21 @@ export var _SIDE_VERTICAL_REACH = 40
 export var _SIDE_HORIZONTAL_REACH = 40
 export var _SIDE_DEPTH = 20
 
-# From the middle of the character.
 export var _OVERHEAD_VERTICAL_REACH = 80
-export var _OVERHEAD_HORIZONTAL_REACH = 40
+export var _OVERHEAD_HORIZONTAL_REACH = 20
 export var _OVERHEAD_DEPTH = 20
 
+export var _LUNGE_VERTICAL_REACH = 40
+export var _LUNGE_HORIZONTAL_REACH = 40
+export var _LUNGE_DEPTH = 20
+
 var _state = State.NEUTRAL
+
 var _neutral_state
 var _charge_state
 var _hit_side_state
+var _hit_overhead_state
+var _lunge_state
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
@@ -115,6 +124,10 @@ func _set_state(value):
             _state = _charge_state
         State.HIT_SIDE:
             _state = _hit_side_state
+        State.HIT_OVERHEAD:
+            _state = _hit_overhead_state
+        State.LUNGE:
+            _state = _lunge_state
         _:
             assert(false)
 
@@ -127,6 +140,8 @@ func _ready():
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self, _ball)
     _hit_side_state = HitSideState.new(self, _ball)
+    _hit_overhead_state = HitOverheadState.new(self, _ball)
+    _lunge_state = LungeState.new(self, _ball)
 
     _set_state(State.NEUTRAL)
 

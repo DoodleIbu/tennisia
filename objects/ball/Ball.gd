@@ -19,6 +19,7 @@ const DAMPING = 0.5
 var _spin = 0
 
 # Court position and velocity.
+var _previous_position = Vector3()
 var _position = Vector3(0, 100, 0)
 var _velocity = Vector3()
 
@@ -31,6 +32,9 @@ var debug = 0
 
 func get_position():
     return _position
+
+func get_previous_position():
+    return _previous_position
 
 func get_current_frame():
     return _current_frame
@@ -157,8 +161,9 @@ func _process(delta):
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
+        _previous_position = Vector3(180, BALL_RADIUS, 360)
         _position = Vector3(180, BALL_RADIUS, 360)
-        _fire(800, -200, Vector3(200, 0, 700))
+        _fire(800, -200, Vector3(50, 0, 700))
         _simulate_ball_trajectory(_position, _velocity, TimeStep.get_time_step())
         _current_frame = 0
         emit_signal("fired")
@@ -166,6 +171,8 @@ func _physics_process(delta):
     var result = _get_new_position_and_velocity(_position, _velocity, TimeStep.get_time_step())
     if result.has("bounce_position"):
         emit_signal("bounced", result["bounce_position"], _velocity)
+
+    _previous_position = _position
     _position = result["position"]
     _velocity = result["velocity"]
     _current_frame += 1

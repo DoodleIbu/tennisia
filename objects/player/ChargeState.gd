@@ -56,18 +56,17 @@ func get_state_transition():
     var frames_until_intersection = result["frames_until_intersection"]
 
     # Lunge
-    if frames_until_intersection != -1 and frames_until_intersection <= 4:
+    if frames_until_intersection != -1 and frames_until_intersection <= 7:
         var intersection_point = result["intersection_point"]
         var horizontal_distance = abs(intersection_point.x - _player.get_position().x)
         var vertical_distance = intersection_point.y
 
-        # Lunge if not in range. Otherwise don't change state.
-        if horizontal_distance <= _player.get_side_horizontal_reach() and vertical_distance <= _player.get_side_vertical_reach():
-            pass
-        elif horizontal_distance <= _player.get_overhead_horizontal_reach() and vertical_distance <= _player.get_overhead_vertical_reach():
+        # Lunge if not in range of either the max horizontal range. Otherwise don't change state.
+        # Note that this can cause the overhead to whiff, but normally you wouldn't lunge at an overhead shot anyway.
+        if horizontal_distance <= _player.get_side_horizontal_reach():
             pass
         else:
-            return State.HIT_SIDE # return State.LUNGE
+            return State.LUNGE
 
     # Hit
     if frames_until_intersection != -1 and frames_until_intersection <= 1:
@@ -75,13 +74,11 @@ func get_state_transition():
         var horizontal_distance = abs(intersection_point.x - _player.get_position().x)
         var vertical_distance = intersection_point.y
 
-        # Hit side if in range, hit overhead if too high. If neither apply, just whiff a side.
-        if horizontal_distance <= _player.get_side_horizontal_reach() and vertical_distance <= _player.get_side_vertical_reach():
+        # Hit side if low enough, hit overhead if too high.
+        if vertical_distance <= _player.get_side_vertical_reach():
             return State.HIT_SIDE
-        elif horizontal_distance <= _player.get_overhead_horizontal_reach() and vertical_distance <= _player.get_overhead_vertical_reach():
-            return State.HIT_SIDE # return State.HIT_OVERHEAD
         else:
-            return State.HIT_SIDE
+            return State.HIT_OVERHEAD
 
     return null
 
