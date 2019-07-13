@@ -50,9 +50,6 @@ var _facing
 var _team = 1
 var _can_hit_ball = false
 
-func get_animation_player():
-    return $AnimationPlayer
-
 func get_position():
     return _position
 
@@ -105,6 +102,41 @@ func get_stop_accel():
 func can_hit_ball():
     return _can_hit_ball
 
+# Common helper methods called from states. There might be a better way to organize these.
+func play_animation(value):
+    $AnimationPlayer.play(value)
+
+func get_current_animation_position():
+    return $AnimationPlayer.get_current_animation_position()
+
+func is_animation_playing():
+    return $AnimationPlayer.is_playing()
+
+func render_hitbox(hitbox):
+    var result = hitbox.get_render_position()
+    var hitbox_display = get_node("HitboxDisplay")
+    hitbox_display.set_global_position(result["position"])
+    hitbox_display.set_size(result["size"])
+    hitbox_display.set_visible(true)
+
+func clear_hitbox():
+    get_node("HitboxDisplay").set_visible(false)
+
+func fire(max_speed, max_spin, goal):
+    emit_signal("hit_ball", max_speed, max_spin, goal)
+
+func update_position(delta):
+    var new_position = _position + _velocity * delta
+    if _team == 1:
+        new_position.z = max(new_position.z, 410)
+    elif _team == 2:
+        new_position.z = min(new_position.z, 370)
+    _position = new_position
+
+func update_render_position():
+    set_render_position(Renderer.get_render_position(_position))
+
+# Internal methods
 func _set_state(value):
     if _state:
         _state.exit()
@@ -140,39 +172,12 @@ func _ready():
 func _process(delta):
     _state.process(delta)
 
-# TODO: Handle input separately. For now this is fine.
 func _physics_process(delta):
     var new_state = _state.get_state_transition()
     if new_state != null:
         _set_state(new_state)
-
     _state.physics_process(TimeStep.get_time_step())
 
 # Signals
 func _on_Ball_fired():
     _can_hit_ball = true
-
-# Common helper methods called from states. There might be a better way to organize these.
-func fire(max_speed, max_spin, goal):
-    emit_signal("hit_ball", max_speed, max_spin, goal)
-
-func render_hitbox(hitbox):
-    var result = hitbox.get_render_position()
-    var hitbox_display = get_node("HitboxDisplay")
-    hitbox_display.set_global_position(result["position"])
-    hitbox_display.set_size(result["size"])
-    hitbox_display.set_visible(true)
-
-func clear_hitbox():
-    get_node("HitboxDisplay").set_visible(false)
-
-func update_position(delta):
-    var new_position = _position + _velocity * delta
-    if _team == 1:
-        new_position.z = max(new_position.z, 410)
-    elif _team == 2:
-        new_position.z = min(new_position.z, 370)
-    _position = new_position
-
-func update_render_position():
-    set_render_position(Renderer.get_render_position(_position))

@@ -17,9 +17,9 @@ func enter():
 
     _player.set_velocity(Vector3(0, 0, 0))
     if _player.get_facing() == Direction.LEFT:
-        _player.get_animation_player().play("hit_overhead_left_long")
+        _player.play_animation("hit_overhead_left_long")
     elif _player.get_facing() == Direction.RIGHT:
-        _player.get_animation_player().play("hit_overhead_right_long")
+        _player.play_animation("hit_overhead_right_long")
     else:
         assert(false)
 
@@ -27,19 +27,18 @@ func exit():
     pass
 
 func get_state_transition():
-    if not _player.get_animation_player().is_playing():
+    if not _player.is_animation_playing():
         return State.NEUTRAL
     return null
 
 func process(delta):
-    if _player.get_animation_player().get_current_animation_position() < 0.1:
+    if _player.get_current_animation_position() < 0.1:
         _player.render_hitbox(_hitbox)
     else:
         _player.clear_hitbox()
 
 func physics_process(delta):
-    # TODO: There should be a better way to determine when the hitbox is active on the animation.
-    if _player.get_animation_player().get_current_animation_position() < 0.1 and not _ball_hit:
+    if _player.get_current_animation_position() < 0.1 and not _ball_hit:
         if _hitbox.intersects_ball(_ball):
             _player.fire(1000, 100, Vector3(80, 0, 50))
             _ball_hit = true
