@@ -1,2 +1,3 @@
 enum Direction { UP, RIGHT, DOWN, LEFT }
-enum Shot { TOP, SLICE, FLAT, LOB, DROP }
+enum Shot { S_TOP, D_TOP, S_SLICE, D_SLICE, S_FLAT, D_FLAT, LOB, DROP }
+enum Key { TOP, SLICE, FLAT, CANCEL_CHARGE }
