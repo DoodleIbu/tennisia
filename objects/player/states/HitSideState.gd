@@ -1,8 +1,8 @@
 extends "StateBase.gd"
 
-const Direction = preload("res://enums/Direction.gd").Direction
-const State = preload("States.gd").State
-const Hitbox = preload("Hitbox.gd")
+const Hitbox = preload("res://objects/player/Hitbox.gd")
+const Direction = preload("res://enums/Common.gd").Direction
+const State = preload("StateEnum.gd").State
 
 var _ball
 var _ball_hit

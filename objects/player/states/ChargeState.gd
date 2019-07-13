@@ -1,8 +1,8 @@
 extends "StateBase.gd"
 
 const Renderer = preload("res://utils/Renderer.gd")
-const Direction = preload("res://enums/Direction.gd").Direction
-const State = preload("States.gd").State
+const Direction = preload("res://enums/Common.gd").Direction
+const State = preload("StateEnum.gd").State
 
 var _ball
 
@@ -48,7 +48,7 @@ func exit():
 
 func get_state_transition():
     # Handle inputs first...
-    if Input.is_action_just_pressed("ui_cancel"):
+    if Input.is_action_just_pressed("cancel_charge"):
         return State.NEUTRAL
 
     # Then handle non-input state transitions.

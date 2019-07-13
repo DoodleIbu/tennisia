@@ -5,12 +5,12 @@ signal hit_ball(max_power, max_spin, goal) # TODO: is there a way to define this
 const Renderer = preload("res://utils/Renderer.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
 
-const State = preload("States.gd").State
-const NeutralState = preload("NeutralState.gd")
-const ChargeState = preload("ChargeState.gd")
-const HitSideState = preload("HitSideState.gd")
-const HitOverheadState = preload("HitOverheadState.gd")
-const LungeState = preload("LungeState.gd")
+const State = preload("states/StateEnum.gd").State
+const NeutralState = preload("states/NeutralState.gd")
+const ChargeState = preload("states/ChargeState.gd")
+const HitSideState = preload("states/HitSideState.gd")
+const HitOverheadState = preload("states/HitOverheadState.gd")
+const LungeState = preload("states/LungeState.gd")
 
 export (NodePath) var _ball_path
 onready var _ball = get_node(_ball_path)

@@ -7,8 +7,6 @@ const Renderer = preload("res://utils/Renderer.gd")
 const Integrator = preload("res://utils/Integrator.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
 
-enum ShotType { FLAT, TOP, SLICE, LOB, DROP }
-
 const NET_CLEARANCE = 40
 const NET_POSITION_Z = 390
 const GRAVITY = -322

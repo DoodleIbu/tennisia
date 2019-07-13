@@ -1,5 +1,5 @@
 const Renderer = preload("res://utils/Renderer.gd")
-const Direction = preload("res://enums/Direction.gd").Direction
+const Direction = preload("res://enums/Common.gd").Direction
 
 var _aabb
 

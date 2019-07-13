@@ -1,7 +1,7 @@
 extends "StateBase.gd"
 
 const Renderer = preload("res://utils/Renderer.gd")
-const State = preload("States.gd").State
+const State = preload("StateEnum.gd").State
 
 const EPSILON = 1
 
@@ -15,7 +15,7 @@ func exit():
     pass
 
 func get_state_transition():
-    if Input.is_action_just_pressed("ui_cancel") and _player.can_hit_ball():
+    if Input.is_action_just_pressed("topspin") and _player.can_hit_ball():
         return State.CHARGE
 
     return null
