@@ -38,7 +38,6 @@ func process(delta):
         _player.clear_hitbox()
 
 func physics_process(delta):
-    if _player.get_current_animation_position() < 0.1 and not _ball_hit:
-        if _hitbox.intersects_ball(_ball):
-            _player.fire(1000, 100, Vector3(80, 0, 50))
-            _ball_hit = true
+    if _player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(_ball) and not _ball_hit:
+        _player.fire()
+        _ball_hit = true

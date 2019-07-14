@@ -46,10 +46,9 @@ func physics_process(delta):
     # TODO: There should be a better way to determine when the hitbox is active on the animation.
     #       This is fine for now, but loop back to this and create a class that ties hitboxes to animation.
     _hitbox = Hitbox.new(_player.get_position(), _player.get_lunge_hitbox(), _player.get_facing())
-    if _player.get_current_animation_position() < 0.2 and not _ball_hit:
-        if _hitbox.intersects_ball(_ball):
-            _player.fire(1000, 100, Vector3(80, 0, 50))
-            _ball_hit = true
+    if _player.get_current_animation_position() < 0.2 and _hitbox.intersects_ball(_ball) and not _ball_hit:
+        _player.fire()
+        _ball_hit = true
 
 func _update_velocity(delta):
     if _player.get_current_animation_position() >= 0.4:

@@ -161,7 +161,13 @@ func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
         _previous_position = Vector3(180, BALL_RADIUS, 360)
         _position = Vector3(180, BALL_RADIUS, 360)
-        _fire(800, -200, Vector3(50, 0, 700))
+
+        if Input.is_action_pressed("ui_left"):
+            _fire(800, -200, Vector3(50, 0, 700))
+        elif Input.is_action_pressed("ui_right"):
+            _fire(800, -200, Vector3(310, 0, 700))
+        else:
+            _fire(800, -200, Vector3(180, 0, 700))
         _simulate_ball_trajectory(_position, _velocity, TimeStep.get_time_step())
         _current_frame = 0
         emit_signal("fired")

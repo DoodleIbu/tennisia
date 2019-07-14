@@ -4,6 +4,8 @@ signal hit_ball(max_power, max_spin, goal) # TODO: is there a way to define this
 
 const Renderer = preload("res://utils/Renderer.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
+const Key = preload("res://enums/Common.gd").Key
+const Shot = preload("res://enums/Common.gd").Shot
 
 const State = preload("states/StateEnum.gd").State
 const NeutralState = preload("states/NeutralState.gd")
@@ -11,6 +13,7 @@ const ChargeState = preload("states/ChargeState.gd")
 const HitSideState = preload("states/HitSideState.gd")
 const HitOverheadState = preload("states/HitOverheadState.gd")
 const LungeState = preload("states/LungeState.gd")
+const ShotBuffer = preload("ShotBuffer.gd")
 
 export (NodePath) var _ball_path
 onready var _ball = get_node(_ball_path)
@@ -46,6 +49,9 @@ var _lunge_state
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
+
+var _shot_buffer
+var _charge
 var _facing
 var _team = 1
 var _can_hit_ball = false
@@ -102,7 +108,54 @@ func get_stop_accel():
 func can_hit_ball():
     return _can_hit_ball
 
-# Common helper methods called from states. There might be a better way to organize these.
+# Common helper methods called from states. There might be a better way to implement these... might refactor when the time comes.
+# It makes sense to me for the player to own the input buffer, charge amount, etc.
+# Example: Should the input buffer be passed by reference into each state instead of defining these methods?
+#          Should we follow LoD?
+func is_shot_input_pressed():
+    return Input.is_action_just_pressed("topspin") or Input.is_action_just_pressed("slice") or Input.is_action_just_pressed("flat")
+
+func process_shot_input():
+    if Input.is_action_just_pressed("topspin"):
+        _shot_buffer.input(Key.TOP)
+    elif Input.is_action_just_pressed("slice"):
+        _shot_buffer.input(Key.SLICE)
+    elif Input.is_action_just_pressed("flat"):
+        _shot_buffer.input(Key.FLAT)
+
+func clear_shot_buffer():
+    _shot_buffer.clear()
+
+# Maybe this should go into a separate module? We need to define behaviour for multiple shot types.
+func fire():
+    var goal
+    var spin
+    var power = 1000
+
+    if Input.is_action_pressed("ui_left"):
+        goal = Vector3(80, 0, 50)
+    elif Input.is_action_pressed("ui_right"):
+        goal = Vector3(280, 0, 50)
+    else:
+        goal = Vector3(180, 0, 50)
+
+    var shot = _shot_buffer.get_shot()
+
+    if shot == Shot.S_SLICE or shot == Shot.D_SLICE:
+        spin = 100
+    elif shot == Shot.S_TOP or shot == Shot.D_TOP:
+        spin = -200
+    elif shot == Shot.S_FLAT or shot == Shot.D_FLAT:
+        spin = 0
+    elif shot == Shot.LOB:
+        power = 500
+        spin = -300
+    else:
+        spin = 0
+
+    emit_signal("hit_ball", power, spin, goal)
+    _can_hit_ball = false
+
 func play_animation(value):
     $AnimationPlayer.play(value)
 
@@ -112,6 +165,7 @@ func get_current_animation_position():
 func is_animation_playing():
     return $AnimationPlayer.is_playing()
 
+# Separate module?
 func render_hitbox(hitbox):
     var result = hitbox.get_render_position()
     var hitbox_display = get_node("HitboxDisplay")
@@ -121,9 +175,6 @@ func render_hitbox(hitbox):
 
 func clear_hitbox():
     get_node("HitboxDisplay").set_visible(false)
-
-func fire(max_speed, max_spin, goal):
-    emit_signal("hit_ball", max_speed, max_spin, goal)
 
 func update_position(delta):
     var new_position = _position + _velocity * delta
@@ -161,6 +212,7 @@ func _set_state(value):
 func _ready():
     $AnimationPlayer.set_animation_process_mode(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
 
+    _shot_buffer = ShotBuffer.new()
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self, _ball)
     _hit_side_state = HitSideState.new(self, _ball)

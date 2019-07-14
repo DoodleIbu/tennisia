@@ -42,7 +42,7 @@ func _match_slice():
 
 func _match_flat():
     match _shot:
-        Shot.S_FLAT:
+        Shot.S_FLAT, Shot.D_FLAT:
             _shot = Shot.D_FLAT
         _:
             _shot = Shot.S_FLAT

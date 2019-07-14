@@ -49,6 +49,7 @@ func exit():
 func get_state_transition():
     # Handle inputs first...
     if Input.is_action_just_pressed("cancel_charge"):
+        _player.clear_shot_buffer()
         return State.NEUTRAL
 
     # Then handle non-input state transitions.
@@ -89,6 +90,7 @@ func process(delta):
 func physics_process(delta):
     _update_velocity(delta)
     _player.update_position(delta)
+    _player.process_shot_input()
 
 func _update_animation():
     var animation_player = _player.get_node("AnimationPlayer")
