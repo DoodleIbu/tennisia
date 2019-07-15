@@ -89,12 +89,12 @@ const _DEFAULT_SHOT_PARAMETERS = {
     },
     Shot.LOB: {
         "power": {
-            "base": 500,
-            "max": 500
+            "base": 400,
+            "max": 400
         },
         "spin": {
-            "base": -300,
-            "max": -300
+            "base": -100,
+            "max": -100
         },
         "angle": null,
         "placement": null,
@@ -107,8 +107,8 @@ const _DEFAULT_SHOT_PARAMETERS = {
             "max": 400
         },
         "spin": {
-            "base": 100,
-            "max": 100
+            "base": 50,
+            "max": 50
         },
         "angle": null,
         "placement": null,

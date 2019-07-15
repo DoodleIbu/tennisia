@@ -27,6 +27,7 @@ var _velocity = Vector3()
 var _current_frame = 0
 var _simulated_ball_positions = []
 var _simulated_ball_velocities = []
+var _simulated_ball_spins = []
 
 var debug = 0
 
@@ -104,7 +105,7 @@ func _fire(max_power, max_spin, goal):
 
     _velocity = Vector3(shot_power * xz_direction.x, velocity_y, shot_power * xz_direction.y)
 
-func _get_new_position_and_velocity(old_position, old_velocity, delta):
+func _get_next_step(old_position, old_velocity, old_spin, delta):
     var integration_result = Integrator.midpoint(old_position, old_velocity, Vector3(0, _get_total_gravity(), 0), delta)
     var new_position = integration_result[0]
     var new_velocity = integration_result[1]
@@ -112,7 +113,7 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
 
     var has_bounced = false
     var bounce_position
-    var new_spin = _spin
+    var new_spin = old_spin
 
     # Ball has collided with the court. Also avoid division by 0.
     if new_position.y <= BALL_RADIUS and midpoint_velocity.y < 0:
@@ -123,12 +124,19 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
 
         bounce_position = old_position + time_percent_before_bounce * midpoint_velocity * delta
         var bounce_normal = Vector3(0, 1, 0)
+
+        # Apply spin change to both bounce velocity and bounce midpoint velocity.
+        var spin_speed_change = -1 * old_spin * BOUNCE_SPIN_SPEED_CHANGE
+
         var bounce_velocity = new_velocity.bounce(bounce_normal) * BOUNCE_VELOCITY_DAMPING
+        bounce_velocity = bounce_velocity + Vector3(bounce_velocity.x, 0, bounce_velocity.z).normalized() * spin_speed_change
+
         var bounce_midpoint_velocity = midpoint_velocity.bounce(bounce_normal) * BOUNCE_VELOCITY_DAMPING
+        bounce_midpoint_velocity = bounce_midpoint_velocity + Vector3(bounce_midpoint_velocity.x, 0, bounce_midpoint_velocity.z).normalized() * spin_speed_change
 
         new_position = bounce_position + time_percent_after_bounce * bounce_midpoint_velocity * delta
         new_velocity = bounce_velocity
-        new_spin = _spin * BOUNCE_SPIN_DAMPING
+        new_spin = old_spin * BOUNCE_SPIN_DAMPING
 
     var return_value = {
         "position": new_position,
@@ -142,22 +150,26 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
     return return_value
 
 # Simulate and cache ball trajectory for other nodes to use.
-func _simulate_ball_trajectory(old_position, old_velocity, delta):
+func _simulate_ball_trajectory(old_position, old_velocity, old_spin, delta):
     _simulated_ball_positions = [old_position]
     _simulated_ball_velocities = [old_velocity]
+    _simulated_ball_spins = [old_spin]
 
     var max_steps = 600
     var current_step = 1
     var current_position = old_position
     var current_velocity = old_velocity
+    var current_spin = old_spin
 
     while current_step < max_steps:
-        var result = _get_new_position_and_velocity(current_position, current_velocity, delta)
+        var result = _get_next_step(current_position, current_velocity, current_spin, delta)
         current_position = result["position"]
         current_velocity = result["velocity"]
+        current_spin = result["spin"]
 
         _simulated_ball_positions.append(current_position)
         _simulated_ball_velocities.append(current_velocity)
+        _simulated_ball_spins.append(current_spin)
 
         current_step += 1
 
@@ -176,11 +188,11 @@ func _physics_process(delta):
             _fire(800, -200, Vector3(310, 0, 700))
         else:
             _fire(800, -200, Vector3(180, 0, 700))
-        _simulate_ball_trajectory(_position, _velocity, TimeStep.get_time_step())
+        _simulate_ball_trajectory(_position, _velocity, _spin, TimeStep.get_time_step())
         _current_frame = 0
         emit_signal("fired")
 
-    var result = _get_new_position_and_velocity(_position, _velocity, TimeStep.get_time_step())
+    var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
     if result.has("bounce_position"):
         emit_signal("bounced", result["bounce_position"], _velocity)
 

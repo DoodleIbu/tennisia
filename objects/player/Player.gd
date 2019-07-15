@@ -47,8 +47,8 @@ export var _SHOT_PARAMETERS = {
             "max": 800
         },
         "spin": {
-            "base": -100,
-            "max": -200
+            "base": -50,
+            "max": -100
         },
         "angle": 60,
         "placement": 20,
@@ -59,8 +59,8 @@ export var _SHOT_PARAMETERS = {
             "max": 1000
         },
         "spin": {
-            "base": -200,
-            "max": -400
+            "base": -100,
+            "max": -200
         },
         "angle": 60,
         "placement": 20,
@@ -71,8 +71,8 @@ export var _SHOT_PARAMETERS = {
             "max": 600
         },
         "spin": {
-            "base": 150,
-            "max": 150
+            "base": 100,
+            "max": 100
         },
         "angle": 60,
         "placement": 20,
@@ -83,8 +83,8 @@ export var _SHOT_PARAMETERS = {
             "max": 800
         },
         "spin": {
-            "base": 75,
-            "max": 75
+            "base": 50,
+            "max": 50
         },
         "angle": 60,
         "placement": 20,
