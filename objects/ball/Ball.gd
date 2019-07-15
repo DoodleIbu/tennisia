@@ -11,7 +11,9 @@ const NET_CLEARANCE = 40
 const NET_POSITION_Z = 390
 const GRAVITY = -322
 const BALL_RADIUS = 1.1
-const DAMPING = 0.5
+const BOUNCE_VELOCITY_DAMPING = 0.5
+const BOUNCE_SPIN_DAMPING = 0.5
+const BOUNCE_SPIN_SPEED_CHANGE = 0.5
 
 # y is positive above the ground.
 var _spin = 0
@@ -39,6 +41,9 @@ func get_current_frame():
 
 func get_simulated_ball_positions():
     return _simulated_ball_positions
+
+func get_power():
+    return Vector2(_velocity.x, _velocity.z).length()
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
 func _get_total_gravity():
@@ -107,6 +112,7 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
 
     var has_bounced = false
     var bounce_position
+    var new_spin = _spin
 
     # Ball has collided with the court. Also avoid division by 0.
     if new_position.y <= BALL_RADIUS and midpoint_velocity.y < 0:
@@ -117,15 +123,17 @@ func _get_new_position_and_velocity(old_position, old_velocity, delta):
 
         bounce_position = old_position + time_percent_before_bounce * midpoint_velocity * delta
         var bounce_normal = Vector3(0, 1, 0)
-        var bounce_velocity = new_velocity.bounce(bounce_normal) * DAMPING
-        var bounce_midpoint_velocity = midpoint_velocity.bounce(bounce_normal) * DAMPING
+        var bounce_velocity = new_velocity.bounce(bounce_normal) * BOUNCE_VELOCITY_DAMPING
+        var bounce_midpoint_velocity = midpoint_velocity.bounce(bounce_normal) * BOUNCE_VELOCITY_DAMPING
 
         new_position = bounce_position + time_percent_after_bounce * bounce_midpoint_velocity * delta
         new_velocity = bounce_velocity
+        new_spin = _spin * BOUNCE_SPIN_DAMPING
 
     var return_value = {
         "position": new_position,
-        "velocity": new_velocity
+        "velocity": new_velocity,
+        "spin": new_spin
     }
 
     if has_bounced:
@@ -179,6 +187,7 @@ func _physics_process(delta):
     _previous_position = _position
     _position = result["position"]
     _velocity = result["velocity"]
+    _spin = result["spin"]
     _current_frame += 1
 
 func _on_Player_hit_ball(max_power, max_spin, goal):

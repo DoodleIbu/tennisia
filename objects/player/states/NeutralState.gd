@@ -10,14 +10,14 @@ func _init(player).(player):
     pass
 
 func enter():
-    pass
+    _player.set_charge(0)
+    _player.clear_shot_buffer()
 
 func exit():
     pass
 
 func get_state_transition():
     if _player.can_hit_ball() and _player.is_shot_input_pressed(): # Dirty
-        _player.process_shot_input()
         return State.CHARGE
 
     return null

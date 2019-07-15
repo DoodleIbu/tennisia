@@ -13,7 +13,9 @@ const ChargeState = preload("states/ChargeState.gd")
 const HitSideState = preload("states/HitSideState.gd")
 const HitOverheadState = preload("states/HitOverheadState.gd")
 const LungeState = preload("states/LungeState.gd")
+
 const ShotBuffer = preload("ShotBuffer.gd")
+const ShotCalculator = preload("ShotCalculator.gd")
 
 export (NodePath) var _ball_path
 onready var _ball = get_node(_ball_path)
@@ -37,6 +39,86 @@ export var _LUNGE_VERTICAL_REACH = 40
 export var _LUNGE_HORIZONTAL_REACH = 55
 export var _LUNGE_DEPTH = 20
 
+# TODO: Find a faster way of determining these.
+export var _SHOT_PARAMETERS = {
+    Shot.S_TOP: {
+        "power": {
+            "base": 500,
+            "max": 800
+        },
+        "spin": {
+            "base": -100,
+            "max": -200
+        },
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.D_TOP: {
+        "power": {
+            "base": 600,
+            "max": 1000
+        },
+        "spin": {
+            "base": -200,
+            "max": -400
+        },
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.S_SLICE: {
+        "power": {
+            "base": 500,
+            "max": 600
+        },
+        "spin": {
+            "base": 150,
+            "max": 150
+        },
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.D_SLICE: {
+        "power": {
+            "base": 600,
+            "max": 800
+        },
+        "spin": {
+            "base": 75,
+            "max": 75
+        },
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.S_FLAT: {
+        "power": {
+            "base": 600,
+            "max": 800
+        },
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.D_FLAT: {
+        "power": {
+            "base": 800,
+            "max": 1200
+        },
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.LOB: {
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.DROP: {
+        "angle": 60,
+        "placement": 20,
+    },
+    Shot.LUNGE: {
+        "angle": 60,
+        "placement": 20,
+    }
+}
+
 var _state = State.NEUTRAL
 
 var _neutral_state
@@ -49,12 +131,13 @@ var _lunge_state
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
-
-var _shot_buffer
 var _charge
 var _facing
 var _team = 1
 var _can_hit_ball = false
+
+var _shot_buffer
+var _shot_calculator
 
 func get_position():
     return _position
@@ -74,6 +157,12 @@ func get_facing():
 
 func set_facing(value):
     _facing = value
+
+func get_charge():
+    return _charge
+
+func set_charge(value):
+    _charge = value
 
 func set_render_position(value):
     position = value
@@ -128,32 +217,11 @@ func clear_shot_buffer():
 
 # Maybe this should go into a separate module? We need to define behaviour for multiple shot types.
 func fire():
-    var goal
-    var spin
-    var power = 1000
-
-    if Input.is_action_pressed("ui_left"):
-        goal = Vector3(80, 0, 50)
-    elif Input.is_action_pressed("ui_right"):
-        goal = Vector3(280, 0, 50)
-    else:
-        goal = Vector3(180, 0, 50)
-
     var shot = _shot_buffer.get_shot()
+    var result = _shot_calculator.calculate(shot, _ball, _charge)
 
-    if shot == Shot.S_SLICE or shot == Shot.D_SLICE:
-        spin = 100
-    elif shot == Shot.S_TOP or shot == Shot.D_TOP:
-        spin = -200
-    elif shot == Shot.S_FLAT or shot == Shot.D_FLAT:
-        spin = 0
-    elif shot == Shot.LOB:
-        power = 500
-        spin = -300
-    else:
-        spin = 0
+    emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
 
-    emit_signal("hit_ball", power, spin, goal)
     _can_hit_ball = false
 
 func play_animation(value):
@@ -213,6 +281,8 @@ func _ready():
     $AnimationPlayer.set_animation_process_mode(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
 
     _shot_buffer = ShotBuffer.new()
+    _shot_calculator = ShotCalculator.new(_SHOT_PARAMETERS)
+
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self, _ball)
     _hit_side_state = HitSideState.new(self, _ball)
