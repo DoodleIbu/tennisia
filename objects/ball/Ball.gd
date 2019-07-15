@@ -29,7 +29,8 @@ var _simulated_ball_positions = []
 var _simulated_ball_velocities = []
 var _simulated_ball_spins = []
 
-var debug = 0
+var _bounce_count = 0
+var _team = 2
 
 func get_position():
     return _position
@@ -81,15 +82,14 @@ func _get_net_adjustment_arc(shot_power, shot_height_mid, start_position, end_po
 # TODO: Incorporate a max height_mid to prevent the ball from going too high.
 #       If the ball exceeds the max height, then shorten the distance or change power.
 func _fire(max_power, max_spin, goal):
+    _bounce_count = 0
+    _spin = max_spin
+
     var start_position = _position
     var end_position = Vector3(goal.x, BALL_RADIUS, goal.z)
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
     var xz_distance_to_end = Vector2(start_position.x, start_position.z).distance_to(Vector2(end_position.x, end_position.z))
     var xz_distance_to_net = (xz_direction * abs(start_position.z - NET_POSITION_Z) / xz_direction.y).length()
-
-    debug += 1
-
-    _spin = max_spin
 
     # Shoot the ball at max power and spin.
     var shot_power = max_power
@@ -179,21 +179,23 @@ func _process(delta):
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("ui_accept"):
-        _previous_position = Vector3(180, BALL_RADIUS, 360)
-        _position = Vector3(180, BALL_RADIUS, 360)
+        _previous_position = Vector3(180, 100, 200)
+        _position = Vector3(180, 100, 200)
+        _velocity = Vector3()
+        _spin = 0
+        _team = 2
+        _bounce_count = 0
 
-        if Input.is_action_pressed("ui_left"):
-            _fire(800, -200, Vector3(50, 0, 700))
-        elif Input.is_action_pressed("ui_right"):
-            _fire(800, -200, Vector3(310, 0, 700))
-        else:
-            _fire(800, -200, Vector3(180, 0, 700))
+    if _team == 2 and _bounce_count >= 1:
+        _fire(400, -200, Vector3(rand_range(50, 310), 0, 700))
         _simulate_ball_trajectory(_position, _velocity, _spin, TimeStep.get_time_step())
         _current_frame = 0
+        _team = 1
         emit_signal("fired")
 
     var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
     if result.has("bounce_position"):
+        _bounce_count += 1
         emit_signal("bounced", result["bounce_position"], _velocity)
 
     _previous_position = _position
@@ -203,4 +205,11 @@ func _physics_process(delta):
     _current_frame += 1
 
 func _on_Player_hit_ball(max_power, max_spin, goal):
+    if _team == 1:
+        _team = 2
+    elif _team == 2:
+        _team = 1
+    else:
+        assert(false)
+
     _fire(max_power, max_spin, goal)
