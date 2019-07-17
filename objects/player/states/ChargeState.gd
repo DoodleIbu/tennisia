@@ -50,7 +50,7 @@ func exit():
 
 func get_state_transition():
     # Handle inputs first...
-    if Input.is_action_just_pressed("cancel_charge"):
+    if Input.is_action_just_pressed("p1_cancel_charge"):
         return State.NEUTRAL
 
     # Then handle non-input state transitions.

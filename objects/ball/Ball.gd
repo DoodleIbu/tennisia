@@ -187,7 +187,7 @@ func _physics_process(delta):
         _bounce_count = 0
 
     if _team == 2 and _bounce_count >= 2:
-        _fire(500, -200, Vector3(rand_range(50, 310), 0, 700))
+        _fire(800, -200, Vector3(rand_range(50, 310), 0, 700))
         _simulate_ball_trajectory(_position, _velocity, _spin, TimeStep.get_time_step())
         _current_frame = 0
         _team = 1

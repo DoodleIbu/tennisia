@@ -177,9 +177,9 @@ func _calculate(shot, ball, charge):
     var placement = _merged_shot_parameters[shot]["placement"]
     var depth = _merged_shot_parameters[shot]["depth"]
 
-    if Input.is_action_pressed("ui_left"):
+    if Input.is_action_pressed("p1_left"):
         goal = Vector3(45 + placement, 0, 390 - depth)
-    elif Input.is_action_pressed("ui_right"):
+    elif Input.is_action_pressed("p1_right"):
         goal = Vector3(315 - placement, 0, 390 - depth)
     else:
         goal = Vector3(180, 0, 390 - depth)

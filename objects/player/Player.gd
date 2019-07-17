@@ -28,15 +28,15 @@ export var _STOP_ACCEL = 800
 
 # From the middle of the character.
 export var _SIDE_VERTICAL_REACH = 40
-export var _SIDE_HORIZONTAL_REACH = 35
+export var _SIDE_HORIZONTAL_REACH = 40
 export var _SIDE_DEPTH = 20
 
 export var _OVERHEAD_VERTICAL_REACH = 80
-export var _OVERHEAD_HORIZONTAL_REACH = 25
+export var _OVERHEAD_HORIZONTAL_REACH = 30
 export var _OVERHEAD_DEPTH = 20
 
 export var _LUNGE_VERTICAL_REACH = 40
-export var _LUNGE_HORIZONTAL_REACH = 55
+export var _LUNGE_HORIZONTAL_REACH = 60
 export var _LUNGE_DEPTH = 20
 
 # TODO: Find a faster way of determining these.
@@ -63,7 +63,7 @@ export var _SHOT_PARAMETERS = {
             "max": -200
         },
         "angle": 60,
-        "placement": 20,
+        "placement": 30,
     },
     Shot.S_SLICE: {
         "power": {
@@ -202,14 +202,14 @@ func can_hit_ball():
 # Example: Should the input buffer be passed by reference into each state instead of defining these methods?
 #          Should we follow LoD?
 func is_shot_input_pressed():
-    return Input.is_action_just_pressed("topspin") or Input.is_action_just_pressed("slice") or Input.is_action_just_pressed("flat")
+    return Input.is_action_just_pressed("p1_topspin") or Input.is_action_just_pressed("p1_slice") or Input.is_action_just_pressed("p1_flat")
 
 func process_shot_input():
-    if Input.is_action_just_pressed("topspin"):
+    if Input.is_action_just_pressed("p1_topspin"):
         _shot_buffer.input(Key.TOP)
-    elif Input.is_action_just_pressed("slice"):
+    elif Input.is_action_just_pressed("p1_slice"):
         _shot_buffer.input(Key.SLICE)
-    elif Input.is_action_just_pressed("flat"):
+    elif Input.is_action_just_pressed("p1_flat"):
         _shot_buffer.input(Key.FLAT)
 
 func clear_shot_buffer():

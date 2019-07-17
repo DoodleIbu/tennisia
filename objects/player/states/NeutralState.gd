@@ -87,13 +87,13 @@ func _get_desired_velocity():
     # TODO: Modify this code to instead read inputs from input().
     var desired_velocity = Vector3()
 
-    if Input.is_action_pressed("ui_right"):
+    if Input.is_action_pressed("p1_right"):
         desired_velocity.x += 1
-    if Input.is_action_pressed("ui_left"):
+    if Input.is_action_pressed("p1_left"):
         desired_velocity.x -= 1
-    if Input.is_action_pressed("ui_down"):
+    if Input.is_action_pressed("p1_down"):
         desired_velocity.z += 1
-    if Input.is_action_pressed("ui_up"):
+    if Input.is_action_pressed("p1_up"):
         desired_velocity.z -= 1
 
     return desired_velocity.normalized() * _player.get_max_neutral_speed()
