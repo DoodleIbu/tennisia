@@ -197,7 +197,7 @@ func get_stop_accel():
 func can_hit_ball():
     return _can_hit_ball
 
-# Common helper methods called from states. There might be a better way to implement these... might refactor when the time comes.
+# Common helper methods called from states. There should be a better way to implement these... will refactor when the time comes.
 # It makes sense to me for the player to own the input buffer, charge amount, etc.
 # Example: Should the input buffer be passed by reference into each state instead of defining these methods?
 #          Should we follow LoD?
@@ -233,17 +233,6 @@ func get_current_animation_position():
 func is_animation_playing():
     return $AnimationPlayer.is_playing()
 
-# Separate module?
-func render_hitbox(hitbox):
-    var result = hitbox.get_render_position()
-    var hitbox_display = get_node("HitboxDisplay")
-    hitbox_display.set_global_position(result["position"])
-    hitbox_display.set_size(result["size"])
-    hitbox_display.set_visible(true)
-
-func clear_hitbox():
-    get_node("HitboxDisplay").set_visible(false)
-
 func update_position(delta):
     var new_position = _position + _velocity * delta
     if _team == 1:
@@ -255,7 +244,24 @@ func update_position(delta):
 func update_render_position():
     set_render_position(Renderer.get_render_position(_position))
 
+func display_hitbox(hitbox, start, end):
+    if DebugOptions.is_hitbox_display_enabled():
+        if get_current_animation_position() >= start and get_current_animation_position() <= end:
+            _render_hitbox(hitbox)
+        else:
+            _clear_hitbox()
+
 # Internal methods
+func _render_hitbox(hitbox):
+    var result = hitbox.get_render_position()
+    var hitbox_display = get_node("HitboxDisplay")
+    hitbox_display.set_global_position(result["position"])
+    hitbox_display.set_size(result["size"])
+    hitbox_display.set_visible(true)
+
+func _clear_hitbox():
+    get_node("HitboxDisplay").set_visible(false)
+
 func _set_state(value):
     if _state:
         _state.exit()

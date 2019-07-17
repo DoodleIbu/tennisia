@@ -17,6 +17,11 @@ _global_script_class_icons={
 
 config/name="Tennisia"
 
+[autoload]
+
+Logger="*res://utils/Logger.gd"
+DebugOptions="*res://utils/DebugOptions.gd"
+
 [display]
 
 window/size/width=256

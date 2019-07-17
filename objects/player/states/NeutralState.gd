@@ -3,7 +3,6 @@ extends "StateBase.gd"
 const Renderer = preload("res://utils/Renderer.gd")
 const State = preload("StateEnum.gd").State
 
-
 const EPSILON = 1
 
 func _init(player).(player):

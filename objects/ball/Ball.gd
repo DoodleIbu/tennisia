@@ -101,7 +101,7 @@ func _fire(max_power, max_spin, goal):
     shot_height_mid = net_adjustment_result[1]
 
     var velocity_y = -1 * (3 * start_position.y - 4 * shot_height_mid + end_position.y) * shot_power / xz_distance_to_end
-    print("Power: ", shot_power, " Y vel: ", velocity_y, " Y mid: ", shot_height_mid)
+    Logger.info("Power: %f, y vel: %f, y mid: %f" % [shot_power, velocity_y, shot_height_mid])
 
     _velocity = Vector3(shot_power * xz_direction.x, velocity_y, shot_power * xz_direction.y)
 

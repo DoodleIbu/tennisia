@@ -32,10 +32,7 @@ func get_state_transition():
     return null
 
 func process(delta):
-    if _player.get_current_animation_position() < 0.1:
-        _player.render_hitbox(_hitbox)
-    else:
-        _player.clear_hitbox()
+    _player.display_hitbox(_hitbox, 0, 0.1)
 
 func physics_process(delta):
     if _player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(_ball) and not _ball_hit:

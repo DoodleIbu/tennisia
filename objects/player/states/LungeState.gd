@@ -34,10 +34,7 @@ func get_state_transition():
 
 func process(delta):
     _player.update_render_position()
-    if _player.get_current_animation_position() < 0.2:
-        _player.render_hitbox(_hitbox)
-    else:
-        _player.clear_hitbox()
+    _player.display_hitbox(_hitbox, 0, 0.2)
 
 func physics_process(delta):
     _update_velocity(delta)
