@@ -21,6 +21,9 @@ const ShotCalculator = preload("ShotCalculator.gd")
 export (NodePath) var _ball_path
 onready var _ball = get_node(_ball_path)
 
+export var _ID = 1
+export var _TEAM = 1
+
 export var _MAX_NEUTRAL_SPEED = 250
 export var _MAX_CHARGE_SPEED = 20
 export var _PIVOT_ACCEL = 1000
@@ -128,9 +131,6 @@ var _hit_side_state
 var _hit_overhead_state
 var _lunge_state
 
-var _id = 1
-var _team = 1
-
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
@@ -173,7 +173,7 @@ func set_render_position(value):
     position = value
 
 func get_team():
-    return _team
+    return _TEAM
 
 func get_side_hitbox():
     return Vector3(_SIDE_HORIZONTAL_REACH, _SIDE_VERTICAL_REACH, _SIDE_DEPTH)
@@ -246,9 +246,9 @@ func is_animation_playing():
 
 func update_position(delta):
     var new_position = _position + _velocity * delta
-    if _team == 1:
+    if _TEAM == 1:
         new_position.z = max(new_position.z, 410)
-    elif _team == 2:
+    elif _TEAM == 2:
         new_position.z = min(new_position.z, 370)
     _position = new_position
 
@@ -297,7 +297,7 @@ func _set_state(value):
 func _ready():
     $AnimationPlayer.set_animation_process_mode(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
 
-    _input_mapper = InputMapper.new(_id)
+    _input_mapper = InputMapper.new(_ID)
     _shot_buffer = ShotBuffer.new()
     _shot_calculator = ShotCalculator.new(_SHOT_PARAMETERS)
 

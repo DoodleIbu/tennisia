@@ -6,7 +6,7 @@ const BASE_Z_INDEX = 100
 
 # Handle z-index rendering of ball, player and net.
 func _process(delta):
-    var z_sortables = [$Player, $Ball, $Net]
+    var z_sortables = [get_node("Player 1"), get_node("Player 2"), $Ball, $Net]
     z_sortables.sort_custom(self, "_z_sortables_comparison")
 
     for i in range(0, z_sortables.size()):

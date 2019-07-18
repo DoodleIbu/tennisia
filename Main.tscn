@@ -23,15 +23,20 @@ position = Vector2( 49, 115 )
 [node name="Ball" parent="." instance=ExtResource( 5 )]
 z_index = 100
 
-[node name="Player" parent="." instance=ExtResource( 6 )]
+[node name="Player 1" parent="." instance=ExtResource( 6 )]
 position = Vector2( 0, 0 )
 z_index = 100
 _ball_path = NodePath("../Ball")
+
+[node name="Player 2" parent="." instance=ExtResource( 6 )]
+_ball_path = NodePath("../Ball")
+_ID = 2
+_TEAM = 2
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 7 )
 volume_db = -10.0
 autoplay = true
 [connection signal="bounced" from="Ball" to="." method="_on_Ball_bounced"]
-[connection signal="fired" from="Ball" to="Player" method="_on_Ball_fired"]
-[connection signal="hit_ball" from="Player" to="Ball" method="_on_Player_hit_ball"]
+[connection signal="fired" from="Ball" to="Player 1" method="_on_Ball_fired"]
+[connection signal="hit_ball" from="Player 1" to="Ball" method="_on_Player_hit_ball"]
