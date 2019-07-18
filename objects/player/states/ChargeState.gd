@@ -16,35 +16,19 @@ func enter():
     _player.set_charge(0)
 
     var simulated_ball_positions = _ball.get_simulated_ball_positions()
+    var plane = Plane(Vector3(0, 0, 1), _player.get_position().z)
 
     for index in range(0, simulated_ball_positions.size() - 1):
         var first_position = simulated_ball_positions[index]
         var second_position = simulated_ball_positions[index + 1]
 
-        # TODO: Depends on team.
-        var player_position = _player.get_position()
-        var player_team = _player.get_team()
-
-        if player_team == 1:
-            if first_position.z <= player_position.z and second_position.z >= player_position.z:
-                var ball_x_position = lerp(first_position.x, second_position.x,
-                                           (player_position.z - first_position.z) / (second_position.z - first_position.z))
-
-                if ball_x_position <= player_position.x:
-                    _player.set_facing(Direction.LEFT)
-                else:
-                    _player.set_facing(Direction.RIGHT)
-                break
-        else:
-            if first_position.z >= player_position.z and second_position.z <= player_position.z:
-                var ball_x_position = lerp(first_position.x, second_position.x,
-                                           (player_position.z - first_position.z) / (second_position.z - first_position.z))
-
-                if ball_x_position <= player_position.x:
-                    _player.set_facing(Direction.LEFT)
-                else:
-                    _player.set_facing(Direction.RIGHT)
-                break
+        var intersection = plane.intersects_segment(first_position, second_position)
+        if intersection:
+            if intersection.x <= _player.get_position().x:
+                _player.set_facing(Direction.LEFT)
+            else:
+                _player.set_facing(Direction.RIGHT)
+            break
 
 func exit():
     pass
@@ -57,8 +41,6 @@ func get_state_transition():
     # Then handle non-input state transitions.
     var result = _get_activation_plane_intersection()
     var frames_until_intersection = result["frames_until_intersection"]
-
-    Logger.info("Frames until intersection: %d" % frames_until_intersection)
 
     # Lunge
     if frames_until_intersection != -1 and frames_until_intersection <= 7:
