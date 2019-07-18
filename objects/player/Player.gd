@@ -4,7 +4,7 @@ signal hit_ball(max_power, max_spin, goal) # TODO: is there a way to define this
 
 const Renderer = preload("res://utils/Renderer.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
-const Key = preload("res://enums/Common.gd").Key
+const Action = preload("res://enums/Common.gd").Action
 const Shot = preload("res://enums/Common.gd").Shot
 
 const State = preload("states/StateEnum.gd").State
@@ -14,6 +14,7 @@ const HitSideState = preload("states/HitSideState.gd")
 const HitOverheadState = preload("states/HitOverheadState.gd")
 const LungeState = preload("states/LungeState.gd")
 
+const InputMapper = preload("InputMapper.gd")
 const ShotBuffer = preload("ShotBuffer.gd")
 const ShotCalculator = preload("ShotCalculator.gd")
 
@@ -127,15 +128,19 @@ var _hit_side_state
 var _hit_overhead_state
 var _lunge_state
 
+var _id = 1
+var _team = 1
+
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
 var _charge
 var _facing
-var _team = 1
+
 var _can_hit_ball = false
 
+var _input_mapper
 var _shot_buffer
 var _shot_calculator
 
@@ -201,16 +206,22 @@ func can_hit_ball():
 # It makes sense to me for the player to own the input buffer, charge amount, etc.
 # Example: Should the input buffer be passed by reference into each state instead of defining these methods?
 #          Should we follow LoD?
-func is_shot_input_pressed():
-    return Input.is_action_just_pressed("p1_topspin") or Input.is_action_just_pressed("p1_slice") or Input.is_action_just_pressed("p1_flat")
+func is_action_pressed(action):
+    return _input_mapper.is_action_pressed(action)
+
+func is_action_just_pressed(action):
+    return _input_mapper.is_action_just_pressed(action)
+
+func is_shot_action_just_pressed():
+    return _input_mapper.is_action_just_pressed(Action.TOP) or \
+           _input_mapper.is_action_just_pressed(Action.SLICE) or \
+           _input_mapper.is_action_just_pressed(Action.FLAT)
 
 func process_shot_input():
-    if Input.is_action_just_pressed("p1_topspin"):
-        _shot_buffer.input(Key.TOP)
-    elif Input.is_action_just_pressed("p1_slice"):
-        _shot_buffer.input(Key.SLICE)
-    elif Input.is_action_just_pressed("p1_flat"):
-        _shot_buffer.input(Key.FLAT)
+    var shot_actions = [Action.TOP, Action.SLICE, Action.FLAT]
+    for shot_action in shot_actions:
+        if _input_mapper.is_action_just_pressed(shot_action):
+            _shot_buffer.input(shot_action)
 
 func clear_shot_buffer():
     _shot_buffer.clear()
@@ -286,6 +297,7 @@ func _set_state(value):
 func _ready():
     $AnimationPlayer.set_animation_process_mode(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
 
+    _input_mapper = InputMapper.new(_id)
     _shot_buffer = ShotBuffer.new()
     _shot_calculator = ShotCalculator.new(_SHOT_PARAMETERS)
 
@@ -301,6 +313,8 @@ func _process(delta):
     _state.process(delta)
 
 func _physics_process(delta):
+    _input_mapper.handle_inputs()
+
     var new_state = _state.get_state_transition()
     if new_state != null:
         _set_state(new_state)

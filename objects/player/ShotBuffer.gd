@@ -1,9 +1,8 @@
 # Stores and determines which shot to use via a state machine. This uses the MTA style of shot buffering.
 # TODO: Look into GUT for testing
 
-const Common = preload("res://enums/Common.gd")
-const Shot = Common.Shot
-const Key = Common.Key
+const Action = preload("res://enums/Common.gd").Action
+const Shot = preload("res://enums/Common.gd").Shot
 
 var _shot = null
 
@@ -12,11 +11,11 @@ func clear():
 
 func input(input):
     match input:
-        Key.TOP:
+        Action.TOP:
             _match_top()
-        Key.SLICE:
+        Action.SLICE:
             _match_slice()
-        Key.FLAT:
+        Action.FLAT:
             _match_flat()
 
 func get_shot():

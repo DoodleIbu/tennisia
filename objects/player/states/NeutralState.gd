@@ -1,6 +1,7 @@
 extends "StateBase.gd"
 
 const Renderer = preload("res://utils/Renderer.gd")
+const Action = preload("res://enums/Common.gd").Action
 const State = preload("StateEnum.gd").State
 
 const EPSILON = 1
@@ -16,7 +17,7 @@ func exit():
     pass
 
 func get_state_transition():
-    if _player.can_hit_ball() and _player.is_shot_input_pressed(): # Dirty
+    if _player.can_hit_ball() and _player.is_shot_action_just_pressed(): # Dirty
         return State.CHARGE
 
     return null
@@ -87,13 +88,13 @@ func _get_desired_velocity():
     # TODO: Modify this code to instead read inputs from input().
     var desired_velocity = Vector3()
 
-    if Input.is_action_pressed("p1_right"):
+    if _player.is_action_pressed(Action.RIGHT):
         desired_velocity.x += 1
-    if Input.is_action_pressed("p1_left"):
+    if _player.is_action_pressed(Action.LEFT):
         desired_velocity.x -= 1
-    if Input.is_action_pressed("p1_down"):
+    if _player.is_action_pressed(Action.DOWN):
         desired_velocity.z += 1
-    if Input.is_action_pressed("p1_up"):
+    if _player.is_action_pressed(Action.UP):
         desired_velocity.z -= 1
 
     return desired_velocity.normalized() * _player.get_max_neutral_speed()
