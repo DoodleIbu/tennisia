@@ -1,7 +1,7 @@
 extends Node2D
 
 signal bounced(bounce_position)
-signal fired()
+signal fired(team_to_hit)
 
 const Renderer = preload("res://utils/Renderer.gd")
 const Integrator = preload("res://utils/Integrator.gd")
@@ -30,7 +30,7 @@ var _simulated_ball_velocities = []
 var _simulated_ball_spins = []
 
 var _bounce_count = 0
-var _team = 2
+var _team_to_hit = 2
 
 func get_position():
     return _position
@@ -183,15 +183,15 @@ func _physics_process(delta):
         _position = Vector3(180, 100, 200)
         _velocity = Vector3()
         _spin = 0
-        _team = 2
+        _team_to_hit = 2
         _bounce_count = 0
 
-    if _team == 2 and _bounce_count >= 2:
+    if _team_to_hit == 2 and _bounce_count >= 2:
         _fire(800, -200, Vector3(rand_range(50, 310), 0, 700))
         _simulate_ball_trajectory(_position, _velocity, _spin, TimeStep.get_time_step())
         _current_frame = 0
-        _team = 1
-        emit_signal("fired")
+        _team_to_hit = 1
+        emit_signal("fired", _team_to_hit)
 
     var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
     if result.has("bounce_position"):
@@ -205,11 +205,12 @@ func _physics_process(delta):
     _current_frame += 1
 
 func _on_Player_hit_ball(max_power, max_spin, goal):
-    if _team == 1:
-        _team = 2
-    elif _team == 2:
-        _team = 1
+    if _team_to_hit == 1:
+        _team_to_hit = 2
+    elif _team_to_hit == 2:
+        _team_to_hit = 1
     else:
         assert(false)
 
     _fire(max_power, max_spin, goal)
+    emit_signal("fired", _team_to_hit)

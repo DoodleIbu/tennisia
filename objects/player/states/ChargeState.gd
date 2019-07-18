@@ -58,6 +58,8 @@ func get_state_transition():
     var result = _get_activation_plane_intersection()
     var frames_until_intersection = result["frames_until_intersection"]
 
+    Logger.info("Frames until intersection: %d" % frames_until_intersection)
+
     # Lunge
     if frames_until_intersection != -1 and frames_until_intersection <= 7:
         var intersection_point = result["intersection_point"]
@@ -96,12 +98,10 @@ func physics_process(delta):
     _player.process_shot_input()
 
 func _update_animation():
-    var animation_player = _player.get_node("AnimationPlayer")
-
     if _player.get_facing() == Direction.LEFT:
-        animation_player.play("charge_left")
+        _player.play_animation("charge_left")
     elif _player.get_facing() == Direction.RIGHT:
-        animation_player.play("charge_right")
+        _player.play_animation("charge_right")
     else:
         assert(false)
 
@@ -133,13 +133,13 @@ func _get_desired_velocity():
     # TODO: Modify this code to instead read inputs from input().
     var desired_velocity = Vector3()
 
-    if Input.is_action_pressed("ui_right"):
+    if _player.is_action_pressed(Action.RIGHT):
         desired_velocity.x += 1
-    if Input.is_action_pressed("ui_left"):
+    if _player.is_action_pressed(Action.LEFT):
         desired_velocity.x -= 1
-    if Input.is_action_pressed("ui_down"):
+    if _player.is_action_pressed(Action.DOWN):
         desired_velocity.z += 1
-    if Input.is_action_pressed("ui_up"):
+    if _player.is_action_pressed(Action.UP):
         desired_velocity.z -= 1
 
     return desired_velocity.normalized() * _player.get_max_charge_speed()

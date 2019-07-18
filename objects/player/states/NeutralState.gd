@@ -17,7 +17,7 @@ func exit():
     pass
 
 func get_state_transition():
-    if _player.can_hit_ball() and _player.is_shot_action_just_pressed(): # Dirty
+    if _player.can_hit_ball() and _player.is_shot_action_just_pressed():
         return State.CHARGE
 
     return null
@@ -31,31 +31,34 @@ func physics_process(delta):
     _player.update_position(delta)
 
 func _update_animation():
-    var animation_player = _player.get_node("AnimationPlayer")
-
     if _player.get_velocity().length() < EPSILON and _get_desired_velocity().length() == 0:
-        animation_player.play("idle_up")
+        if _player.get_team() == 1:
+            _player.play_animation("idle_up")
+        elif _player.get_team() == 2:
+            _player.play_animation("idle_down")
+        else:
+            assert(false)
     else:
         var velocity_2d = Vector2(_player.get_velocity().x, _player.get_velocity().z)
         var angle_rad = velocity_2d.angle()
         var angle_degrees = angle_rad * 180 / PI
 
         if angle_degrees >= -22.5 and angle_degrees <= 22.5:
-            animation_player.play("run_right")
+            _player.play_animation("run_right")
         elif angle_degrees >= 22.5 and angle_degrees <= 67.5:
-            animation_player.play("run_downright")
+            _player.play_animation("run_downright")
         elif angle_degrees >= 67.5 and angle_degrees <= 112.5:
-            animation_player.play("run_down")
+            _player.play_animation("run_down")
         elif angle_degrees >= 112.5 and angle_degrees <= 157.5:
-            animation_player.play("run_downleft")
+            _player.play_animation("run_downleft")
         elif angle_degrees >= 157.5 or angle_degrees <= -157.5:
-            animation_player.play("run_left")
+            _player.play_animation("run_left")
         elif angle_degrees >= -157.5 and angle_degrees <= -112.5:
-            animation_player.play("run_upleft")
+            _player.play_animation("run_upleft")
         elif angle_degrees >= -112.5 and angle_degrees <= -67.5:
-            animation_player.play("run_up")
+            _player.play_animation("run_up")
         elif angle_degrees >= -67.5 and angle_degrees <= -22.5:
-            animation_player.play("run_upright")
+            _player.play_animation("run_upright")
 
 func _update_render_position():
     _player.set_render_position(Renderer.get_render_position(_player.get_position()))
