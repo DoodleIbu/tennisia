@@ -80,12 +80,16 @@ func physics_process(delta):
     _player.process_shot_input()
 
 func _update_animation():
-    if _player.get_facing() == Direction.LEFT:
-        _player.play_animation("charge_left")
-    elif _player.get_facing() == Direction.RIGHT:
-        _player.play_animation("charge_right")
-    else:
-        assert(false)
+    if _player.get_team() == 1:
+        if _player.get_facing() == Direction.LEFT:
+            _player.play_animation("charge_left")
+        elif _player.get_facing() == Direction.RIGHT:
+            _player.play_animation("charge_right")
+    elif _player.get_team() == 2:
+        if _player.get_facing() == Direction.LEFT:
+            _player.play_animation("charge_left_down")
+        elif _player.get_facing() == Direction.RIGHT:
+            _player.play_animation("charge_right_down")
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()

@@ -36,8 +36,6 @@ func _update_animation():
             _player.play_animation("idle_up")
         elif _player.get_team() == 2:
             _player.play_animation("idle_down")
-        else:
-            assert(false)
     else:
         var velocity_2d = Vector2(_player.get_velocity().x, _player.get_velocity().z)
         var angle_rad = velocity_2d.angle()

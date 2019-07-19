@@ -21,8 +21,6 @@ func enter():
     elif _player.get_facing() == Direction.RIGHT:
         _player.set_velocity(Vector3(200, 0, 0))
         _player.play_animation("lunge_right")
-    else:
-        assert(false)
 
 func exit():
     _player.set_velocity(Vector3(0, 0, 0))

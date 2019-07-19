@@ -16,12 +16,16 @@ func enter():
     _hitbox = Hitbox.new(_player.get_position(), _player.get_overhead_hitbox(), _player.get_facing())
 
     _player.set_velocity(Vector3(0, 0, 0))
-    if _player.get_facing() == Direction.LEFT:
-        _player.play_animation("hit_overhead_left_long")
-    elif _player.get_facing() == Direction.RIGHT:
-        _player.play_animation("hit_overhead_right_long")
-    else:
-        assert(false)
+    if _player.get_team() == 1:
+        if _player.get_facing() == Direction.LEFT:
+            _player.play_animation("hit_overhead_left_long")
+        elif _player.get_facing() == Direction.RIGHT:
+            _player.play_animation("hit_overhead_right_long")
+    elif _player.get_team() == 2:
+        if _player.get_facing() == Direction.LEFT:
+            _player.play_animation("hit_overhead_left_long_down")
+        elif _player.get_facing() == Direction.RIGHT:
+            _player.play_animation("hit_overhead_right_long_down")
 
 func exit():
     pass

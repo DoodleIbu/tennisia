@@ -131,11 +131,13 @@ const _DEFAULT_SHOT_PARAMETERS = {
     }
 }
 var _merged_shot_parameters
+var _team
 
 # Combines shot parameters from the player and the defaults, overwriting the defaults with the player's if it exists.
-func _init(player_shot_parameters):
+func _init(player_shot_parameters, team):
     _merged_shot_parameters = _DEFAULT_SHOT_PARAMETERS
     _merge_dir(_merged_shot_parameters, player_shot_parameters)
+    _team = team
 
 # Lazy woo! https://godotengine.org/qa/8024/update-dictionary-method
 func _merge_dir(target, patch):
@@ -177,12 +179,18 @@ func _calculate(shot, ball, charge):
     var placement = _merged_shot_parameters[shot]["placement"]
     var depth = _merged_shot_parameters[shot]["depth"]
 
+    var z
+    if _team == 1:
+        z = 390 - depth
+    elif _team == 2:
+        z = 390 + depth
+
     if Input.is_action_pressed("p1_left"):
-        goal = Vector3(45 + placement, 0, 390 - depth)
+        goal = Vector3(45 + placement, 0, z)
     elif Input.is_action_pressed("p1_right"):
-        goal = Vector3(315 - placement, 0, 390 - depth)
+        goal = Vector3(315 - placement, 0, z)
     else:
-        goal = Vector3(180, 0, 390 - depth)
+        goal = Vector3(180, 0, z)
 
     return {
         "power": power,

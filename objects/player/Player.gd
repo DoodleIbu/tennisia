@@ -299,7 +299,7 @@ func _ready():
 
     _input_mapper = InputMapper.new(_ID)
     _shot_buffer = ShotBuffer.new()
-    _shot_calculator = ShotCalculator.new(_SHOT_PARAMETERS)
+    _shot_calculator = ShotCalculator.new(_SHOT_PARAMETERS, _TEAM)
 
     _neutral_state = NeutralState.new(self)
     _charge_state = ChargeState.new(self, _ball)
@@ -322,4 +322,5 @@ func _physics_process(delta):
 
 # Signals
 func _on_Ball_fired(team_to_hit):
+    Logger.info("%d - %d" % [_TEAM, team_to_hit])
     _can_hit_ball = (team_to_hit == _TEAM)
