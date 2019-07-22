@@ -1,6 +1,8 @@
 extends Node2D
 
-signal hit_ball(max_power, max_spin, goal) # TODO: is there a way to define this in the state and not player?
+signal hit_ball(max_power, max_spin, goal)
+signal serve_ball_tossed(ball_position, ball_y_velocity)
+signal serve_ball_held()
 
 const Renderer = preload("res://utils/Renderer.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
@@ -13,6 +15,8 @@ const ChargeState = preload("states/ChargeState.gd")
 const HitSideState = preload("states/HitSideState.gd")
 const HitOverheadState = preload("states/HitOverheadState.gd")
 const LungeState = preload("states/LungeState.gd")
+const ServeNeutralState = preload("states/ServeNeutralState.gd")
+const ServeTossState = preload("states/ServeTossState.gd")
 
 const InputMapper = preload("InputMapper.gd")
 const ShotBuffer = preload("ShotBuffer.gd")
@@ -130,6 +134,8 @@ var _charge_state
 var _hit_side_state
 var _hit_overhead_state
 var _lunge_state
+var _serve_neutral_state
+var _serve_toss_state
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
@@ -190,6 +196,9 @@ func get_max_neutral_speed():
 func get_max_charge_speed():
     return _MAX_CHARGE_SPEED
 
+func get_serve_neutral_speed():
+    return 250
+
 func get_pivot_accel():
     return _PIVOT_ACCEL
 
@@ -205,7 +214,6 @@ func can_hit_ball():
 # Common helper methods called from states. There should be a better way to implement these... will refactor when the time comes.
 # It makes sense to me for the player to own the input buffer, charge amount, etc.
 # Example: Should the input buffer be passed by reference into each state instead of defining these methods?
-#          Should we follow LoD?
 func is_action_pressed(action):
     return _input_mapper.is_action_pressed(action)
 
@@ -226,7 +234,6 @@ func process_shot_input():
 func clear_shot_buffer():
     _shot_buffer.clear()
 
-# Maybe this should go into a separate module? We need to define behaviour for multiple shot types.
 func fire():
     var shot = _shot_buffer.get_shot()
     var result = _shot_calculator.calculate(shot, _ball, _charge)
@@ -288,6 +295,10 @@ func _set_state(value):
             _state = _hit_overhead_state
         State.LUNGE:
             _state = _lunge_state
+        State.SERVE_NEUTRAL:
+            _state = _serve_neutral_state
+        State.SERVE_TOSS:
+            _state = _serve_toss_state
         _:
             assert(false)
 
@@ -306,8 +317,14 @@ func _ready():
     _hit_side_state = HitSideState.new(self, _ball)
     _hit_overhead_state = HitOverheadState.new(self, _ball)
     _lunge_state = LungeState.new(self, _ball)
+    _serve_neutral_state = ServeNeutralState.new(self, _ball)
+    _serve_toss_state = ServeTossState.new(self, _ball)
 
-    _set_state(State.NEUTRAL)
+    if _TEAM == 1:
+        _set_state(State.SERVE_NEUTRAL)
+        _position = Vector3(220, 0, 800) # TODO: Implement logic to place player in the correct area.
+    elif _TEAM == 2:
+        _set_state(State.NEUTRAL)
 
 func _process(delta):
     _state.process(delta)
@@ -322,5 +339,4 @@ func _physics_process(delta):
 
 # Signals
 func _on_Ball_fired(team_to_hit):
-    Logger.info("%d - %d" % [_TEAM, team_to_hit])
     _can_hit_ball = (team_to_hit == _TEAM)

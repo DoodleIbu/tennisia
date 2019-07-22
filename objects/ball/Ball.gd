@@ -15,6 +15,8 @@ const BOUNCE_VELOCITY_DAMPING = 0.5
 const BOUNCE_SPIN_DAMPING = 0.5
 const BOUNCE_SPIN_SPEED_CHANGE = 0.5
 
+var _held = false
+
 # y is positive above the ground.
 var _spin = 0
 
@@ -30,10 +32,13 @@ var _simulated_ball_velocities = []
 var _simulated_ball_spins = []
 
 var _bounce_count = 0
-var _team_to_hit = 2
+var _team_to_hit = 1
 
 func get_position():
     return _position
+
+func get_velocity():
+    return _velocity
 
 func get_previous_position():
     return _previous_position
@@ -46,6 +51,10 @@ func get_simulated_ball_positions():
 
 func get_power():
     return Vector2(_velocity.x, _velocity.z).length()
+
+func _set_visible(value):
+    $Ball.set_visible(value)
+    $Shadow.set_visible(value)
 
 # Add the spin factor to the gravity constant to get the ball's actual gravity.
 func _get_total_gravity():
@@ -190,21 +199,39 @@ func _process(delta):
     $Shadow.position = Renderer.get_render_position(Vector3(_position.x, 0, _position.z))
 
 func _physics_process(delta):
+
+    # Debug
     if Input.is_action_just_pressed("ui_accept"):
         _previous_position = Vector3(180, 20, 100)
         _position = Vector3(180, 20, 100)
         _fire(500, -200, Vector3(180, 0, 700))
 
-    var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
-    if result.has("bounce_position"):
-        _bounce_count += 1
-        emit_signal("bounced", result["bounce_position"], _velocity)
+    if not _held:
+        var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
+        if result.has("bounce_position"):
+            _bounce_count += 1
+            emit_signal("bounced", result["bounce_position"], _velocity)
 
-    _previous_position = _position
-    _position = result["position"]
-    _velocity = result["velocity"]
-    _spin = result["spin"]
-    _current_frame += 1
+        _previous_position = _position
+        _position = result["position"]
+        _velocity = result["velocity"]
+        _spin = result["spin"]
+        _current_frame += 1
 
 func _on_Player_hit_ball(max_power, max_spin, goal):
     _fire(max_power, max_spin, goal)
+
+func _on_Player_serve_ball_held():
+    Logger.info("serve_ball_held")
+
+    _held = true
+    _set_visible(false)
+
+func _on_Player_serve_ball_tossed(ball_position, ball_y_velocity):
+    Logger.info("serve_ball_tossed")
+
+    _held = false
+    _set_visible(true)
+
+    _position = ball_position
+    _velocity = Vector3(0, ball_y_velocity, 0)

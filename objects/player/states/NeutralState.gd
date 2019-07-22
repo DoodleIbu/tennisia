@@ -86,7 +86,6 @@ func _update_velocity(delta):
         _player.set_velocity(_player.get_velocity() + velocity_delta)
 
 func _get_desired_velocity():
-    # TODO: Modify this code to instead read inputs from input().
     var desired_velocity = Vector3()
 
     if _player.is_action_pressed(Action.RIGHT):
