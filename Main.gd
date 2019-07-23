@@ -8,7 +8,7 @@ const Renderer = preload("res://utils/Renderer.gd")
 const Direction = preload("res://enums/Common.gd").Direction
 
 const _BASE_Z_INDEX = 100
-const _POINT_ENDED_FRAMES = 180
+const _POINT_ENDED_FRAMES = 60
 
 var _win_game_count = 0
 var _tiebreaker_point_count = 7

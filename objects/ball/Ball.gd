@@ -225,13 +225,13 @@ func _on_Player_hit_ball(max_power, max_spin, goal):
     _fire(max_power, max_spin, goal)
 
 func _on_Player_serve_ball_held():
-    Logger.info("serve_ball_held")
+    Logger.info("Signal: serve_ball_held")
 
     _held = true
     _set_visible(false)
 
 func _on_Player_serve_ball_tossed(ball_position, ball_y_velocity):
-    Logger.info("serve_ball_tossed")
+    Logger.info("Signal: serve_ball_tossed")
 
     _held = false
     _set_visible(true)

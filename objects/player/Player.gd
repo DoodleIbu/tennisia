@@ -361,11 +361,6 @@ func _on_Ball_fired(team_to_hit):
     _can_hit_ball = (team_to_hit == _TEAM)
 
 func _on_Main_point_started(serving_team, serving_side):
-    if _TEAM == serving_team:
-        _set_state(State.SERVE_NEUTRAL)
-    else:
-        _set_state(State.NEUTRAL)
-
     var x
     var z
 
@@ -389,6 +384,14 @@ func _on_Main_point_started(serving_team, serving_side):
     _velocity = Vector3()
     _can_hit_ball = (_TEAM == serving_team)
     _serving_side = serving_side
+
+    if _TEAM == serving_team:
+        _set_state(State.SERVE_NEUTRAL)
+    else:
+        _set_state(State.NEUTRAL)
+
+    Logger.info("Current animation: %s" % $AnimationPlayer.get_current_animation())
+    Logger.info($AnimationPlayer.is_playing())
 
 func _on_Main_point_ended(scoring_team):
     if _TEAM == scoring_team:

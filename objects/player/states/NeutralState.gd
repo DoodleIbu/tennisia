@@ -10,6 +10,7 @@ func _init(player).(player):
     pass
 
 func enter():
+    _update_animation()
     _player.set_charge(0)
     _player.clear_shot_buffer()
 

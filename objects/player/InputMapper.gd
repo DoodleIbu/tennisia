@@ -17,7 +17,7 @@ var _id
 
 func _init(id):
     for action in Action:
-        _actions[action] = 0
+        _actions[Action[action]] = 0
     _id = id
 
 func handle_inputs():
