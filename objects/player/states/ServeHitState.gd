@@ -32,6 +32,7 @@ func physics_process(delta):
     if not _ball_hit:
         var depth
         var side
+        var spin = 0
         var control = 50
 
         if _player.get_team() == 1:
@@ -49,7 +50,13 @@ func physics_process(delta):
         elif _player.is_action_pressed(Action.RIGHT):
             side += control
 
+        if _player.is_action_pressed(Action.TOP):
+            spin = -100
+        elif _player.is_action_pressed(Action.SLICE):
+            spin = 100
+
         var goal = Vector3(side, 0, depth)
 
-        _player.emit_signal("hit_ball", 1600, 0, goal)
+        _player.emit_signal("hit_ball", 1200, spin, goal)
+        _player.set_can_hit_ball(false)
         _ball_hit = true

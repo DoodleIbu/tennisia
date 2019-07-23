@@ -220,6 +220,9 @@ func get_stop_accel():
 func can_hit_ball():
     return _can_hit_ball
 
+func set_can_hit_ball(value):
+    _can_hit_ball = value
+
 # Common helper methods called from states. There should be a better way to implement these... will refactor when the time comes.
 # It makes sense to me for the player to own the input buffer, charge amount, etc.
 # Example: Should the input buffer be passed by reference into each state instead of defining these methods?
