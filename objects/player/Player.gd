@@ -19,6 +19,8 @@ const LungeState = preload("states/LungeState.gd")
 const ServeNeutralState = preload("states/ServeNeutralState.gd")
 const ServeTossState = preload("states/ServeTossState.gd")
 const ServeHitState = preload("states/ServeHitState.gd")
+const WinState = preload("states/WinState.gd")
+const LoseState = preload("states/LoseState.gd")
 
 const InputMapper = preload("InputMapper.gd")
 const ShotBuffer = preload("ShotBuffer.gd")
@@ -139,6 +141,8 @@ var _lunge_state
 var _serve_neutral_state
 var _serve_toss_state
 var _serve_hit_state
+var _win_state
+var _lose_state
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
@@ -313,6 +317,10 @@ func _set_state(value):
             _state = _serve_toss_state
         State.SERVE_HIT:
             _state = _serve_hit_state
+        State.WIN:
+            _state = _win_state
+        State.LOSE:
+            _state = _lose_state
         _:
             assert(false)
 
@@ -334,14 +342,8 @@ func _ready():
     _serve_neutral_state = ServeNeutralState.new(self, _ball)
     _serve_toss_state = ServeTossState.new(self, _ball)
     _serve_hit_state = ServeHitState.new(self)
-
-    if _TEAM == 1:
-        _set_state(State.SERVE_NEUTRAL)
-        _serving_side = Direction.RIGHT
-        _position = Vector3(220, 0, 800) # TODO: Implement logic to place player in the correct area.
-    elif _TEAM == 2:
-        _set_state(State.NEUTRAL)
-        _serving_side = Direction.LEFT
+    _win_state = WinState.new(self)
+    _lose_state = LoseState.new(self)
 
 func _process(delta):
     _state.process(delta)
@@ -357,3 +359,37 @@ func _physics_process(delta):
 # Signals
 func _on_Ball_fired(team_to_hit):
     _can_hit_ball = (team_to_hit == _TEAM)
+
+func _on_Main_point_started(serving_team, serving_side):
+    if _TEAM == serving_team:
+        _set_state(State.SERVE_NEUTRAL)
+    else:
+        _set_state(State.NEUTRAL)
+
+    var x
+    var z
+
+    if _TEAM == serving_team:
+        if serving_side == Direction.LEFT:
+            x = 140
+        else:
+            x = 220
+    else:
+        if serving_side == Direction.LEFT:
+            x = 220
+        else:
+            x = 140
+
+    if _TEAM == 1:
+        z = 800
+    else:
+        z = -20
+
+    _position = Vector3(x, 0, z)
+    _serving_side = serving_side
+
+func _on_Main_point_ended(scoring_team):
+    if _TEAM == scoring_team:
+        _set_state(State.WIN)
+    else:
+        _set_state(State.LOSE)

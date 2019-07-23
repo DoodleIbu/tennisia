@@ -1,6 +1,6 @@
 extends Node2D
 
-signal bounced(bounce_position)
+signal bounced(bounce_position, bounce_velocity, bounce_count)
 signal fired(team_to_hit)
 
 const Renderer = preload("res://utils/Renderer.gd")
@@ -48,6 +48,9 @@ func get_current_frame():
 
 func get_simulated_ball_positions():
     return _simulated_ball_positions
+
+func get_team_to_hit():
+    return _team_to_hit
 
 func get_power():
     return Vector2(_velocity.x, _velocity.z).length()
@@ -210,7 +213,7 @@ func _physics_process(delta):
         var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
         if result.has("bounce_position"):
             _bounce_count += 1
-            emit_signal("bounced", result["bounce_position"], _velocity)
+            emit_signal("bounced", result["bounce_position"], _velocity, _bounce_count)
 
         _previous_position = _position
         _position = result["position"]
