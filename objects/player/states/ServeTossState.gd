@@ -11,7 +11,14 @@ func _init(player, ball).(player):
     _ball = ball
 
 func enter():
-    _player.emit_signal("serve_ball_tossed", _player.get_position() + Vector3(10, 40, 0), 200)
+    var x_offset
+
+    if _player.get_team() == 1:
+        x_offset = 10
+    else:
+        x_offset = -10
+
+    _player.emit_signal("serve_ball_tossed", _player.get_position() + Vector3(x_offset, 40, 0), 200)
 
     if _player.get_team() == 1:
         _player.play_animation("serve_toss_right_up")

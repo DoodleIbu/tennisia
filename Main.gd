@@ -8,9 +8,9 @@ const Renderer = preload("res://utils/Renderer.gd")
 const Direction = preload("res://enums/Common.gd").Direction
 
 const _BASE_Z_INDEX = 100
-const _POINT_ENDED_FRAMES = 300
+const _POINT_ENDED_FRAMES = 180
 
-var _win_game_count = 1
+var _win_game_count = 0
 var _tiebreaker_point_count = 7
 var _game_point_count = 4
 
@@ -48,20 +48,20 @@ func _start_point():
     var serving_side
 
     if _is_tiebreaker():
-        serving_team = (_team_1_points + _team_2_points) % 2 + 1
+        serving_team = (_team_1_points + _team_2_points + 1) / 2 % 2 + 1
         var serving_side_mod = (_team_1_points + _team_2_points) % 2
 
         # Even
         if serving_side_mod == 0:
             if serving_team == 1:
-                serving_side = Direction.LEFT
-            else:
                 serving_side = Direction.RIGHT
+            else:
+                serving_side = Direction.LEFT
         else:
             if serving_team == 1:
-                serving_side = Direction.RIGHT
-            else:
                 serving_side = Direction.LEFT
+            else:
+                serving_side = Direction.RIGHT
     else:
         serving_team = (_team_1_games + _team_2_games) % 2 + 1
         var serving_side_mod = (_team_1_points + _team_2_points) % 2

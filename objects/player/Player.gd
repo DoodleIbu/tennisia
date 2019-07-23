@@ -386,6 +386,8 @@ func _on_Main_point_started(serving_team, serving_side):
         z = -20
 
     _position = Vector3(x, 0, z)
+    _velocity = Vector3()
+    _can_hit_ball = (_TEAM == serving_team)
     _serving_side = serving_side
 
 func _on_Main_point_ended(scoring_team):

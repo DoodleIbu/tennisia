@@ -239,3 +239,6 @@ func _on_Player_serve_ball_tossed(ball_position, ball_y_velocity):
     _position = ball_position
     _velocity = Vector3(0, ball_y_velocity, 0)
     _spin = 0
+
+func _on_Main_point_started(serving_team, direction):
+    _team_to_hit = serving_team
