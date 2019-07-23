@@ -6,7 +6,6 @@ const Direction = preload("res://enums/Common.gd").Direction
 const State = preload("StateEnum.gd").State
 
 var _ball
-var _serve_direction = Direction.RIGHT
 
 func _init(player, ball).(player):
     _ball = ball
@@ -20,7 +19,7 @@ func enter():
         _player.play_animation("serve_neutral_left_down")
 
 func exit():
-    pass
+    _player.set_velocity(Vector3())
 
 func get_state_transition():
     if _player.is_shot_action_just_pressed():
@@ -46,12 +45,12 @@ func _get_desired_velocity():
 func _set_player_position(delta):
     var new_position = _player.get_position() + _player.get_velocity() * delta
 
-    if _serve_direction == Direction.LEFT:
+    if _player.get_serving_side() == Direction.LEFT:
         if new_position.x < 65:
             new_position.x = 65
         elif new_position.x > 160:
             new_position.x = 160
-    elif _serve_direction == Direction.RIGHT:
+    elif _player.get_serving_side() == Direction.RIGHT:
         if new_position.x < 200:
             new_position.x = 200
         elif new_position.x > 295:

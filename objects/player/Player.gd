@@ -7,6 +7,7 @@ signal serve_ball_held()
 const Renderer = preload("res://utils/Renderer.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
 const Action = preload("res://enums/Common.gd").Action
+const Direction = preload("res://enums/Common.gd").Direction
 const Shot = preload("res://enums/Common.gd").Shot
 
 const State = preload("states/StateEnum.gd").State
@@ -17,6 +18,7 @@ const HitOverheadState = preload("states/HitOverheadState.gd")
 const LungeState = preload("states/LungeState.gd")
 const ServeNeutralState = preload("states/ServeNeutralState.gd")
 const ServeTossState = preload("states/ServeTossState.gd")
+const ServeHitState = preload("states/ServeHitState.gd")
 
 const InputMapper = preload("InputMapper.gd")
 const ShotBuffer = preload("ShotBuffer.gd")
@@ -136,6 +138,7 @@ var _hit_overhead_state
 var _lunge_state
 var _serve_neutral_state
 var _serve_toss_state
+var _serve_hit_state
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
@@ -143,6 +146,7 @@ var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
 var _charge
 var _facing
+var _serving_side
 
 var _can_hit_ball = false
 
@@ -162,12 +166,17 @@ func get_velocity():
 func set_velocity(value):
     _velocity = value
 
-# Used for charging.
 func get_facing():
     return _facing
 
 func set_facing(value):
     _facing = value
+
+func get_serving_side():
+    return _serving_side
+
+func set_serving_side(value):
+    _serving_side = value
 
 func get_charge():
     return _charge
@@ -299,6 +308,8 @@ func _set_state(value):
             _state = _serve_neutral_state
         State.SERVE_TOSS:
             _state = _serve_toss_state
+        State.SERVE_HIT:
+            _state = _serve_hit_state
         _:
             assert(false)
 
@@ -319,12 +330,15 @@ func _ready():
     _lunge_state = LungeState.new(self, _ball)
     _serve_neutral_state = ServeNeutralState.new(self, _ball)
     _serve_toss_state = ServeTossState.new(self, _ball)
+    _serve_hit_state = ServeHitState.new(self)
 
     if _TEAM == 1:
         _set_state(State.SERVE_NEUTRAL)
+        _serving_side = Direction.RIGHT
         _position = Vector3(220, 0, 800) # TODO: Implement logic to place player in the correct area.
     elif _TEAM == 2:
         _set_state(State.NEUTRAL)
+        _serving_side = Direction.LEFT
 
 func _process(delta):
     _state.process(delta)
