@@ -28,7 +28,7 @@ func enter():
             _player.play_animation("hit_side_right_long_down")
 
 func exit():
-    pass
+    _player.clear_hitbox()
 
 func get_state_transition():
     if not _player.is_animation_playing():

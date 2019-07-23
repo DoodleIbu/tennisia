@@ -1,6 +1,7 @@
 extends Node2D
 
 signal hit_ball(max_power, max_spin, goal)
+signal serve_ball(max_power, max_spin, goal)
 signal serve_ball_tossed(ball_position, ball_y_velocity)
 signal serve_ball_held()
 
@@ -131,7 +132,7 @@ export var _SHOT_PARAMETERS = {
     }
 }
 
-var _state = State.NEUTRAL
+var _state
 
 var _neutral_state
 var _charge_state
@@ -286,6 +287,9 @@ func display_hitbox(hitbox, start, end):
         else:
             _clear_hitbox()
 
+func clear_hitbox():
+    _clear_hitbox()
+
 # Internal methods
 func _render_hitbox(hitbox):
     var result = hitbox.get_render_position()
@@ -345,6 +349,8 @@ func _ready():
     _serve_hit_state = ServeHitState.new(self)
     _win_state = WinState.new(self)
     _lose_state = LoseState.new(self)
+
+    _set_state(State.NEUTRAL)
 
 func _process(delta):
     _state.process(delta)

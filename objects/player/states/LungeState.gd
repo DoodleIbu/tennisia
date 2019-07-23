@@ -24,6 +24,7 @@ func enter():
 
 func exit():
     _player.set_velocity(Vector3(0, 0, 0))
+    _player.clear_hitbox()
 
 func get_state_transition():
     if not _player.is_animation_playing():

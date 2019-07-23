@@ -57,6 +57,6 @@ func physics_process(delta):
 
         var goal = Vector3(side, 0, depth)
 
-        _player.emit_signal("hit_ball", 1200, spin, goal)
+        _player.emit_signal("serve_ball", 1200, spin, goal)
         _player.set_can_hit_ball(false)
         _ball_hit = true

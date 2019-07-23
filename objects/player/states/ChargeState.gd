@@ -11,7 +11,7 @@ func _init(player, ball).(player):
     _ball = ball
 
 func enter():
-    # Set charge direction.
+    _player.set_velocity(Vector3())
     _player.set_facing(Direction.LEFT)
     _player.set_charge(0)
 

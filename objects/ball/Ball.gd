@@ -1,6 +1,6 @@
 extends Node2D
 
-signal bounced(bounce_position, bounce_velocity, bounce_count)
+signal bounced(bounce_position, bounce_velocity)
 signal fired(team_to_hit)
 
 const Renderer = preload("res://utils/Renderer.gd")
@@ -31,6 +31,7 @@ var _simulated_ball_positions = []
 var _simulated_ball_velocities = []
 var _simulated_ball_spins = []
 
+var _is_serve = false
 var _bounce_count = 0
 var _team_to_hit = 1
 
@@ -51,6 +52,12 @@ func get_simulated_ball_positions():
 
 func get_team_to_hit():
     return _team_to_hit
+
+func get_bounce_count():
+    return _bounce_count
+
+func is_serve():
+    return _is_serve
 
 func get_power():
     return Vector2(_velocity.x, _velocity.z).length()
@@ -202,18 +209,11 @@ func _process(delta):
     $Shadow.position = Renderer.get_render_position(Vector3(_position.x, 0, _position.z))
 
 func _physics_process(delta):
-
-    # Debug
-    if Input.is_action_just_pressed("ui_accept"):
-        _previous_position = Vector3(180, 20, 100)
-        _position = Vector3(180, 20, 100)
-        _fire(500, -200, Vector3(180, 0, 700))
-
     if not _held:
         var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
         if result.has("bounce_position"):
             _bounce_count += 1
-            emit_signal("bounced", result["bounce_position"], _velocity, _bounce_count)
+            emit_signal("bounced", result["bounce_position"], _velocity)
 
         _previous_position = _position
         _position = result["position"]
@@ -222,16 +222,25 @@ func _physics_process(delta):
         _current_frame += 1
 
 func _on_Player_hit_ball(max_power, max_spin, goal):
+    Logger.info("[Ball] Signal received: hit_ball")
+
+    _is_serve = false
+    _fire(max_power, max_spin, goal)
+
+func _on_Player_serve_ball(max_power, max_spin, goal):
+    Logger.info("[Ball] Signal received: serve_ball")
+
+    _is_serve = true
     _fire(max_power, max_spin, goal)
 
 func _on_Player_serve_ball_held():
-    Logger.info("Signal: serve_ball_held")
+    Logger.info("[Ball] Signal received: serve_ball_held")
 
     _held = true
     _set_visible(false)
 
 func _on_Player_serve_ball_tossed(ball_position, ball_y_velocity):
-    Logger.info("Signal: serve_ball_tossed")
+    Logger.info("[Ball] Signal received: serve_ball_tossed")
 
     _held = false
     _set_visible(true)

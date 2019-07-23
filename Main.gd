@@ -8,7 +8,7 @@ const Renderer = preload("res://utils/Renderer.gd")
 const Direction = preload("res://enums/Common.gd").Direction
 
 const _BASE_Z_INDEX = 100
-const _POINT_ENDED_FRAMES = 60
+const _POINT_ENDED_FRAMES = 180
 
 var _win_game_count = 0
 var _tiebreaker_point_count = 7
@@ -81,6 +81,20 @@ func _start_point():
 
     emit_signal("point_started", serving_team, serving_side)
 
+func _end_point():
+    var scoring_team
+    var team_to_hit = $Ball.get_team_to_hit()
+
+    if team_to_hit == 1:
+        scoring_team = 2
+    elif team_to_hit == 2:
+        scoring_team = 1
+
+    _add_point(scoring_team)
+    _point_ended = true
+    _point_ended_frame = 0
+    emit_signal("point_ended", scoring_team)
+
 # We don't actually need a parameter for this function, but it makes it easier.
 func _add_game(scoring_team):
     if scoring_team == 1:
@@ -114,22 +128,17 @@ func _add_point(scoring_team):
 func _is_tiebreaker():
     return _team_1_games >= _win_game_count and _team_2_games >= _win_game_count
 
-func _on_Ball_bounced(bounce_position, bounce_velocity, bounce_count):
-    if bounce_count == 2:
-        var scoring_team
-        var team_to_hit = $Ball.get_team_to_hit()
-
-        if team_to_hit == 1:
-            scoring_team = 2
-        elif team_to_hit == 2:
-            scoring_team = 1
-
-        _add_point(scoring_team)
-        _point_ended = true
-        _point_ended_frame = 0
-        emit_signal("point_ended", scoring_team)
-
+func _render_ball_bounce(bounce_position, bounce_velocity):
     if bounce_velocity.y < -100:
         var bounce = Bounce.instance()
         bounce.position = Renderer.get_render_position(bounce_position)
         add_child(bounce)
+
+func _on_Ball_bounced(bounce_position, bounce_velocity):
+    _render_ball_bounce(bounce_position, bounce_velocity)
+    if not _point_ended and $Ball.get_bounce_count() >= 2:
+        _end_point()
+
+func _on_Player_hit_ball(max_power, max_spin, goal):
+    if not _point_ended and $Ball.is_serve() and $Ball.get_bounce_count() == 0:
+        _end_point()
