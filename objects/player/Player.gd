@@ -260,6 +260,7 @@ func fire():
 
 func play_animation(value):
     $AnimationPlayer.play(value)
+    $AnimationPlayer.advance(0) # Force update to new animation. TODO: Is there a better way to do this?
 
 func get_current_animation_position():
     return $AnimationPlayer.get_current_animation_position()
@@ -391,7 +392,6 @@ func _on_Main_point_started(serving_team, serving_side):
         _set_state(State.NEUTRAL)
 
     Logger.info("Current animation: %s" % $AnimationPlayer.get_current_animation())
-    Logger.info($AnimationPlayer.is_playing())
 
 func _on_Main_point_ended(scoring_team):
     if _TEAM == scoring_team:
