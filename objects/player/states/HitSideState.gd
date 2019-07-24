@@ -13,7 +13,7 @@ func _init(player, ball).(player):
 
 func enter():
     _ball_hit = false
-    _hitbox = Hitbox.new(_player.get_position(), _player.get_side_hitbox(), _player.get_facing())
+    _hitbox = Hitbox.new(_player.get_position(), _player.get_hit_side_reach(), _player.get_hit_side_stretch(), _player.get_facing())
 
     _player.set_velocity(Vector3(0, 0, 0))
     if _player.get_team() == 1:

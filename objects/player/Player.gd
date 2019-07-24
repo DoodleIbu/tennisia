@@ -39,18 +39,19 @@ export var _PIVOT_ACCEL = 1000
 export var _RUN_ACCEL = 800
 export var _STOP_ACCEL = 800
 
-# From the middle of the character.
-export var _SIDE_VERTICAL_REACH = 40
-export var _SIDE_HORIZONTAL_REACH = 40
-export var _SIDE_DEPTH = 20
+# Define the hitbox of a shot via two parameters:
+# Reach: How far the character can reach from the exact middle of the character.
+#        Also used for shot activation plane checks.
+# Stretch: Offset of the hitbox when the player is facing right.
+#          Negative values mean the hitbox will be extended.
+export var _HIT_SIDE_REACH = Vector3(40, 40, 10)
+export var _HIT_SIDE_STRETCH = Vector3(-10, 0, -10)
 
-export var _OVERHEAD_VERTICAL_REACH = 80
-export var _OVERHEAD_HORIZONTAL_REACH = 30
-export var _OVERHEAD_DEPTH = 20
+export var _HIT_OVERHEAD_REACH = Vector3(30, 80, 10)
+export var _HIT_OVERHEAD_STRETCH = Vector3(-10, 0, -10)
 
-export var _LUNGE_VERTICAL_REACH = 40
-export var _LUNGE_HORIZONTAL_REACH = 60
-export var _LUNGE_DEPTH = 20
+export var _LUNGE_REACH = Vector3(60, 40, 10)
+export var _LUNGE_STRETCH = Vector3(-10, 0, -10)
 
 # TODO: Find a faster way of determining these.
 export var _SHOT_PARAMETERS = {
@@ -195,14 +196,23 @@ func set_render_position(value):
 func get_team():
     return _TEAM
 
-func get_side_hitbox():
-    return Vector3(_SIDE_HORIZONTAL_REACH, _SIDE_VERTICAL_REACH, _SIDE_DEPTH)
+func get_hit_side_reach():
+    return _HIT_SIDE_REACH
 
-func get_overhead_hitbox():
-    return Vector3(_OVERHEAD_HORIZONTAL_REACH, _OVERHEAD_VERTICAL_REACH, _OVERHEAD_DEPTH)
+func get_hit_side_stretch():
+    return _HIT_SIDE_STRETCH
 
-func get_lunge_hitbox():
-    return Vector3(_LUNGE_HORIZONTAL_REACH, _LUNGE_VERTICAL_REACH, _LUNGE_DEPTH)
+func get_hit_overhead_reach():
+    return _HIT_OVERHEAD_REACH
+
+func get_hit_overhead_stretch():
+    return _HIT_OVERHEAD_STRETCH
+
+func get_lunge_reach():
+    return _LUNGE_REACH
+
+func get_lunge_stretch():
+    return _LUNGE_STRETCH
 
 func get_max_neutral_speed():
     return _MAX_NEUTRAL_SPEED

@@ -3,17 +3,15 @@ const Direction = preload("res://enums/Common.gd").Direction
 
 var _aabb
 
-func _init(position, size, direction):
+func _init(position, reach, stretch, direction):
     var aabb_start
 
     if direction == Direction.LEFT:
-        aabb_start = position - Vector3(size.x, 0, size.z / 2)
-    elif direction == Direction.RIGHT:
-        aabb_start = position - Vector3(0, 0, size.z / 2)
+        aabb_start = position - Vector3(reach.x, 0, reach.z) + Vector3(0, stretch.y, 0)
     else:
-        assert(false)
+        aabb_start = position + stretch
 
-    _aabb = AABB(aabb_start, size)
+    _aabb = AABB(aabb_start, reach - stretch)
 
 func intersects_ball(ball):
     return _aabb.intersects_segment(ball.get_previous_position(), ball.get_position())
