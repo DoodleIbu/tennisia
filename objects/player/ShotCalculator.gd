@@ -1,4 +1,5 @@
 # Calculates the goal, max power and spin of the ball based on multiple parameters.
+const Direction = preload("res://enums/Common.gd").Direction
 const Shot = preload("res://enums/Common.gd").Shot
 
 # Null parameters should always be provided by the player.
@@ -127,7 +128,7 @@ const _DEFAULT_SHOT_PARAMETERS = {
         "angle": null,
         "placement": null,
         "depth": 200,
-        "power_reduction": 0.5
+        "power_reduction": 0.2
     }
 }
 var _merged_shot_parameters
@@ -151,7 +152,7 @@ func _merge_dir(target, patch):
         else:
             target[key] = patch[key]
 
-func _calculate(shot, ball, charge):
+func _calculate(shot, ball, charge, direction):
     var max_charge_percent = min(1, charge / 50.0)
 
     # POWER
@@ -185,9 +186,9 @@ func _calculate(shot, ball, charge):
     elif _team == 2:
         z = 390 + depth
 
-    if Input.is_action_pressed("p1_left"):
+    if direction == Direction.LEFT:
         goal = Vector3(45 + placement, 0, z)
-    elif Input.is_action_pressed("p1_right"):
+    elif direction == Direction.RIGHT:
         goal = Vector3(315 - placement, 0, z)
     else:
         goal = Vector3(180, 0, z)
@@ -199,5 +200,5 @@ func _calculate(shot, ball, charge):
     }
 
 # TODO: Support other shots (e.g. special shots) in the future
-func calculate(shot, ball, charge):
-    return _calculate(shot, ball, charge)
+func calculate(shot, ball, charge, direction):
+    return _calculate(shot, ball, charge, direction)

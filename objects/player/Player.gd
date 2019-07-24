@@ -128,7 +128,7 @@ export var _SHOT_PARAMETERS = {
     },
     Shot.LUNGE: {
         "angle": 60,
-        "placement": 20,
+        "placement": 40,
     }
 }
 
@@ -251,13 +251,25 @@ func process_shot_input():
 func clear_shot_buffer():
     _shot_buffer.clear()
 
-func fire():
-    var shot = _shot_buffer.get_shot()
-    var result = _shot_calculator.calculate(shot, _ball, _charge)
+# TODO: There should be a better way to implement these.
+func _fire(shot):
+    var direction
+    if _input_mapper.is_action_pressed(Action.LEFT):
+        direction = Direction.LEFT
+    elif _input_mapper.is_action_pressed(Action.RIGHT):
+        direction = Direction.RIGHT
+    else:
+        direction = null
 
+    var result = _shot_calculator.calculate(shot, _ball, _charge, direction)
     emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
-
     _can_hit_ball = false
+
+func fire():
+    _fire(_shot_buffer.get_shot())
+
+func lunge():
+    _fire(Shot.LUNGE)
 
 func play_animation(value):
     $AnimationPlayer.play(value)
