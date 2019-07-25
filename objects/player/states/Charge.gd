@@ -76,14 +76,14 @@ func physics_process(delta):
 func _update_animation():
     if owner.TEAM == 1:
         if owner.status.facing == Direction.LEFT:
-            owner.play_animation("charge_left")
+            owner.animation_player.play("charge_left")
         else:
-            owner.play_animation("charge_right")
+            owner.animation_player.play("charge_right")
     else:
         if owner.status.facing == Direction.LEFT:
-            owner.play_animation("charge_left_down")
+            owner.animation_player.play("charge_left_down")
         else:
-            owner.play_animation("charge_right_down")
+            owner.animation_player.play("charge_right_down")
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()

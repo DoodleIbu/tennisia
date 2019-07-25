@@ -21,9 +21,13 @@ export var TEAM : int = 1
 # TODO: Implement ball node within player to store relevant information about the ball.
 export (NodePath) var _ball_path
 onready var ball = get_node(_ball_path)
+
 onready var state_machine = $StateMachine
 onready var parameters = $Parameters
 onready var status = $Status
+
+onready var animation_player = $AnimationPlayer
+onready var hitbox_viewer = $HitboxViewer
 
 var _input_mapper
 var _shot_buffer
@@ -76,16 +80,6 @@ func fire():
 func lunge():
     _fire(Shot.LUNGE)
 
-func play_animation(value):
-    $AnimationPlayer.play(value)
-    $AnimationPlayer.advance(0) # Force update to new animation. TODO: Is there a better way to do this?
-
-func get_current_animation_position():
-    return $AnimationPlayer.get_current_animation_position()
-
-func is_animation_playing():
-    return $AnimationPlayer.is_playing()
-
 func update_position(delta):
     var new_position = status.position + status.velocity * delta
     if TEAM == 1:
@@ -99,7 +93,8 @@ func update_render_position():
 
 func display_hitbox(hitbox, start, end):
     if DebugOptions.is_hitbox_display_enabled():
-        if get_current_animation_position() >= start and get_current_animation_position() <= end:
+        if animation_player.get_current_animation_position() >= start and \
+           animation_player.get_current_animation_position() <= end:
             _render_hitbox(hitbox)
         else:
             _clear_hitbox()
@@ -110,17 +105,15 @@ func clear_hitbox():
 # Internal methods
 func _render_hitbox(hitbox):
     var result = hitbox.get_render_position()
-    var hitbox_display = get_node("HitboxDisplay")
+    var hitbox_display = get_node("HitboxViewer")
     hitbox_display.set_global_position(result["position"])
     hitbox_display.set_size(result["size"])
     hitbox_display.set_visible(true)
 
 func _clear_hitbox():
-    get_node("HitboxDisplay").set_visible(false)
+    get_node("HitboxViewer").set_visible(false)
 
 func _ready():
-    $AnimationPlayer.set_animation_process_mode(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
-
     _input_mapper = InputMapper.new(ID)
     _shot_buffer = ShotBuffer.new()
     _shot_calculator = ShotCalculator.new(parameters.SHOT_PARAMETERS, TEAM)

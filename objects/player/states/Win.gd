@@ -1,7 +1,7 @@
 extends State
 
 func enter(message = {}):
-    owner.play_animation("win")
+    owner.animation_player.play("win")
 
 func exit():
     pass

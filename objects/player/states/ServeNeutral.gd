@@ -8,9 +8,9 @@ func enter(message = {}):
     owner.emit_signal("serve_ball_held")
 
     if owner.TEAM == 1:
-        owner.play_animation("serve_neutral_right_up")
+        owner.animation_player.play("serve_neutral_right_up")
     else:
-        owner.play_animation("serve_neutral_left_down")
+        owner.animation_player.play("serve_neutral_left_down")
 
 func exit():
     owner.status.velocity = Vector3()

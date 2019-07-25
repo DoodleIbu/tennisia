@@ -15,9 +15,9 @@ func enter(message = {}):
     owner.emit_signal("serve_ball_tossed", owner.get_position() + Vector3(x_offset, 40, 0), 200)
 
     if owner.TEAM == 1:
-        owner.play_animation("serve_toss_right_up")
+        owner.animation_player.play("serve_toss_right_up")
     elif owner.TEAM == 2:
-        owner.play_animation("serve_toss_left_down")
+        owner.animation_player.play("serve_toss_left_down")
 
 func exit():
     pass

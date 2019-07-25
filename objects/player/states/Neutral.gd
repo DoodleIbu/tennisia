@@ -28,30 +28,30 @@ func physics_process(delta):
 func _update_animation():
     if owner.status.velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
         if owner.TEAM == 1:
-            owner.play_animation("idle_up")
+            owner.animation_player.play("idle_up")
         elif owner.TEAM == 2:
-            owner.play_animation("idle_down")
+            owner.animation_player.play("idle_down")
     else:
         var velocity_2d = Vector2(owner.status.velocity.x, owner.status.velocity.z)
         var angle_rad = velocity_2d.angle()
         var angle_degrees = angle_rad * 180 / PI
 
         if angle_degrees >= -22.5 and angle_degrees <= 22.5:
-            owner.play_animation("run_right")
+            owner.animation_player.play("run_right")
         elif angle_degrees >= 22.5 and angle_degrees <= 67.5:
-            owner.play_animation("run_downright")
+            owner.animation_player.play("run_downright")
         elif angle_degrees >= 67.5 and angle_degrees <= 112.5:
-            owner.play_animation("run_down")
+            owner.animation_player.play("run_down")
         elif angle_degrees >= 112.5 and angle_degrees <= 157.5:
-            owner.play_animation("run_downleft")
+            owner.animation_player.play("run_downleft")
         elif angle_degrees >= 157.5 or angle_degrees <= -157.5:
-            owner.play_animation("run_left")
+            owner.animation_player.play("run_left")
         elif angle_degrees >= -157.5 and angle_degrees <= -112.5:
-            owner.play_animation("run_upleft")
+            owner.animation_player.play("run_upleft")
         elif angle_degrees >= -112.5 and angle_degrees <= -67.5:
-            owner.play_animation("run_up")
+            owner.animation_player.play("run_up")
         elif angle_degrees >= -67.5 and angle_degrees <= -22.5:
-            owner.play_animation("run_upright")
+            owner.animation_player.play("run_upright")
 
 func _update_render_position():
     owner.set_render_position(Renderer.get_render_position(owner.status.position))

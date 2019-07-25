@@ -10,15 +10,15 @@ func enter(message = {}):
     _ball_hit = false
 
     if owner.TEAM == 1:
-        owner.play_animation("hit_overhead_right_long")
+        owner.animation_player.play("hit_overhead_right_long")
     elif owner.TEAM == 2:
-        owner.play_animation("hit_overhead_left_long_down")
+        owner.animation_player.play("hit_overhead_left_long_down")
 
 func exit():
     pass
 
 func get_state_transition():
-    if not owner.is_animation_playing():
+    if not owner.animation_player.is_playing():
         return "Neutral"
 
 func process(delta):

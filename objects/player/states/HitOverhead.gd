@@ -13,28 +13,28 @@ func enter(message = {}):
                          owner.parameters.HIT_OVERHEAD_STRETCH,
                          owner.status.facing)
 
-    if owner.get_team() == 1:
+    if owner.TEAM == 1:
         if owner.status.facing == Direction.LEFT:
-            owner.play_animation("hit_overhead_left_long")
+            owner.animation_player.play("hit_overhead_left_long")
         elif owner.status.facing == Direction.RIGHT:
-            owner.play_animation("hit_overhead_right_long")
-    elif owner.get_team() == 2:
+            owner.animation_player.play("hit_overhead_right_long")
+    elif owner.TEAM == 2:
         if owner.status.facing == Direction.LEFT:
-            owner.play_animation("hit_overhead_left_long_down")
+            owner.animation_player.play("hit_overhead_left_long_down")
         elif owner.status.facing == Direction.RIGHT:
-            owner.play_animation("hit_overhead_right_long_down")
+            owner.animation_player.play("hit_overhead_right_long_down")
 
 func exit():
     owner.clear_hitbox()
 
 func get_state_transition():
-    if not owner.is_animation_playing():
+    if not owner.animation_player.is_playing():
         return "Neutral"
 
 func process(delta):
     owner.display_hitbox(_hitbox, 0, 0.1)
 
 func physics_process(delta):
-    if owner.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
+    if owner.animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
         owner.fire()
         _ball_hit = true
