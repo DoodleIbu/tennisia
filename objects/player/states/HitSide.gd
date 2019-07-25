@@ -26,16 +26,20 @@ func enter(message = {}):
             owner.animation_player.play("hit_side_right_long_down")
 
 func exit():
-    owner.clear_hitbox()
+    owner.hitbox_viewer.clear()
 
 func get_state_transition():
     if not owner.animation_player.is_playing():
         return "Neutral"
 
 func process(delta):
-    owner.display_hitbox(_hitbox, 0, 0.1)
+    if owner.animation_player.get_current_animation_position() < 0.1:
+        owner.hitbox_viewer.view(_hitbox)
+    else:
+        owner.hitbox_viewer.clear()
 
 func physics_process(delta):
-    if owner.animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
+    if owner.animation_player.get_current_animation_position() < 0.1 and \
+       _hitbox.intersects_ball(owner.ball) and not _ball_hit:
         owner.fire()
         _ball_hit = true

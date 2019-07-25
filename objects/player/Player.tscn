@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=2]
+[gd_scene load_steps=50 format=2]
 
 [ext_resource path="res://objects/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://objects/player/states/StateMachine.gd" type="Script" id=2]
@@ -16,6 +16,7 @@
 [ext_resource path="res://objects/player/Status.gd" type="Script" id=14]
 [ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=15]
 [ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=16]
+[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=17]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -1281,7 +1282,6 @@ position = Vector2( 34.9272, 42.17 )
 script = ExtResource( 1 )
 
 [node name="StateMachine" type="Node" parent="."]
-editor/display_folded = true
 script = ExtResource( 2 )
 initial_state = NodePath("Neutral")
 
@@ -1364,3 +1364,4 @@ frame = 23
 
 [node name="HitboxViewer" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
+script = ExtResource( 17 )

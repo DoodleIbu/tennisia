@@ -20,7 +20,7 @@ func enter(message = {}):
 
 func exit():
     owner.status.velocity = Vector3(0, 0, 0)
-    owner.clear_hitbox()
+    owner.hitbox_viewer.clear()
 
 func get_state_transition():
     if not owner.animation_player.is_playing():
@@ -28,7 +28,10 @@ func get_state_transition():
 
 func process(delta):
     owner.update_render_position()
-    owner.display_hitbox(_hitbox, 0, 0.2)
+    if owner.animation_player.get_current_animation_position() < 0.2:
+        owner.hitbox_viewer.view(_hitbox)
+    else:
+        owner.hitbox_viewer.clear()
 
 func physics_process(delta):
     _update_velocity(delta)

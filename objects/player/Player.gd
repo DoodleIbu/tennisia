@@ -91,27 +91,7 @@ func update_position(delta):
 func update_render_position():
     position = Renderer.get_render_position(status.position)
 
-func display_hitbox(hitbox, start, end):
-    if DebugOptions.is_hitbox_display_enabled():
-        if animation_player.get_current_animation_position() >= start and \
-           animation_player.get_current_animation_position() <= end:
-            _render_hitbox(hitbox)
-        else:
-            _clear_hitbox()
 
-func clear_hitbox():
-    _clear_hitbox()
-
-# Internal methods
-func _render_hitbox(hitbox):
-    var result = hitbox.get_render_position()
-    var hitbox_display = get_node("HitboxViewer")
-    hitbox_display.set_global_position(result["position"])
-    hitbox_display.set_size(result["size"])
-    hitbox_display.set_visible(true)
-
-func _clear_hitbox():
-    get_node("HitboxViewer").set_visible(false)
 
 func _ready():
     _input_mapper = InputMapper.new(ID)
