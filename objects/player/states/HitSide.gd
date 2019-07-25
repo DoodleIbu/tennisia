@@ -9,18 +9,20 @@ var _hitbox
 
 func enter(message = {}):
     _ball_hit = false
-    _hitbox = Hitbox.new(owner.get_position(), owner.get_hit_side_reach(), owner.get_hit_side_stretch(), owner.get_facing())
+    _hitbox = Hitbox.new(owner.status.position,
+                         owner.parameters.HIT_SIDE_REACH,
+                         owner.parameters.HIT_SIDE_STRETCH,
+                         owner.status.facing)
 
-    owner.set_velocity(Vector3(0, 0, 0))
-    if owner.get_team() == 1:
-        if owner.get_facing() == Direction.LEFT:
+    if owner.TEAM == 1:
+        if owner.status.facing == Direction.LEFT:
             owner.play_animation("hit_side_left_long")
-        elif owner.get_facing() == Direction.RIGHT:
+        elif owner.status.facing == Direction.RIGHT:
             owner.play_animation("hit_side_right_long")
-    elif owner.get_team() == 2:
-        if owner.get_facing() == Direction.LEFT:
+    elif owner.TEAM == 2:
+        if owner.status.facing == Direction.LEFT:
             owner.play_animation("hit_side_left_long_down")
-        elif owner.get_facing() == Direction.RIGHT:
+        elif owner.status.facing == Direction.RIGHT:
             owner.play_animation("hit_side_right_long_down")
 
 func exit():

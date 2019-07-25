@@ -9,9 +9,9 @@ var _ball_hit
 func enter(message = {}):
     _ball_hit = false
 
-    if owner.get_team() == 1:
+    if owner.TEAM == 1:
         owner.play_animation("hit_overhead_right_long")
-    elif owner.get_team() == 2:
+    elif owner.TEAM == 2:
         owner.play_animation("hit_overhead_left_long_down")
 
 func exit():
@@ -31,14 +31,14 @@ func physics_process(delta):
         var spin = 0
         var control = 50
 
-        if owner.get_team() == 1:
+        if owner.TEAM == 1:
             depth = 210
-        elif owner.get_team() == 2:
+        elif owner.TEAM == 2:
             depth = 570
 
-        if owner.get_serving_side() == Direction.LEFT:
+        if owner.status.serving_side == Direction.LEFT:
             side = 247.5
-        elif owner.get_serving_side() == Direction.RIGHT:
+        elif owner.status.serving_side == Direction.RIGHT:
             side = 112.5
 
         if owner.is_action_pressed(Action.LEFT):
@@ -54,6 +54,6 @@ func physics_process(delta):
         var goal = Vector3(side, 0, depth)
 
         owner.emit_signal("serve_ball", 1200, spin, goal)
-        owner.set_meter(owner.get_meter() + 10)
-        owner.set_can_hit_ball(false)
+        owner.status.meter += 10
+        owner.status.can_hit_ball = false
         _ball_hit = true

@@ -3,24 +3,25 @@ extends State
 const Direction = preload("res://enums/Common.gd").Direction
 const Hitbox = preload("res://objects/player/Hitbox.gd")
 
-var _ball
 var _ball_hit
 var _hitbox
 
 func enter(message = {}):
     _ball_hit = false
-    _hitbox = Hitbox.new(owner.get_position(), owner.get_hit_overhead_reach(), owner.get_hit_overhead_stretch(), owner.get_facing())
+    _hitbox = Hitbox.new(owner.status.position,
+                         owner.parameters.HIT_OVERHEAD_REACH,
+                         owner.parameters.HIT_OVERHEAD_STRETCH,
+                         owner.status.facing)
 
-    owner.set_velocity(Vector3(0, 0, 0))
     if owner.get_team() == 1:
-        if owner.get_facing() == Direction.LEFT:
+        if owner.status.facing == Direction.LEFT:
             owner.play_animation("hit_overhead_left_long")
-        elif owner.get_facing() == Direction.RIGHT:
+        elif owner.status.facing == Direction.RIGHT:
             owner.play_animation("hit_overhead_right_long")
     elif owner.get_team() == 2:
-        if owner.get_facing() == Direction.LEFT:
+        if owner.status.facing == Direction.LEFT:
             owner.play_animation("hit_overhead_left_long_down")
-        elif owner.get_facing() == Direction.RIGHT:
+        elif owner.status.facing == Direction.RIGHT:
             owner.play_animation("hit_overhead_right_long_down")
 
 func exit():

@@ -7,13 +7,13 @@ const Direction = preload("res://enums/Common.gd").Direction
 func enter(message = {}):
     owner.emit_signal("serve_ball_held")
 
-    if owner.get_team() == 1:
+    if owner.TEAM == 1:
         owner.play_animation("serve_neutral_right_up")
-    elif owner.get_team() == 2:
+    else:
         owner.play_animation("serve_neutral_left_down")
 
 func exit():
-    owner.set_velocity(Vector3())
+    owner.status.velocity = Vector3()
 
 func get_state_transition():
     if owner.is_shot_action_just_pressed():
@@ -23,7 +23,7 @@ func process(delta):
     owner.update_render_position()
 
 func physics_process(delta):
-    owner.set_velocity(_get_desired_velocity())
+    owner.status.velocity = _get_desired_velocity()
     _set_player_position(delta)
 
 func _get_desired_velocity():
@@ -34,20 +34,20 @@ func _get_desired_velocity():
     if owner.is_action_pressed(Action.LEFT):
         desired_velocity.x -= 1
 
-    return desired_velocity.normalized() * owner.get_serve_neutral_speed()
+    return desired_velocity.normalized() * owner.parameters.SERVE_NEUTRAL_SPEED
 
 func _set_player_position(delta):
-    var new_position = owner.get_position() + owner.get_velocity() * delta
+    var new_position = owner.status.position + owner.status.velocity * delta
 
-    if owner.get_serving_side() == Direction.LEFT:
+    if owner.status.serving_side == Direction.LEFT:
         if new_position.x < 65:
             new_position.x = 65
         elif new_position.x > 160:
             new_position.x = 160
-    elif owner.get_serving_side() == Direction.RIGHT:
+    else:
         if new_position.x < 200:
             new_position.x = 200
         elif new_position.x > 295:
             new_position.x = 295
 
-    owner.set_position(new_position)
+    owner.status.position = new_position

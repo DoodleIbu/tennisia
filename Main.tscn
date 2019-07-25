@@ -31,9 +31,9 @@ _ball_path = NodePath("../Ball")
 
 [node name="Player 2" parent="." instance=ExtResource( 6 )]
 position = Vector2( 0, 0 )
+ID = 2
+TEAM = 2
 _ball_path = NodePath("../Ball")
-_ID = 2
-_TEAM = 2
 
 [node name="GUI" parent="." instance=ExtResource( 7 )]
 
@@ -43,8 +43,8 @@ volume_db = -10.0
 autoplay = true
 [connection signal="point_ended" from="." to="Player 1" method="_on_Main_point_ended"]
 [connection signal="point_ended" from="." to="Player 2" method="_on_Main_point_ended"]
-[connection signal="point_started" from="." to="Ball" method="_on_Main_point_started"]
 [connection signal="point_started" from="." to="Player 1" method="_on_Main_point_started"]
+[connection signal="point_started" from="." to="Ball" method="_on_Main_point_started"]
 [connection signal="point_started" from="." to="Player 2" method="_on_Main_point_started"]
 [connection signal="bounced" from="Ball" to="." method="_on_Ball_bounced"]
 [connection signal="fired" from="Ball" to="Player 1" method="_on_Ball_fired"]
