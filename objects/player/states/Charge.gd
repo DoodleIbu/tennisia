@@ -10,7 +10,7 @@ func enter(message = {}):
     owner.status.charge = 0
 
     var simulated_ball_positions = owner.ball.get_simulated_ball_positions()
-    var plane = Plane(Vector3(0, 0, 1), owner.get_position().z)
+    var plane = Plane(Vector3(0, 0, 1), owner.status.position.z)
 
     for index in range(0, simulated_ball_positions.size() - 1):
         var first_position = simulated_ball_positions[index]
@@ -18,7 +18,7 @@ func enter(message = {}):
 
         var intersection = plane.intersects_segment(first_position, second_position)
         if intersection:
-            if intersection.x <= owner.get_position().x:
+            if intersection.x <= owner.status.position.x:
                 owner.status.facing = Direction.LEFT
             else:
                 owner.status.facing = Direction.RIGHT
@@ -29,7 +29,7 @@ func exit():
 
 func get_state_transition():
     # Handle inputs first...
-    if owner.is_action_just_pressed(Action.CANCEL_CHARGE):
+    if owner.input_handler.is_action_just_pressed(Action.CANCEL_CHARGE):
         return "Neutral"
 
     # Then handle non-input state transitions.
@@ -112,13 +112,13 @@ func _update_velocity(delta):
 func _get_desired_velocity():
     var desired_velocity = Vector3()
 
-    if owner.is_action_pressed(Action.RIGHT):
+    if owner.input_handler.is_action_pressed(Action.RIGHT):
         desired_velocity.x += 1
-    if owner.is_action_pressed(Action.LEFT):
+    if owner.input_handler.is_action_pressed(Action.LEFT):
         desired_velocity.x -= 1
-    if owner.is_action_pressed(Action.DOWN):
+    if owner.input_handler.is_action_pressed(Action.DOWN):
         desired_velocity.z += 1
-    if owner.is_action_pressed(Action.UP):
+    if owner.input_handler.is_action_pressed(Action.UP):
         desired_velocity.z -= 1
 
     return desired_velocity.normalized() * owner.parameters.MAX_CHARGE_SPEED

@@ -16,7 +16,7 @@ func exit():
     owner.status.velocity = Vector3()
 
 func get_state_transition():
-    if owner.is_shot_action_just_pressed():
+    if owner.input_handler.is_shot_action_just_pressed():
         return "ServeToss"
 
 func process(delta):
@@ -29,9 +29,9 @@ func physics_process(delta):
 func _get_desired_velocity():
     var desired_velocity = Vector3()
 
-    if owner.is_action_pressed(Action.RIGHT):
+    if owner.input_handler.is_action_pressed(Action.RIGHT):
         desired_velocity.x += 1
-    if owner.is_action_pressed(Action.LEFT):
+    if owner.input_handler.is_action_pressed(Action.LEFT):
         desired_velocity.x -= 1
 
     return desired_velocity.normalized() * owner.parameters.SERVE_NEUTRAL_SPEED

@@ -1,7 +1,5 @@
 extends Node
 
-const TimeStep = preload("res://utils/TimeStep.gd")
-
 export var initial_state = NodePath()
 onready var _state = get_node(initial_state)
 
@@ -14,11 +12,11 @@ func set_state(target_state_path, message = {}):
     _state = target_state
     _state.enter(message)
 
-func _process(delta):
+func process(delta):
     _state.process(delta)
 
-func _physics_process(delta):
+func physics_process(delta):
     var new_state = _state.get_state_transition()
     if new_state != null:
         set_state(new_state)
-    _state.physics_process(TimeStep.get_time_step())
+    _state.physics_process(delta)

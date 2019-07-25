@@ -12,7 +12,7 @@ func enter(message = {}):
     else:
         x_offset = -10
 
-    owner.emit_signal("serve_ball_tossed", owner.get_position() + Vector3(x_offset, 40, 0), 200)
+    owner.emit_signal("serve_ball_tossed", owner.status.position + Vector3(x_offset, 40, 0), 200)
 
     if owner.TEAM == 1:
         owner.animation_player.play("serve_toss_right_up")
@@ -25,7 +25,7 @@ func exit():
 func get_state_transition():
     if owner.ball.get_position().y < 40 and owner.ball.get_velocity().y < 0:
         return "ServeNeutral"
-    if owner.is_shot_action_just_pressed():
+    if owner.input_handler.is_shot_action_just_pressed():
         return "ServeHit"
 
 func process(delta):

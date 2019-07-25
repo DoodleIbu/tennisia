@@ -14,7 +14,7 @@ func exit():
     pass
 
 func get_state_transition():
-    if owner.status.can_hit_ball and owner.is_shot_action_just_pressed():
+    if owner.status.can_hit_ball and owner.input_handler.is_shot_action_just_pressed():
         return "Charge"
 
 func process(delta):
@@ -83,13 +83,13 @@ func _update_velocity(delta):
 func _get_desired_velocity():
     var desired_velocity = Vector3()
 
-    if owner.is_action_pressed(Action.RIGHT):
+    if owner.input_handler.is_action_pressed(Action.RIGHT):
         desired_velocity.x += 1
-    if owner.is_action_pressed(Action.LEFT):
+    if owner.input_handler.is_action_pressed(Action.LEFT):
         desired_velocity.x -= 1
-    if owner.is_action_pressed(Action.DOWN):
+    if owner.input_handler.is_action_pressed(Action.DOWN):
         desired_velocity.z += 1
-    if owner.is_action_pressed(Action.UP):
+    if owner.input_handler.is_action_pressed(Action.UP):
         desired_velocity.z -= 1
 
     return desired_velocity.normalized() * owner.parameters.MAX_NEUTRAL_SPEED

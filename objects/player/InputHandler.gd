@@ -1,4 +1,7 @@
-# Maps key presses per player with different key bindings in mind.
+"""
+Maps key presses per player with different key bindings in mind, and also contains input utility methods.
+"""
+extends Node
 
 const Action = preload("res://enums/Common.gd").Action
 
@@ -13,16 +16,14 @@ const _ACTION_BINDINGS = {
     "p%d_cancel_charge": Action.CANCEL_CHARGE
 }
 var _actions = {}
-var _id
 
-func _init(id):
+func _ready():
     for action in Action:
         _actions[Action[action]] = 0
-    _id = id
 
 func handle_inputs():
     for action_binding in _ACTION_BINDINGS.keys():
-        var action_name = action_binding % _id
+        var action_name = action_binding % owner.ID
         var action = _ACTION_BINDINGS[action_binding]
 
         if Input.is_action_pressed(action_name):
@@ -35,3 +36,8 @@ func is_action_just_pressed(action):
 
 func is_action_pressed(action):
     return _actions[action] > 0
+
+func is_shot_action_just_pressed():
+    return is_action_just_pressed(Action.TOP) or \
+           is_action_just_pressed(Action.SLICE) or \
+           is_action_just_pressed(Action.FLAT)

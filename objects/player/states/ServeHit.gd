@@ -41,14 +41,14 @@ func physics_process(delta):
         elif owner.status.serving_side == Direction.RIGHT:
             side = 112.5
 
-        if owner.is_action_pressed(Action.LEFT):
+        if owner.input_handler.is_action_pressed(Action.LEFT):
             side -= control
-        elif owner.is_action_pressed(Action.RIGHT):
+        elif owner.input_handler.is_action_pressed(Action.RIGHT):
             side += control
 
-        if owner.is_action_pressed(Action.TOP):
+        if owner.input_handler.is_action_pressed(Action.TOP):
             spin = -100
-        elif owner.is_action_pressed(Action.SLICE):
+        elif owner.input_handler.is_action_pressed(Action.SLICE):
             spin = 100
 
         var goal = Vector3(side, 0, depth)
