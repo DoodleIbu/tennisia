@@ -281,7 +281,7 @@ func _fire(shot):
     elif _input_mapper.is_action_pressed(Action.RIGHT):
         direction = Direction.RIGHT
     else:
-        direction = null
+        direction = Direction.NONE
 
     var result = _shot_calculator.calculate(shot, _ball, _charge, direction)
     emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
@@ -427,8 +427,8 @@ func _on_Main_point_started(serving_team, serving_side):
     _can_hit_ball = (_TEAM == serving_team)
     _serving_side = serving_side
 
-    if _meter < 25:
-        set_meter(25)
+#    if _meter < 25:
+#        set_meter(25)
 
     if _TEAM == serving_team:
         _set_state(State.SERVE_NEUTRAL)

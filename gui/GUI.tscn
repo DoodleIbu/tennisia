@@ -22,7 +22,7 @@ centered = false
 margin_left = 23.0
 margin_top = 10.0
 max_value = 101.0
-value = 99.0
+value = 0.0
 fill_mode = 1
 
 [node name="Player 2 Meter" parent="." instance=ExtResource( 3 )]
@@ -31,7 +31,7 @@ margin_top = 9.58188
 margin_right = 233.0
 margin_bottom = 20.5819
 max_value = 101.0
-value = 99.0
+value = 0.0
 _ID = 2
-[connection signal="meter_updated" from="." to="Player 2 Meter" method="_on_GUI_meter_updated"]
 [connection signal="meter_updated" from="." to="Player 1 Meter" method="_on_GUI_meter_updated"]
+[connection signal="meter_updated" from="." to="Player 2 Meter" method="_on_GUI_meter_updated"]
