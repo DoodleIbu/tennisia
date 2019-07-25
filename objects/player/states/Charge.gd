@@ -69,9 +69,13 @@ func process(delta):
 
 func physics_process(delta):
     _update_velocity(delta)
-    owner.update_position(delta)
+    owner.status.position += owner.status.velocity * delta
     owner.status.charge += 1
-    owner.process_shot_input()
+
+    var shot_actions = [Action.TOP, Action.SLICE, Action.FLAT]
+    for shot_action in shot_actions:
+        if owner.input_handler.is_action_just_pressed(shot_action):
+            owner.shot_selector.input(shot_action)
 
 func _update_animation():
     if owner.TEAM == 1:

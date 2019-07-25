@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=2]
+[gd_scene load_steps=52 format=2]
 
 [ext_resource path="res://objects/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://objects/player/InputHandler.gd" type="Script" id=2]
@@ -13,11 +13,12 @@
 [ext_resource path="res://objects/player/states/ServeHit.gd" type="Script" id=11]
 [ext_resource path="res://objects/player/states/Win.gd" type="Script" id=12]
 [ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=13]
-[ext_resource path="res://objects/player/Parameters.gd" type="Script" id=14]
-[ext_resource path="res://objects/player/Status.gd" type="Script" id=15]
-[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=16]
-[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=17]
-[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=18]
+[ext_resource path="res://objects/player/ShotSelector.gd" type="Script" id=14]
+[ext_resource path="res://objects/player/Parameters.gd" type="Script" id=15]
+[ext_resource path="res://objects/player/Status.gd" type="Script" id=16]
+[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=17]
+[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=18]
+[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=19]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -1320,11 +1321,14 @@ script = ExtResource( 12 )
 [node name="Lose" type="Node" parent="StateMachine"]
 script = ExtResource( 13 )
 
-[node name="Parameters" type="Node" parent="."]
+[node name="ShotSelector" type="Node" parent="."]
 script = ExtResource( 14 )
 
-[node name="Status" type="Node" parent="."]
+[node name="Parameters" type="Node" parent="."]
 script = ExtResource( 15 )
+
+[node name="Status" type="Node" parent="."]
+script = ExtResource( 16 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/charge_left = SubResource( 1 )
@@ -1359,14 +1363,14 @@ anims/serve_neutral_right_up = SubResource( 29 )
 anims/serve_toss_left_down = SubResource( 30 )
 anims/serve_toss_right_up = SubResource( 31 )
 anims/win = SubResource( 32 )
-script = ExtResource( 16 )
+script = ExtResource( 17 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 3, -15 )
-texture = ExtResource( 17 )
+texture = ExtResource( 18 )
 hframes = 50
 frame = 23
 
 [node name="HitboxViewer" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
-script = ExtResource( 18 )
+script = ExtResource( 19 )

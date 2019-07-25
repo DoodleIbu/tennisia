@@ -8,7 +8,7 @@ const EPSILON = 1
 func enter(message = {}):
     _update_animation()
     owner.status.charge = 0
-    owner.clear_shot_buffer()
+    owner.shot_selector.clear()
 
 func exit():
     pass

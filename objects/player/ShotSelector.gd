@@ -1,5 +1,8 @@
-# Stores and determines which shot to use via a state machine. This uses the MTA style of shot buffering.
-# TODO: Look into GUT for testing
+"""
+Stores and determines which shot to use via a simple state machine. This uses the MTA style of shot buffering.
+TODO: Look into GUT for testing
+"""
+extends Node
 
 const Action = preload("res://enums/Common.gd").Action
 const Shot = preload("res://enums/Common.gd").Shot

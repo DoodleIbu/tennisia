@@ -12,7 +12,6 @@ const Shot = preload("res://enums/Common.gd").Shot
 const Renderer = preload("res://utils/Renderer.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
 
-const ShotBuffer = preload("ShotBuffer.gd")
 const ShotCalculator = preload("ShotCalculator.gd")
 
 export var ID : int = 1
@@ -23,6 +22,7 @@ export (NodePath) var _ball_path
 onready var ball = get_node(_ball_path)
 
 onready var input_handler = $InputHandler
+onready var shot_selector = $ShotSelector
 
 onready var state_machine = $StateMachine
 onready var parameters = $Parameters
@@ -36,15 +36,6 @@ var _shot_calculator
 
 func get_position():
     return status.position
-
-func process_shot_input():
-    var shot_actions = [Action.TOP, Action.SLICE, Action.FLAT]
-    for shot_action in shot_actions:
-        if input_handler.is_action_just_pressed(shot_action):
-            _shot_buffer.input(shot_action)
-
-func clear_shot_buffer():
-    _shot_buffer.clear()
 
 # TODO: There should be a better way to implement these.
 func _fire(shot):
@@ -61,7 +52,7 @@ func _fire(shot):
     status.can_hit_ball = false
 
 func fire():
-    _fire(_shot_buffer.get_shot())
+    _fire(shot_selector.get_shot())
     status.meter += 10
 
 func lunge():
@@ -79,9 +70,9 @@ func update_render_position():
     position = Renderer.get_render_position(status.position)
 
 func _ready():
-    _shot_buffer = ShotBuffer.new()
     _shot_calculator = ShotCalculator.new(parameters.SHOT_PARAMETERS, TEAM)
 
+# Processing
 func _process(delta):
     state_machine.process(delta)
 
@@ -125,8 +116,6 @@ func _on_Main_point_started(serving_team, serving_side):
         state_machine.set_state("ServeNeutral")
     else:
         state_machine.set_state("Neutral")
-
-    Logger.info("Current animation: %s" % $AnimationPlayer.get_current_animation())
 
 func _on_Main_point_ended(scoring_team):
     if TEAM == scoring_team:
