@@ -35,7 +35,7 @@ func process(delta):
 
 func physics_process(delta):
     _update_velocity(delta)
-    owner.update_position(delta)
+    owner.status.position += owner.status.velocity * delta
 
     # TODO: There should be a better way to determine when the hitbox is active on the animation.
     #       This is fine for now, but loop back to this and create a class that ties hitboxes to animation.

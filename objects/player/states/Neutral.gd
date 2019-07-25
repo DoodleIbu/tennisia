@@ -23,7 +23,7 @@ func process(delta):
 
 func physics_process(delta):
     _update_velocity(delta)
-    owner.update_position(delta)
+    owner.status.position += owner.status.velocity * delta
 
 func _update_animation():
     if owner.status.velocity.length() < EPSILON and _get_desired_velocity().length() == 0:

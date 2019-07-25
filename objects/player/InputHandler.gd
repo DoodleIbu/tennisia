@@ -3,6 +3,8 @@ Maps key presses per player with different key bindings in mind, and also contai
 """
 extends Node
 
+var ID : int = -1
+
 const Action = preload("res://enums/Common.gd").Action
 
 const _ACTION_BINDINGS = {

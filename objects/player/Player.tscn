@@ -1,24 +1,25 @@
-[gd_scene load_steps=52 format=2]
+[gd_scene load_steps=53 format=2]
 
 [ext_resource path="res://objects/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://objects/player/InputHandler.gd" type="Script" id=2]
-[ext_resource path="res://objects/player/states/StateMachine.gd" type="Script" id=3]
-[ext_resource path="res://objects/player/states/Neutral.gd" type="Script" id=4]
-[ext_resource path="res://objects/player/states/Charge.gd" type="Script" id=5]
-[ext_resource path="res://objects/player/states/HitSide.gd" type="Script" id=6]
-[ext_resource path="res://objects/player/states/HitOverhead.gd" type="Script" id=7]
-[ext_resource path="res://objects/player/states/Lunge.gd" type="Script" id=8]
-[ext_resource path="res://objects/player/states/ServeNeutral.gd" type="Script" id=9]
-[ext_resource path="res://objects/player/states/ServeToss.gd" type="Script" id=10]
-[ext_resource path="res://objects/player/states/ServeHit.gd" type="Script" id=11]
-[ext_resource path="res://objects/player/states/Win.gd" type="Script" id=12]
-[ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=13]
-[ext_resource path="res://objects/player/ShotSelector.gd" type="Script" id=14]
-[ext_resource path="res://objects/player/Parameters.gd" type="Script" id=15]
-[ext_resource path="res://objects/player/Status.gd" type="Script" id=16]
-[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=17]
-[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=18]
-[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=19]
+[ext_resource path="res://objects/player/ShotSelector.gd" type="Script" id=3]
+[ext_resource path="res://objects/player/ShotCalculator.gd" type="Script" id=4]
+[ext_resource path="res://objects/player/Parameters.gd" type="Script" id=5]
+[ext_resource path="res://objects/player/Status.gd" type="Script" id=6]
+[ext_resource path="res://objects/player/states/StateMachine.gd" type="Script" id=7]
+[ext_resource path="res://objects/player/states/Neutral.gd" type="Script" id=8]
+[ext_resource path="res://objects/player/states/Charge.gd" type="Script" id=9]
+[ext_resource path="res://objects/player/states/HitSide.gd" type="Script" id=10]
+[ext_resource path="res://objects/player/states/HitOverhead.gd" type="Script" id=11]
+[ext_resource path="res://objects/player/states/Lunge.gd" type="Script" id=12]
+[ext_resource path="res://objects/player/states/ServeNeutral.gd" type="Script" id=13]
+[ext_resource path="res://objects/player/states/ServeToss.gd" type="Script" id=14]
+[ext_resource path="res://objects/player/states/ServeHit.gd" type="Script" id=15]
+[ext_resource path="res://objects/player/states/Win.gd" type="Script" id=16]
+[ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=17]
+[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=18]
+[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=19]
+[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=20]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -1286,49 +1287,53 @@ script = ExtResource( 1 )
 [node name="InputHandler" type="Node" parent="."]
 script = ExtResource( 2 )
 
+[node name="ShotSelector" type="Node" parent="."]
+script = ExtResource( 3 )
+
+[node name="ShotCalculator" type="Node" parent="."]
+script = ExtResource( 4 )
+parameters = NodePath("../Parameters")
+
+[node name="Parameters" type="Node" parent="."]
+script = ExtResource( 5 )
+
+[node name="Status" type="Node" parent="."]
+script = ExtResource( 6 )
+
 [node name="StateMachine" type="Node" parent="."]
 editor/display_folded = true
-script = ExtResource( 3 )
+script = ExtResource( 7 )
 initial_state = NodePath("Neutral")
 
 [node name="Neutral" type="Node" parent="StateMachine"]
-script = ExtResource( 4 )
-
-[node name="Charge" type="Node" parent="StateMachine"]
-script = ExtResource( 5 )
-
-[node name="HitSide" type="Node" parent="StateMachine"]
-script = ExtResource( 6 )
-
-[node name="HitOverhead" type="Node" parent="StateMachine"]
-script = ExtResource( 7 )
-
-[node name="Lunge" type="Node" parent="StateMachine"]
 script = ExtResource( 8 )
 
-[node name="ServeNeutral" type="Node" parent="StateMachine"]
+[node name="Charge" type="Node" parent="StateMachine"]
 script = ExtResource( 9 )
 
-[node name="ServeToss" type="Node" parent="StateMachine"]
+[node name="HitSide" type="Node" parent="StateMachine"]
 script = ExtResource( 10 )
 
-[node name="ServeHit" type="Node" parent="StateMachine"]
+[node name="HitOverhead" type="Node" parent="StateMachine"]
 script = ExtResource( 11 )
 
-[node name="Win" type="Node" parent="StateMachine"]
+[node name="Lunge" type="Node" parent="StateMachine"]
 script = ExtResource( 12 )
 
-[node name="Lose" type="Node" parent="StateMachine"]
+[node name="ServeNeutral" type="Node" parent="StateMachine"]
 script = ExtResource( 13 )
 
-[node name="ShotSelector" type="Node" parent="."]
+[node name="ServeToss" type="Node" parent="StateMachine"]
 script = ExtResource( 14 )
 
-[node name="Parameters" type="Node" parent="."]
+[node name="ServeHit" type="Node" parent="StateMachine"]
 script = ExtResource( 15 )
 
-[node name="Status" type="Node" parent="."]
+[node name="Win" type="Node" parent="StateMachine"]
 script = ExtResource( 16 )
+
+[node name="Lose" type="Node" parent="StateMachine"]
+script = ExtResource( 17 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/charge_left = SubResource( 1 )
@@ -1363,14 +1368,14 @@ anims/serve_neutral_right_up = SubResource( 29 )
 anims/serve_toss_left_down = SubResource( 30 )
 anims/serve_toss_right_up = SubResource( 31 )
 anims/win = SubResource( 32 )
-script = ExtResource( 17 )
+script = ExtResource( 18 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 3, -15 )
-texture = ExtResource( 18 )
+texture = ExtResource( 19 )
 hframes = 50
 frame = 23
 
 [node name="HitboxViewer" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
-script = ExtResource( 19 )
+script = ExtResource( 20 )

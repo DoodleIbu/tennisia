@@ -23,6 +23,7 @@ onready var ball = get_node(_ball_path)
 
 onready var input_handler = $InputHandler
 onready var shot_selector = $ShotSelector
+onready var shot_calculator = $ShotCalculator
 
 onready var state_machine = $StateMachine
 onready var parameters = $Parameters
@@ -30,9 +31,6 @@ onready var status = $Status
 
 onready var animation_player = $AnimationPlayer
 onready var hitbox_viewer = $HitboxViewer
-
-var _shot_buffer
-var _shot_calculator
 
 func get_position():
     return status.position
@@ -47,7 +45,7 @@ func _fire(shot):
     else:
         direction = Direction.NONE
 
-    var result = _shot_calculator.calculate(shot, ball, status.charge, direction)
+    var result = shot_calculator.calculate(shot, ball, status.charge, direction)
     emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
     status.can_hit_ball = false
 
@@ -58,19 +56,8 @@ func fire():
 func lunge():
     _fire(Shot.LUNGE)
 
-func update_position(delta):
-    var new_position = status.position + status.velocity * delta
-    if TEAM == 1:
-        new_position.z = max(new_position.z, 410)
-    elif TEAM == 2:
-        new_position.z = min(new_position.z, 370)
-    status.position = new_position
-
 func update_render_position():
     position = Renderer.get_render_position(status.position)
-
-func _ready():
-    _shot_calculator = ShotCalculator.new(parameters.SHOT_PARAMETERS, TEAM)
 
 # Processing
 func _process(delta):

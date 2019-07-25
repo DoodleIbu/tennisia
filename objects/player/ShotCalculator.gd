@@ -1,4 +1,11 @@
-# Calculates the goal, max power and spin of the ball based on multiple parameters.
+"""
+Calculates the goal, max power and spin of the ball based on multiple parameters.
+"""
+extends Node
+
+export (NodePath) var parameters = NodePath()
+onready var parameter = get_node(parameters)
+
 const Direction = preload("res://enums/Common.gd").Direction
 const Shot = preload("res://enums/Common.gd").Shot
 
@@ -132,13 +139,12 @@ const _DEFAULT_SHOT_PARAMETERS = {
     }
 }
 var _merged_shot_parameters
-var _team
 
 # Combines shot parameters from the player and the defaults, overwriting the defaults with the player's if it exists.
-func _init(player_shot_parameters, team):
+func _ready():
     _merged_shot_parameters = _DEFAULT_SHOT_PARAMETERS
-    _merge_dir(_merged_shot_parameters, player_shot_parameters)
-    _team = team
+    Logger.info(parameters)
+    _merge_dir(_merged_shot_parameters, parameter.SHOT_PARAMETERS)
 
 # Lazy woo! https://godotengine.org/qa/8024/update-dictionary-method
 func _merge_dir(target, patch):
@@ -181,9 +187,9 @@ func _calculate(shot, ball, charge, direction):
     var depth = _merged_shot_parameters[shot]["depth"]
 
     var z
-    if _team == 1:
+    if owner.TEAM == 1:
         z = 390 - depth
-    elif _team == 2:
+    elif owner.TEAM == 2:
         z = 390 + depth
 
     if direction == Direction.LEFT:
