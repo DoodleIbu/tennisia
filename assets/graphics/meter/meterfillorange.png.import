@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/meterfill.png-6747314ff5c342520bbf209e2c56d75f.stex"
+path="res://.import/meterfillorange.png-5c741df7f4f9938e6de29548a8379ae2.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/graphics/meter/meterfill.png"
-dest_files=[ "res://.import/meterfill.png-6747314ff5c342520bbf209e2c56d75f.stex" ]
+source_file="res://assets/graphics/meter/meterfillorange.png"
+dest_files=[ "res://.import/meterfillorange.png-5c741df7f4f9938e6de29548a8379ae2.stex" ]
 
 [params]
 

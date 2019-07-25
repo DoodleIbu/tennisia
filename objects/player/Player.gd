@@ -4,6 +4,7 @@ signal hit_ball(max_power, max_spin, goal)
 signal serve_ball(max_power, max_spin, goal)
 signal serve_ball_tossed(ball_position, ball_y_velocity)
 signal serve_ball_held()
+signal meter_updated(player_id, meter)
 
 const Renderer = preload("res://utils/Renderer.gd")
 const TimeStep = preload("res://utils/TimeStep.gd")
@@ -150,7 +151,8 @@ var _lose_state
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
-var _charge
+var _meter = 0
+var _charge = 0
 var _facing
 var _serving_side
 
@@ -159,6 +161,16 @@ var _can_hit_ball = false
 var _input_mapper
 var _shot_buffer
 var _shot_calculator
+
+func get_meter():
+    return _meter
+
+func set_meter(value):
+    if value > 100:
+        _meter = 100
+    else:
+        _meter = value
+    emit_signal("meter_updated", _ID, _meter)
 
 func get_position():
     return _position
@@ -277,6 +289,7 @@ func _fire(shot):
 
 func fire():
     _fire(_shot_buffer.get_shot())
+    set_meter(_meter + 10)
 
 func lunge():
     _fire(Shot.LUNGE)
@@ -413,6 +426,9 @@ func _on_Main_point_started(serving_team, serving_side):
     _velocity = Vector3()
     _can_hit_ball = (_TEAM == serving_team)
     _serving_side = serving_side
+
+    if _meter < 25:
+        set_meter(25)
 
     if _TEAM == serving_team:
         _set_state(State.SERVE_NEUTRAL)

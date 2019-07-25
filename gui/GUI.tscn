@@ -32,3 +32,6 @@ margin_right = 233.0
 margin_bottom = 20.5819
 max_value = 101.0
 value = 99.0
+_ID = 2
+[connection signal="meter_updated" from="." to="Player 2 Meter" method="_on_GUI_meter_updated"]
+[connection signal="meter_updated" from="." to="Player 1 Meter" method="_on_GUI_meter_updated"]
