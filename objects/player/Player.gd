@@ -16,7 +16,7 @@ const ShotBuffer = preload("ShotBuffer.gd")
 const ShotCalculator = preload("ShotCalculator.gd")
 
 export (NodePath) var _ball_path
-onready var _ball = get_node(_ball_path)
+onready var ball = get_node(_ball_path)
 
 export var _ID = 1
 export var _TEAM = 1
@@ -121,25 +121,12 @@ export var _SHOT_PARAMETERS = {
     }
 }
 
-var _state
-
-var _neutral_state
-var _charge_state
-var _hit_side_state
-var _hit_overhead_state
-var _lunge_state
-var _serve_neutral_state
-var _serve_toss_state
-var _serve_hit_state
-var _win_state
-var _lose_state
-
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
 var _position = Vector3(360, 0, 780)
 var _velocity = Vector3()
 var _meter = 0
-var _charge = 0
+var charge = 0
 var _facing
 var _serving_side
 
@@ -153,10 +140,7 @@ func get_meter():
     return _meter
 
 func set_meter(value):
-    if value > 100:
-        _meter = 100
-    else:
-        _meter = value
+    _meter = clamp(value, 0, 100)
     emit_signal("meter_updated", _ID, _meter)
 
 func get_position():
@@ -184,10 +168,10 @@ func set_serving_side(value):
     _serving_side = value
 
 func get_charge():
-    return _charge
+    return charge
 
 func set_charge(value):
-    _charge = value
+    charge = value
 
 func set_render_position(value):
     position = value
@@ -270,7 +254,7 @@ func _fire(shot):
     else:
         direction = Direction.NONE
 
-    var result = _shot_calculator.calculate(shot, _ball, _charge, direction)
+    var result = _shot_calculator.calculate(shot, ball, charge, direction)
     emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
     _can_hit_ball = false
 

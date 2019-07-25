@@ -8,7 +8,7 @@ var _ball
 var _ball_hit
 var _hitbox
 
-func enter():
+func enter(message = {}):
     _ball_hit = false
 
     if owner.get_facing() == Direction.LEFT:
@@ -37,7 +37,7 @@ func physics_process(delta):
     # TODO: There should be a better way to determine when the hitbox is active on the animation.
     #       This is fine for now, but loop back to this and create a class that ties hitboxes to animation.
     _hitbox = Hitbox.new(owner.get_position(), owner.get_lunge_reach(), owner.get_lunge_stretch(), owner.get_facing())
-    if owner.get_current_animation_position() < 0.2 and _hitbox.intersects_ball(_ball) and not _ball_hit:
+    if owner.get_current_animation_position() < 0.2 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
         owner.lunge()
         _ball_hit = true
 

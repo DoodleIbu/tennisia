@@ -2,7 +2,7 @@ extends Node
 
 class_name State
 
-func enter():
+func enter(message = {}):
     assert(false)
 func exit():
     assert(false)

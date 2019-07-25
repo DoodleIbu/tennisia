@@ -4,9 +4,7 @@ extends State
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
 
-var _ball
-
-func enter():
+func enter(message = {}):
     var x_offset
 
     if owner.get_team() == 1:
@@ -25,7 +23,7 @@ func exit():
     pass
 
 func get_state_transition():
-    if _ball.get_position().y < 40 and _ball.get_velocity().y < 0:
+    if owner.ball.get_position().y < 40 and owner.ball.get_velocity().y < 0:
         return "ServeNeutral"
     if owner.is_shot_action_just_pressed():
         return "ServeHit"

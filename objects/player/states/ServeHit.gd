@@ -6,7 +6,7 @@ const Direction = preload("res://enums/Common.gd").Direction
 
 var _ball_hit
 
-func enter():
+func enter(message = {}):
     _ball_hit = false
 
     if owner.get_team() == 1:

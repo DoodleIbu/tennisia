@@ -4,9 +4,7 @@ extends State
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
 
-var _ball
-
-func enter():
+func enter(message = {}):
     owner.emit_signal("serve_ball_held")
 
     if owner.get_team() == 1:

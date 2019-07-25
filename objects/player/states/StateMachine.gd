@@ -5,14 +5,14 @@ const TimeStep = preload("res://utils/TimeStep.gd")
 export var initial_state = NodePath()
 onready var _state = get_node(initial_state)
 
-func set_state(target_state_path):
+func set_state(target_state_path, message = {}):
     if not has_node(target_state_path):
         return
 
     var target_state = get_node(target_state_path)
     _state.exit()
     _state = target_state
-    _state.enter()
+    _state.enter(message)
 
 func _process(delta):
     _state.process(delta)

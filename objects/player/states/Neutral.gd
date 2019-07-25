@@ -5,7 +5,7 @@ const Action = preload("res://enums/Common.gd").Action
 
 const EPSILON = 1
 
-func enter():
+func enter(message = {}):
     _update_animation()
     owner.set_charge(0)
     owner.clear_shot_buffer()

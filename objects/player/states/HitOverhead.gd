@@ -7,7 +7,7 @@ var _ball
 var _ball_hit
 var _hitbox
 
-func enter():
+func enter(message = {}):
     _ball_hit = false
     _hitbox = Hitbox.new(owner.get_position(), owner.get_hit_overhead_reach(), owner.get_hit_overhead_stretch(), owner.get_facing())
 
@@ -34,6 +34,6 @@ func process(delta):
     owner.display_hitbox(_hitbox, 0, 0.1)
 
 func physics_process(delta):
-    if owner.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(_ball) and not _ball_hit:
+    if owner.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
         owner.fire()
         _ball_hit = true

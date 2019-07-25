@@ -4,14 +4,12 @@ const Renderer = preload("res://utils/Renderer.gd")
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
 
-var _ball
-
-func enter():
+func enter(message = {}):
     owner.set_velocity(Vector3())
     owner.set_facing(Direction.LEFT)
     owner.set_charge(0)
 
-    var simulated_ball_positions = _ball.get_simulated_ball_positions()
+    var simulated_ball_positions = owner.ball.get_simulated_ball_positions()
     var plane = Plane(Vector3(0, 0, 1), owner.get_position().z)
 
     for index in range(0, simulated_ball_positions.size() - 1):
@@ -135,8 +133,8 @@ func _get_desired_velocity():
 # TODO: Add this to the neutral state when trying to hit...
 func _get_activation_plane_intersection():
     var frames_to_check = 10
-    var simulated_ball_positions = _ball.get_simulated_ball_positions()
-    var current_frame = _ball.get_current_frame()
+    var simulated_ball_positions = owner.ball.get_simulated_ball_positions()
+    var current_frame = owner.ball.get_current_frame()
 
     for index in range(0, frames_to_check):
         var checked_frame = current_frame + index

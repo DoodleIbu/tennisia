@@ -1,6 +1,6 @@
 extends State
 
-func enter():
+func enter(message = {}):
     owner.play_animation("win")
 
 func exit():
