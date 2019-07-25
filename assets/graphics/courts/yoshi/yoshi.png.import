@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/yoshinet.png-cf35aef21e7bff5a6bfbab6edae0a3d0.stex"
+path="res://.import/yoshi.png-085bbe693c350c04a1af0d8c2b4525ea.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/graphics/courts/yoshinet.png"
-dest_files=[ "res://.import/yoshinet.png-cf35aef21e7bff5a6bfbab6edae0a3d0.stex" ]
+source_file="res://assets/graphics/courts/yoshi/yoshi.png"
+dest_files=[ "res://.import/yoshi.png-085bbe693c350c04a1af0d8c2b4525ea.stex" ]
 
 [params]
 
