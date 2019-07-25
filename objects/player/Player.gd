@@ -7,22 +7,9 @@ signal serve_ball_held()
 signal meter_updated(player_id, meter)
 
 const Renderer = preload("res://utils/Renderer.gd")
-const TimeStep = preload("res://utils/TimeStep.gd")
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
 const Shot = preload("res://enums/Common.gd").Shot
-
-const State = preload("states/StateEnum.gd").State
-const NeutralState = preload("states/NeutralState.gd")
-const ChargeState = preload("states/ChargeState.gd")
-const HitSideState = preload("states/HitSideState.gd")
-const HitOverheadState = preload("states/HitOverheadState.gd")
-const LungeState = preload("states/LungeState.gd")
-const ServeNeutralState = preload("states/ServeNeutralState.gd")
-const ServeTossState = preload("states/ServeTossState.gd")
-const ServeHitState = preload("states/ServeHitState.gd")
-const WinState = preload("states/WinState.gd")
-const LoseState = preload("states/LoseState.gd")
 
 const InputMapper = preload("InputMapper.gd")
 const ShotBuffer = preload("ShotBuffer.gd")
@@ -336,37 +323,6 @@ func _render_hitbox(hitbox):
 func _clear_hitbox():
     get_node("HitboxDisplay").set_visible(false)
 
-func _set_state(value):
-    if _state:
-        _state.exit()
-
-    match value:
-        State.NEUTRAL:
-            _state = _neutral_state
-        State.CHARGE:
-            _state = _charge_state
-        State.HIT_SIDE:
-            _state = _hit_side_state
-        State.HIT_OVERHEAD:
-            _state = _hit_overhead_state
-        State.LUNGE:
-            _state = _lunge_state
-        State.SERVE_NEUTRAL:
-            _state = _serve_neutral_state
-        State.SERVE_TOSS:
-            _state = _serve_toss_state
-        State.SERVE_HIT:
-            _state = _serve_hit_state
-        State.WIN:
-            _state = _win_state
-        State.LOSE:
-            _state = _lose_state
-        _:
-            assert(false)
-
-    if _state:
-        _state.enter()
-
 func _ready():
     $AnimationPlayer.set_animation_process_mode(AnimationPlayer.ANIMATION_PROCESS_PHYSICS)
 
@@ -374,29 +330,9 @@ func _ready():
     _shot_buffer = ShotBuffer.new()
     _shot_calculator = ShotCalculator.new(_SHOT_PARAMETERS, _TEAM)
 
-    _neutral_state = NeutralState.new(self)
-    _charge_state = ChargeState.new(self, _ball)
-    _hit_side_state = HitSideState.new(self, _ball)
-    _hit_overhead_state = HitOverheadState.new(self, _ball)
-    _lunge_state = LungeState.new(self, _ball)
-    _serve_neutral_state = ServeNeutralState.new(self, _ball)
-    _serve_toss_state = ServeTossState.new(self, _ball)
-    _serve_hit_state = ServeHitState.new(self)
-    _win_state = WinState.new(self)
-    _lose_state = LoseState.new(self)
-
-    _set_state(State.NEUTRAL)
-
-func _process(delta):
-    _state.process(delta)
-
+# TODO: How should we handle inputs and state transitions?
 func _physics_process(delta):
     _input_mapper.handle_inputs()
-
-    var new_state = _state.get_state_transition()
-    if new_state != null:
-        _set_state(new_state)
-    _state.physics_process(TimeStep.get_time_step())
 
 # Signals
 func _on_Ball_fired(team_to_hit):
@@ -427,18 +363,18 @@ func _on_Main_point_started(serving_team, serving_side):
     _can_hit_ball = (_TEAM == serving_team)
     _serving_side = serving_side
 
-#    if _meter < 25:
-#        set_meter(25)
+    if _meter < 25:
+        set_meter(25)
 
     if _TEAM == serving_team:
-        _set_state(State.SERVE_NEUTRAL)
+        $StateMachine.set_state("ServeNeutral")
     else:
-        _set_state(State.NEUTRAL)
+        $StateMachine.set_state("Neutral")
 
     Logger.info("Current animation: %s" % $AnimationPlayer.get_current_animation())
 
 func _on_Main_point_ended(scoring_team):
     if _TEAM == scoring_team:
-        _set_state(State.WIN)
+        $StateMachine.set_state("Win")
     else:
-        _set_state(State.LOSE)
+        $StateMachine.set_state("Lose")

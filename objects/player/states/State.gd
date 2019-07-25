@@ -1,7 +1,7 @@
-var _player
+extends Node
 
-func _init(player):
-    _player = player
+class_name State
+
 func enter():
     assert(false)
 func exit():

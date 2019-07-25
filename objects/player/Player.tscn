@@ -1,7 +1,18 @@
-[gd_scene load_steps=35 format=2]
+[gd_scene load_steps=46 format=2]
 
 [ext_resource path="res://objects/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=2]
+[ext_resource path="res://objects/player/states/StateMachine.gd" type="Script" id=3]
+[ext_resource path="res://objects/player/states/Neutral.gd" type="Script" id=4]
+[ext_resource path="res://objects/player/states/Charge.gd" type="Script" id=5]
+[ext_resource path="res://objects/player/states/HitSide.gd" type="Script" id=6]
+[ext_resource path="res://objects/player/states/HitOverhead.gd" type="Script" id=7]
+[ext_resource path="res://objects/player/states/Lunge.gd" type="Script" id=8]
+[ext_resource path="res://objects/player/states/ServeNeutral.gd" type="Script" id=9]
+[ext_resource path="res://objects/player/states/ServeToss.gd" type="Script" id=10]
+[ext_resource path="res://objects/player/states/ServeHit.gd" type="Script" id=11]
+[ext_resource path="res://objects/player/states/Win.gd" type="Script" id=12]
+[ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=13]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -1308,3 +1319,37 @@ frame = 23
 
 [node name="HitboxDisplay" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource( 3 )
+initial_state = NodePath("Neutral")
+
+[node name="Neutral" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+
+[node name="Charge" type="Node" parent="StateMachine"]
+script = ExtResource( 5 )
+
+[node name="HitSide" type="Node" parent="StateMachine"]
+script = ExtResource( 6 )
+
+[node name="HitOverhead" type="Node" parent="StateMachine"]
+script = ExtResource( 7 )
+
+[node name="Lunge" type="Node" parent="StateMachine"]
+script = ExtResource( 8 )
+
+[node name="ServeNeutral" type="Node" parent="StateMachine"]
+script = ExtResource( 9 )
+
+[node name="ServeToss" type="Node" parent="StateMachine"]
+script = ExtResource( 10 )
+
+[node name="ServeHit" type="Node" parent="StateMachine"]
+script = ExtResource( 11 )
+
+[node name="Win" type="Node" parent="StateMachine"]
+script = ExtResource( 12 )
+
+[node name="Lose" type="Node" parent="StateMachine"]
+script = ExtResource( 13 )

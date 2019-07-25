@@ -1,10 +1,7 @@
-extends "StateBase.gd"
-
-func _init(player).(player):
-    _player = player
+extends State
 
 func enter():
-    _player.play_animation("lose")
+    owner.play_animation("lose")
 
 func exit():
     pass

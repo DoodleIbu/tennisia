@@ -1,22 +1,18 @@
-extends "StateBase.gd"
+extends State
 
 const Renderer = preload("res://utils/Renderer.gd")
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
-const State = preload("StateEnum.gd").State
 
 var _ball
 
-func _init(player, ball).(player):
-    _ball = ball
-
 func enter():
-    _player.set_velocity(Vector3())
-    _player.set_facing(Direction.LEFT)
-    _player.set_charge(0)
+    owner.set_velocity(Vector3())
+    owner.set_facing(Direction.LEFT)
+    owner.set_charge(0)
 
     var simulated_ball_positions = _ball.get_simulated_ball_positions()
-    var plane = Plane(Vector3(0, 0, 1), _player.get_position().z)
+    var plane = Plane(Vector3(0, 0, 1), owner.get_position().z)
 
     for index in range(0, simulated_ball_positions.size() - 1):
         var first_position = simulated_ball_positions[index]
@@ -24,10 +20,10 @@ func enter():
 
         var intersection = plane.intersects_segment(first_position, second_position)
         if intersection:
-            if intersection.x <= _player.get_position().x:
-                _player.set_facing(Direction.LEFT)
+            if intersection.x <= owner.get_position().x:
+                owner.set_facing(Direction.LEFT)
             else:
-                _player.set_facing(Direction.RIGHT)
+                owner.set_facing(Direction.RIGHT)
             break
 
 func exit():
@@ -35,8 +31,8 @@ func exit():
 
 func get_state_transition():
     # Handle inputs first...
-    if _player.is_action_just_pressed(Action.CANCEL_CHARGE):
-        return State.NEUTRAL
+    if owner.is_action_just_pressed(Action.CANCEL_CHARGE):
+        return "Neutral"
 
     # Then handle non-input state transitions.
     var result = _get_activation_plane_intersection()
@@ -45,90 +41,90 @@ func get_state_transition():
     # Lunge
     if frames_until_intersection != -1 and frames_until_intersection <= 7:
         var intersection_point = result["intersection_point"]
-        var horizontal_distance = abs(intersection_point.x - _player.get_position().x)
+        var horizontal_distance = abs(intersection_point.x - owner.get_position().x)
         var vertical_distance = intersection_point.y
 
         # Lunge if not in range of either the max horizontal range. Otherwise don't change state.
         # Note that this can cause the overhead to whiff, but normally you wouldn't lunge at an overhead shot anyway.
-        if horizontal_distance <= _player.get_hit_side_reach().x:
+        if horizontal_distance <= owner.get_hit_side_reach().x:
             pass
         else:
-            return State.LUNGE
+            return "Lunge"
 
     # Hit
     if frames_until_intersection != -1 and frames_until_intersection <= 1:
         var intersection_point = result["intersection_point"]
-        var horizontal_distance = abs(intersection_point.x - _player.get_position().x)
+        var horizontal_distance = abs(intersection_point.x - owner.get_position().x)
         var vertical_distance = intersection_point.y
 
         # Hit side if low enough, hit overhead if too high.
-        if vertical_distance <= _player.get_hit_side_reach().y:
-            return State.HIT_SIDE
+        if vertical_distance <= owner.get_hit_side_reach().y:
+            return "HitSide"
         else:
-            return State.HIT_OVERHEAD
+            return "HitOverhead"
 
     return null
 
 func process(delta):
     _update_animation()
-    _player.update_render_position()
+    owner.update_render_position()
 
 func physics_process(delta):
     _update_velocity(delta)
-    _player.update_position(delta)
-    _player.set_charge(_player.get_charge() + 1)
-    _player.process_shot_input()
+    owner.update_position(delta)
+    owner.set_charge(owner.get_charge() + 1)
+    owner.process_shot_input()
 
 func _update_animation():
-    if _player.get_team() == 1:
-        if _player.get_facing() == Direction.LEFT:
-            _player.play_animation("charge_left")
-        elif _player.get_facing() == Direction.RIGHT:
-            _player.play_animation("charge_right")
-    elif _player.get_team() == 2:
-        if _player.get_facing() == Direction.LEFT:
-            _player.play_animation("charge_left_down")
-        elif _player.get_facing() == Direction.RIGHT:
-            _player.play_animation("charge_right_down")
+    if owner.get_team() == 1:
+        if owner.get_facing() == Direction.LEFT:
+            owner.play_animation("charge_left")
+        elif owner.get_facing() == Direction.RIGHT:
+            owner.play_animation("charge_right")
+    elif owner.get_team() == 2:
+        if owner.get_facing() == Direction.LEFT:
+            owner.play_animation("charge_left_down")
+        elif owner.get_facing() == Direction.RIGHT:
+            owner.play_animation("charge_right_down")
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()
 
     # Accelerate towards the desired velocity vector.
-    var to_goal = desired_velocity - _player.get_velocity()
+    var to_goal = desired_velocity - owner.get_velocity()
     var accel_direction = to_goal.normalized()
 
     # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
-    var movement_dot = _player.get_velocity().dot(desired_velocity)
+    var movement_dot = owner.get_velocity().dot(desired_velocity)
     var velocity_delta
 
     if desired_velocity.length() == 0:
-        velocity_delta = accel_direction * _player.get_stop_accel() * delta
+        velocity_delta = accel_direction * owner.get_stop_accel() * delta
     elif movement_dot >= 0:
-        velocity_delta = accel_direction * _player.get_run_accel() * delta
+        velocity_delta = accel_direction * owner.get_run_accel() * delta
     else:
-        velocity_delta = accel_direction * _player.get_pivot_accel() * delta
+        velocity_delta = accel_direction * owner.get_pivot_accel() * delta
 
     # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
     if velocity_delta.length() > to_goal.length():
-        _player.set_velocity(desired_velocity)
+        owner.set_velocity(desired_velocity)
     else:
-        _player.set_velocity(_player.get_velocity() + velocity_delta)
+        owner.set_velocity(owner.get_velocity() + velocity_delta)
 
 func _get_desired_velocity():
     # TODO: Modify this code to instead read inputs from input().
     var desired_velocity = Vector3()
 
-    if _player.is_action_pressed(Action.RIGHT):
+    if owner.is_action_pressed(Action.RIGHT):
         desired_velocity.x += 1
-    if _player.is_action_pressed(Action.LEFT):
+    if owner.is_action_pressed(Action.LEFT):
         desired_velocity.x -= 1
-    if _player.is_action_pressed(Action.DOWN):
+    if owner.is_action_pressed(Action.DOWN):
         desired_velocity.z += 1
-    if _player.is_action_pressed(Action.UP):
+    if owner.is_action_pressed(Action.UP):
         desired_velocity.z -= 1
 
-    return desired_velocity.normalized() * _player.get_max_charge_speed()
+    return desired_velocity.normalized() * owner.get_max_charge_speed()
 
 # Count the number of frames until the ball passes the activation plane.
 # The player by default takes 2 frames to hit, but lunges can take more frames to hit.
@@ -150,7 +146,7 @@ func _get_activation_plane_intersection():
         var first_position = simulated_ball_positions[checked_frame]
         var second_position = simulated_ball_positions[checked_frame + 1]
 
-        var plane = Plane(Vector3(0, 0, 1), _player.get_position().z)
+        var plane = Plane(Vector3(0, 0, 1), owner.get_position().z)
         var intersection = plane.intersects_segment(first_position, second_position)
 
         if intersection:
