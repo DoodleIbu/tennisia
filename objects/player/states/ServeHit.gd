@@ -1,6 +1,8 @@
 # State when the player is hitting the ball.
 extends State
 
+signal ball_served(max_power, max_spin, goal)
+
 export (NodePath) var _player_path = NodePath()
 onready var _player = get_node(_player_path)
 
@@ -65,7 +67,7 @@ func physics_process(delta):
 
         var goal = Vector3(side, 0, depth)
 
-        owner.emit_signal("serve_ball", 1200, spin, goal)
+        emit_signal("ball_served", 1200, spin, goal)
         _status.meter += 10
         _status.can_hit_ball = false
         _ball_hit = true

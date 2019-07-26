@@ -1,5 +1,7 @@
 extends State
 
+signal ball_hit(max_power, max_spin, goal)
+
 export (NodePath) var _input_handler_path = NodePath()
 onready var _input_handler = get_node(_input_handler_path)
 
@@ -79,5 +81,5 @@ func _fire():
         direction = Direction.NONE
 
     var result = _shot_calculator.calculate(Shot.LUNGE, owner.ball, _status.charge, direction)
-    owner.emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
+    emit_signal("ball_hit", result["power"], result["spin"], result["goal"])
     _status.can_hit_ball = false

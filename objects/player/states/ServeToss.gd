@@ -3,6 +3,8 @@ State when the player has tossed the ball during serve.
 """
 extends State
 
+signal ball_tossed(ball_position, ball_y_velocity)
+
 export (NodePath) var _player_path = NodePath()
 onready var _player = get_node(_player_path)
 
@@ -28,7 +30,7 @@ func enter(message = {}):
         x_offset = -10
         _animation_player.play("serve_toss_left_down")
 
-    owner.emit_signal("serve_ball_tossed", _status.position + Vector3(x_offset, 40, 0), 200)
+    emit_signal("ball_tossed", _status.position + Vector3(x_offset, 40, 0), 200)
 
 func exit():
     pass

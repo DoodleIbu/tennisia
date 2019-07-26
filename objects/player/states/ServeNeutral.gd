@@ -1,6 +1,8 @@
 # State when the player is serving with ball in hand.
 extends State
 
+signal ball_held()
+
 export (NodePath) var _player_path = NodePath()
 onready var _player = get_node(_player_path)
 
@@ -20,7 +22,7 @@ const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
 
 func enter(message = {}):
-    owner.emit_signal("serve_ball_held")
+    emit_signal("ball_held")
 
     if _player.TEAM == 1:
         _animation_player.play("serve_neutral_right_up")

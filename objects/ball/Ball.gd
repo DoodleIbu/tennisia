@@ -221,26 +221,26 @@ func _physics_process(_unused):
         _spin = result["spin"]
         _current_frame += 1
 
-func _on_Player_hit_ball(max_power, max_spin, goal):
-    Logger.info("[Ball] Signal received: hit_ball")
+func _on_Player_ball_hit(max_power, max_spin, goal):
+    Logger.info("[Ball] Signal received: ball_hit")
 
     _is_serve = false
     _fire(max_power, max_spin, goal)
 
-func _on_Player_serve_ball(max_power, max_spin, goal):
-    Logger.info("[Ball] Signal received: serve_ball")
+func _on_Player_ball_served(max_power, max_spin, goal):
+    Logger.info("[Ball] Signal received: ball_served")
 
     _is_serve = true
     _fire(max_power, max_spin, goal)
 
-func _on_Player_serve_ball_held():
-    Logger.info("[Ball] Signal received: serve_ball_held")
+func _on_Player_ball_held():
+    Logger.info("[Ball] Signal received: ball_held")
 
     _held = true
     _set_visible(false)
 
-func _on_Player_serve_ball_tossed(ball_position, ball_y_velocity):
-    Logger.info("[Ball] Signal received: serve_ball_tossed")
+func _on_Player_ball_tossed(ball_position, ball_y_velocity):
+    Logger.info("[Ball] Signal received: ball_tossed")
 
     _held = false
     _set_visible(true)

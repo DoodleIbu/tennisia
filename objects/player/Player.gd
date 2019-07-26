@@ -2,10 +2,10 @@ extends Node2D
 
 class_name Player
 
-signal hit_ball(max_power, max_spin, goal)
-signal serve_ball(max_power, max_spin, goal)
-signal serve_ball_tossed(ball_position, ball_y_velocity)
-signal serve_ball_held()
+signal ball_hit(max_power, max_spin, goal)
+signal ball_served(max_power, max_spin, goal)
+signal ball_tossed(ball_position, ball_y_velocity)
+signal ball_held()
 signal meter_updated(player_id, meter)
 
 const Action = preload("res://enums/Common.gd").Action
@@ -19,8 +19,7 @@ const ShotCalculator = preload("ShotCalculator.gd")
 export var ID : int = 1
 export var TEAM : int = 1
 
-# TODO: Implement ball node within player to store relevant information about the ball.
-export (NodePath) var _ball_path
+export (NodePath) var _ball_path = NodePath()
 onready var ball = get_node(_ball_path)
 
 onready var _input_handler = $InputHandler
@@ -38,7 +37,7 @@ func _physics_process(_unused):
     _input_handler.handle_inputs()
     _state_machine.physics_process(TimeStep.get_time_step())
 
-# Signals
+# External signals
 func _on_Ball_fired(team_to_hit):
     _status.can_hit_ball = (team_to_hit == TEAM)
 
@@ -81,8 +80,21 @@ func _on_Main_point_ended(scoring_team):
     else:
         _state_machine.set_state("Lose")
 
+# Internal signals
 func _on_Status_meter_updated(meter):
     emit_signal("meter_updated", ID, meter)
 
 func _on_Status_position_updated(status_position):
     position = Renderer.get_render_position(status_position)
+
+func _on_ball_hit(max_power, max_spin, goal):
+    emit_signal("ball_hit", max_power, max_spin, goal)
+
+func _on_ServeHit_ball_served(max_power, max_spin, goal):
+    emit_signal("ball_served", max_power, max_spin, goal)
+
+func _on_ServeToss_ball_tossed(ball_position, ball_y_velocity):
+    emit_signal("ball_tossed", ball_position, ball_y_velocity)
+
+func _on_ServeNeutral_ball_held():
+    emit_signal("ball_held")

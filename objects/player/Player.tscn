@@ -1432,3 +1432,9 @@ hframes = 50
 frame = 23
 [connection signal="meter_updated" from="Status" to="." method="_on_Status_meter_updated"]
 [connection signal="position_updated" from="Status" to="." method="_on_Status_position_updated"]
+[connection signal="ball_hit" from="StateMachine/HitSide" to="." method="_on_ball_hit"]
+[connection signal="ball_hit" from="StateMachine/HitOverhead" to="." method="_on_ball_hit"]
+[connection signal="ball_hit" from="StateMachine/Lunge" to="." method="_on_ball_hit"]
+[connection signal="ball_held" from="StateMachine/ServeNeutral" to="." method="_on_ServeNeutral_ball_held"]
+[connection signal="ball_tossed" from="StateMachine/ServeToss" to="." method="_on_ServeToss_ball_tossed"]
+[connection signal="ball_served" from="StateMachine/ServeHit" to="." method="_on_ServeHit_ball_served"]
