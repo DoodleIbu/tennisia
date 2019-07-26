@@ -1,6 +1,18 @@
 # State when the player is hitting the ball.
 extends State
 
+export (NodePath) var _player_path = NodePath()
+onready var _player = get_node(_player_path)
+
+export (NodePath) var _input_handler_path = NodePath()
+onready var _input_handler = get_node(_input_handler_path)
+
+export (NodePath) var _status_path = NodePath()
+onready var _status = get_node(_status_path)
+
+export (NodePath) var _animation_player_path = NodePath()
+onready var _animation_player = get_node(_animation_player_path)
+
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
 
@@ -9,16 +21,16 @@ var _ball_hit
 func enter(message = {}):
     _ball_hit = false
 
-    if owner.TEAM == 1:
-        owner.animation_player.play("hit_overhead_right_long")
-    elif owner.TEAM == 2:
-        owner.animation_player.play("hit_overhead_left_long_down")
+    if _player.TEAM == 1:
+        _animation_player.play("hit_overhead_right_long")
+    elif _player.TEAM == 2:
+        _animation_player.play("hit_overhead_left_long_down")
 
 func exit():
     pass
 
 func get_state_transition():
-    if not owner.animation_player.is_playing():
+    if not _animation_player.is_playing():
         return "Neutral"
 
 func process(delta):
@@ -31,29 +43,29 @@ func physics_process(delta):
         var spin = 0
         var control = 50
 
-        if owner.TEAM == 1:
+        if _player.TEAM == 1:
             depth = 210
-        elif owner.TEAM == 2:
+        elif _player.TEAM == 2:
             depth = 570
 
-        if owner.status.serving_side == Direction.LEFT:
+        if _status.serving_side == Direction.LEFT:
             side = 247.5
-        elif owner.status.serving_side == Direction.RIGHT:
+        elif _status.serving_side == Direction.RIGHT:
             side = 112.5
 
-        if owner.input_handler.is_action_pressed(Action.LEFT):
+        if _input_handler.is_action_pressed(Action.LEFT):
             side -= control
-        elif owner.input_handler.is_action_pressed(Action.RIGHT):
+        elif _input_handler.is_action_pressed(Action.RIGHT):
             side += control
 
-        if owner.input_handler.is_action_pressed(Action.TOP):
+        if _input_handler.is_action_pressed(Action.TOP):
             spin = -100
-        elif owner.input_handler.is_action_pressed(Action.SLICE):
+        elif _input_handler.is_action_pressed(Action.SLICE):
             spin = 100
 
         var goal = Vector3(side, 0, depth)
 
         owner.emit_signal("serve_ball", 1200, spin, goal)
-        owner.status.meter += 10
-        owner.status.can_hit_ball = false
+        _status.meter += 10
+        _status.can_hit_ball = false
         _ball_hit = true

@@ -18,8 +18,8 @@
 [ext_resource path="res://objects/player/states/Win.gd" type="Script" id=16]
 [ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=17]
 [ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=18]
-[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=19]
-[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=20]
+[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=19]
+[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=20]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -1318,30 +1318,65 @@ _animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="Charge" type="Node" parent="StateMachine"]
 script = ExtResource( 9 )
+_player_path = NodePath("../..")
+_input_handler_path = NodePath("../../InputHandler")
+_shot_selector_path = NodePath("../../ShotSelector")
+_parameters_path = NodePath("../../Parameters")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="HitSide" type="Node" parent="StateMachine"]
 script = ExtResource( 10 )
+_player_path = NodePath("../..")
+_parameters_path = NodePath("../../Parameters")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
+_hitbox_viewer_path = NodePath("../../HitboxViewer")
 
 [node name="HitOverhead" type="Node" parent="StateMachine"]
 script = ExtResource( 11 )
+_player_path = NodePath("../..")
+_parameters_path = NodePath("../../Parameters")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
+_hitbox_viewer_path = NodePath("../../HitboxViewer")
 
 [node name="Lunge" type="Node" parent="StateMachine"]
 script = ExtResource( 12 )
+_parameters_path = NodePath("../../Parameters")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
+_hitbox_viewer_path = NodePath("../../HitboxViewer")
 
 [node name="ServeNeutral" type="Node" parent="StateMachine"]
 script = ExtResource( 13 )
+_player_path = NodePath("../..")
+_input_handler_path = NodePath("../../InputHandler")
+_parameters_path = NodePath("../../Parameters")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="ServeToss" type="Node" parent="StateMachine"]
 script = ExtResource( 14 )
+_player_path = NodePath("../..")
+_input_handler_path = NodePath("../../InputHandler")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="ServeHit" type="Node" parent="StateMachine"]
 script = ExtResource( 15 )
+_player_path = NodePath("../..")
+_input_handler_path = NodePath("../../InputHandler")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="Win" type="Node" parent="StateMachine"]
 script = ExtResource( 16 )
+_animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="Lose" type="Node" parent="StateMachine"]
 script = ExtResource( 17 )
+_animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/charge_left = SubResource( 1 )
@@ -1378,14 +1413,14 @@ anims/serve_toss_right_up = SubResource( 31 )
 anims/win = SubResource( 32 )
 script = ExtResource( 18 )
 
-[node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 3, -15 )
-texture = ExtResource( 19 )
-hframes = 50
-frame = 23
-
 [node name="HitboxViewer" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
-script = ExtResource( 20 )
+script = ExtResource( 19 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 3, -15 )
+texture = ExtResource( 20 )
+hframes = 50
+frame = 23
 [connection signal="meter_updated" from="Status" to="." method="_on_Status_meter_updated"]
 [connection signal="position_updated" from="Status" to="." method="_on_Status_position_updated"]

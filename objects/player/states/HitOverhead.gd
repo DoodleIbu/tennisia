@@ -1,5 +1,20 @@
 extends State
 
+export (NodePath) var _player_path = NodePath()
+onready var _player = get_node(_player_path)
+
+export (NodePath) var _parameters_path = NodePath()
+onready var _parameters = get_node(_parameters_path)
+
+export (NodePath) var _status_path = NodePath()
+onready var _status = get_node(_status_path)
+
+export (NodePath) var _animation_player_path = NodePath()
+onready var _animation_player = get_node(_animation_player_path)
+
+export (NodePath) var _hitbox_viewer_path = NodePath()
+onready var _hitbox_viewer = get_node(_hitbox_viewer_path)
+
 const Direction = preload("res://enums/Common.gd").Direction
 const Hitbox = preload("res://objects/player/Hitbox.gd")
 
@@ -8,36 +23,36 @@ var _hitbox
 
 func enter(message = {}):
     _ball_hit = false
-    _hitbox = Hitbox.new(owner.status.position,
-                         owner.parameters.HIT_OVERHEAD_REACH,
-                         owner.parameters.HIT_OVERHEAD_STRETCH,
-                         owner.status.facing)
+    _hitbox = Hitbox.new(_status.position,
+                         _parameters.HIT_OVERHEAD_REACH,
+                         _parameters.HIT_OVERHEAD_STRETCH,
+                         _status.facing)
 
-    if owner.TEAM == 1:
-        if owner.status.facing == Direction.LEFT:
-            owner.animation_player.play("hit_overhead_left_long")
-        elif owner.status.facing == Direction.RIGHT:
-            owner.animation_player.play("hit_overhead_right_long")
-    elif owner.TEAM == 2:
-        if owner.status.facing == Direction.LEFT:
-            owner.animation_player.play("hit_overhead_left_long_down")
-        elif owner.status.facing == Direction.RIGHT:
-            owner.animation_player.play("hit_overhead_right_long_down")
+    if _player.TEAM == 1:
+        if _status.facing == Direction.LEFT:
+            _animation_player.play("hit_overhead_left_long")
+        elif _status.facing == Direction.RIGHT:
+            _animation_player.play("hit_overhead_right_long")
+    elif _player.TEAM == 2:
+        if _status.facing == Direction.LEFT:
+            _animation_player.play("hit_overhead_left_long_down")
+        elif _status.facing == Direction.RIGHT:
+            _animation_player.play("hit_overhead_right_long_down")
 
 func exit():
-    owner.hitbox_viewer.clear()
+    _hitbox_viewer.clear()
 
 func get_state_transition():
-    if not owner.animation_player.is_playing():
+    if not _animation_player.is_playing():
         return "Neutral"
 
 func process(delta):
-    if owner.animation_player.get_current_animation_position() < 0.1:
-        owner.hitbox_viewer.view(_hitbox)
+    if _animation_player.get_current_animation_position() < 0.1:
+        _hitbox_viewer.view(_hitbox)
     else:
-        owner.hitbox_viewer.clear()
+        _hitbox_viewer.clear()
 
 func physics_process(delta):
-    if owner.animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
+    if _animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
         owner.fire()
         _ball_hit = true
