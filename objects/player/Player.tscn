@@ -1309,6 +1309,12 @@ _initial_state = NodePath("Neutral")
 
 [node name="Neutral" type="Node" parent="StateMachine"]
 script = ExtResource( 8 )
+_player_path = NodePath("../..")
+_input_handler_path = NodePath("../../InputHandler")
+_shot_selector_path = NodePath("../../ShotSelector")
+_parameters_path = NodePath("../../Parameters")
+_status_path = NodePath("../../Status")
+_animation_player_path = NodePath("../../AnimationPlayer")
 
 [node name="Charge" type="Node" parent="StateMachine"]
 script = ExtResource( 9 )
