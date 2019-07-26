@@ -15,12 +15,24 @@ _global_script_classes=[ {
 "path": "res://objects/player/Hitbox.gd"
 }, {
 "base": "Node",
+"class": "Parameters",
+"language": "GDScript",
+"path": "res://objects/player/Parameters.gd"
+}, {
+"base": "Node2D",
+"class": "Player",
+"language": "GDScript",
+"path": "res://objects/player/Player.gd"
+}, {
+"base": "Node",
 "class": "State",
 "language": "GDScript",
 "path": "res://objects/player/states/State.gd"
 } ]
 _global_script_class_icons={
 "Hitbox": "",
+"Parameters": "",
+"Player": "",
 "State": ""
 }
 

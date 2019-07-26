@@ -19,7 +19,6 @@ func get_state_transition():
 
 func process(delta):
     _update_animation()
-    owner.update_render_position()
 
 func physics_process(delta):
     _update_velocity(delta)
@@ -52,9 +51,6 @@ func _update_animation():
             owner.animation_player.play("run_up")
         elif angle_degrees >= -67.5 and angle_degrees <= -22.5:
             owner.animation_player.play("run_upright")
-
-func _update_render_position():
-    owner.set_render_position(Renderer.get_render_position(owner.status.position))
 
 func _update_velocity(delta):
     var desired_velocity = _get_desired_velocity()

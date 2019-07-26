@@ -3,14 +3,17 @@ Calculates the goal, max power and spin of the ball based on multiple parameters
 """
 extends Node
 
-export (NodePath) var parameters = NodePath()
-onready var parameter = get_node(parameters)
+export (NodePath) var _player_path = NodePath()
+onready var _player = get_node(_player_path)
+
+export (NodePath) var _parameters_path = NodePath()
+onready var _parameters = get_node(_parameters_path)
 
 const Direction = preload("res://enums/Common.gd").Direction
 const Shot = preload("res://enums/Common.gd").Shot
 
 # Null parameters should always be provided by the player.
-const _DEFAULT_SHOT_PARAMETERS = {
+var _shot_parameters = {
     Shot.S_TOP: {
         "power": {
             "base": null,
@@ -138,15 +141,11 @@ const _DEFAULT_SHOT_PARAMETERS = {
         "power_reduction": 0.2
     }
 }
-var _merged_shot_parameters
 
-# Combines shot parameters from the player and the defaults, overwriting the defaults with the player's if it exists.
 func _ready():
-    _merged_shot_parameters = _DEFAULT_SHOT_PARAMETERS
-    Logger.info(parameters)
-    _merge_dir(_merged_shot_parameters, parameter.SHOT_PARAMETERS)
+    _merge_dir(_shot_parameters, _parameters.SHOT_PARAMETERS)
 
-# Lazy woo! https://godotengine.org/qa/8024/update-dictionary-method
+# https://godotengine.org/qa/8024/update-dictionary-method
 func _merge_dir(target, patch):
     for key in patch:
         if target.has(key):
@@ -158,13 +157,15 @@ func _merge_dir(target, patch):
         else:
             target[key] = patch[key]
 
-func _calculate(shot, ball, charge, direction):
+# TODO: I could also inject the ball, status, input handler...
+#       What should I inject?
+func calculate(shot, ball, charge, direction):
     var max_charge_percent = min(1, charge / 50.0)
 
     # POWER
-    var power_base = _merged_shot_parameters[shot]["power"]["base"]
-    var power_max = _merged_shot_parameters[shot]["power"]["max"]
-    var power_reduction = _merged_shot_parameters[shot]["power_reduction"]
+    var power_base = _shot_parameters[shot]["power"]["base"]
+    var power_max = _shot_parameters[shot]["power"]["max"]
+    var power_reduction = _shot_parameters[shot]["power_reduction"]
 
     # The more you charge, the more the penalty from the opponent's ball speed is negated.
     var power_reduction_with_charge = (1 - max_charge_percent) * power_reduction
@@ -174,22 +175,21 @@ func _calculate(shot, ball, charge, direction):
     power = power - ball.get_power() * power_reduction_with_charge
 
     # SPIN
-    var spin_base = _merged_shot_parameters[shot]["spin"]["base"]
-    var spin_max = _merged_shot_parameters[shot]["spin"]["max"]
+    var spin_base = _shot_parameters[shot]["spin"]["base"]
+    var spin_max = _shot_parameters[shot]["spin"]["max"]
     var spin = lerp(spin_base, spin_max, max_charge_percent)
 
     # GOAL
     var goal
 
-    # TODO: Pass in direction to the method.
-    var angle = _merged_shot_parameters[shot]["angle"]
-    var placement = _merged_shot_parameters[shot]["placement"]
-    var depth = _merged_shot_parameters[shot]["depth"]
+    # var angle = _shot_parameters[shot]["angle"]
+    var placement = _shot_parameters[shot]["placement"]
+    var depth = _shot_parameters[shot]["depth"]
 
     var z
-    if owner.TEAM == 1:
+    if _player.TEAM == 1:
         z = 390 - depth
-    elif owner.TEAM == 2:
+    elif _player.TEAM == 2:
         z = 390 + depth
 
     if direction == Direction.LEFT:
@@ -204,7 +204,3 @@ func _calculate(shot, ball, charge, direction):
         "spin": spin,
         "goal": goal
     }
-
-# TODO: Support other shots (e.g. special shots) in the future
-func calculate(shot, ball, charge, direction):
-    return _calculate(shot, ball, charge, direction)

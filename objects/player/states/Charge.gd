@@ -65,7 +65,6 @@ func get_state_transition():
 
 func process(delta):
     _update_animation()
-    owner.update_render_position()
 
 func physics_process(delta):
     _update_velocity(delta)

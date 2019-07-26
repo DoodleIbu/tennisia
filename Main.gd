@@ -139,6 +139,6 @@ func _on_Ball_bounced(bounce_position, bounce_velocity):
     if not _point_ended and $Ball.get_bounce_count() >= 2:
         _end_point()
 
-func _on_Player_hit_ball(max_power, max_spin, goal):
+func _on_Player_hit_ball(_unused, _unused, _unused):
     if not _point_ended and $Ball.is_serve() and $Ball.get_bounce_count() == 0:
         _end_point()

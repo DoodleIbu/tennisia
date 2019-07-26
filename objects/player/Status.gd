@@ -1,8 +1,13 @@
 """
 Node storing all of the changeable values for the player.
 """
-
 extends Node
+
+export (NodePath) var _player_path = NodePath()
+onready var _player = get_node(_player_path)
+
+signal position_updated(position)
+signal meter_updated(meter)
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court
@@ -16,12 +21,12 @@ var can_hit_ball : bool
 
 func set_meter(value):
     meter = clamp(value, 0, 100)
-    owner.emit_signal("meter_updated", owner.ID, meter)
+    emit_signal("meter_updated", meter)
 
 func set_position(value):
-    var new_position = value
-    if owner.TEAM == 1:
-        new_position.z = max(new_position.z, 410)
-    elif owner.TEAM == 2:
-        new_position.z = min(new_position.z, 370)
-    position = new_position
+    position = value
+    if _player.TEAM == 1:
+        position.z = max(position.z, 410)
+    elif _player.TEAM == 2:
+        position.z = min(position.z, 370)
+    emit_signal("position_updated", position)

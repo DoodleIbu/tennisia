@@ -1,8 +1,9 @@
 """
 Node storing all of the fixed values for the character. Can be modified per character.
 """
-
 extends Node
+
+class_name Parameters
 
 const Shot = preload("res://enums/Common.gd").Shot
 

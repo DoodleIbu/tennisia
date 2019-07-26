@@ -1,5 +1,7 @@
 extends Node2D
 
+class_name Player
+
 signal hit_ball(max_power, max_spin, goal)
 signal serve_ball(max_power, max_spin, goal)
 signal serve_ball_tossed(ball_position, ball_y_velocity)
@@ -26,8 +28,8 @@ onready var shot_selector = $ShotSelector
 onready var shot_calculator = $ShotCalculator
 
 onready var state_machine = $StateMachine
-onready var parameters = $Parameters
 onready var status = $Status
+onready var parameters = $Parameters
 
 onready var animation_player = $AnimationPlayer
 onready var hitbox_viewer = $HitboxViewer
@@ -63,7 +65,7 @@ func update_render_position():
 func _process(delta):
     state_machine.process(delta)
 
-func _physics_process(delta):
+func _physics_process(_unused):
     input_handler.handle_inputs()
     state_machine.physics_process(TimeStep.get_time_step())
 
@@ -109,3 +111,9 @@ func _on_Main_point_ended(scoring_team):
         state_machine.set_state("Win")
     else:
         state_machine.set_state("Lose")
+
+func _on_Status_meter_updated(meter):
+    emit_signal("meter_updated", ID, meter)
+
+func _on_Status_position_updated(status_position):
+    position = Renderer.get_render_position(status_position)

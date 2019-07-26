@@ -1286,24 +1286,26 @@ script = ExtResource( 1 )
 
 [node name="InputHandler" type="Node" parent="."]
 script = ExtResource( 2 )
+_player_path = NodePath("..")
 
 [node name="ShotSelector" type="Node" parent="."]
 script = ExtResource( 3 )
 
 [node name="ShotCalculator" type="Node" parent="."]
 script = ExtResource( 4 )
-parameters = NodePath("../Parameters")
+_player_path = NodePath("..")
+_parameters_path = NodePath("../Parameters")
 
 [node name="Parameters" type="Node" parent="."]
 script = ExtResource( 5 )
 
 [node name="Status" type="Node" parent="."]
 script = ExtResource( 6 )
+_player_path = NodePath("..")
 
 [node name="StateMachine" type="Node" parent="."]
-editor/display_folded = true
 script = ExtResource( 7 )
-initial_state = NodePath("Neutral")
+_initial_state = NodePath("Neutral")
 
 [node name="Neutral" type="Node" parent="StateMachine"]
 script = ExtResource( 8 )
@@ -1379,3 +1381,5 @@ frame = 23
 [node name="HitboxViewer" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
 script = ExtResource( 20 )
+[connection signal="meter_updated" from="Status" to="." method="_on_Status_meter_updated"]
+[connection signal="position_updated" from="Status" to="." method="_on_Status_position_updated"]

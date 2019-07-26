@@ -1,7 +1,7 @@
 extends Node
 
-export var initial_state = NodePath()
-onready var _state = get_node(initial_state)
+export var _initial_state = NodePath()
+onready var _state = get_node(_initial_state)
 
 func set_state(target_state_path, message = {}):
     if not has_node(target_state_path):

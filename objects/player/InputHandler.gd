@@ -3,6 +3,9 @@ Maps key presses per player with different key bindings in mind, and also contai
 """
 extends Node
 
+export (NodePath) var _player_path = NodePath()
+onready var _player = get_node(_player_path)
+
 var ID : int = -1
 
 const Action = preload("res://enums/Common.gd").Action
@@ -25,7 +28,7 @@ func _ready():
 
 func handle_inputs():
     for action_binding in _ACTION_BINDINGS.keys():
-        var action_name = action_binding % owner.ID
+        var action_name = action_binding % _player.ID
         var action = _ACTION_BINDINGS[action_binding]
 
         if Input.is_action_pressed(action_name):

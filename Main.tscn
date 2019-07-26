@@ -41,14 +41,14 @@ _ball_path = NodePath("../Ball")
 stream = ExtResource( 8 )
 volume_db = -10.0
 autoplay = true
-[connection signal="point_ended" from="." to="Player 2" method="_on_Main_point_ended"]
 [connection signal="point_ended" from="." to="Player 1" method="_on_Main_point_ended"]
-[connection signal="point_started" from="." to="Player 2" method="_on_Main_point_started"]
+[connection signal="point_ended" from="." to="Player 2" method="_on_Main_point_ended"]
 [connection signal="point_started" from="." to="Player 1" method="_on_Main_point_started"]
+[connection signal="point_started" from="." to="Player 2" method="_on_Main_point_started"]
 [connection signal="point_started" from="." to="Ball" method="_on_Main_point_started"]
 [connection signal="bounced" from="Ball" to="." method="_on_Ball_bounced"]
-[connection signal="fired" from="Ball" to="Player 2" method="_on_Ball_fired"]
 [connection signal="fired" from="Ball" to="Player 1" method="_on_Ball_fired"]
+[connection signal="fired" from="Ball" to="Player 2" method="_on_Ball_fired"]
 [connection signal="hit_ball" from="Player 1" to="." method="_on_Player_hit_ball"]
 [connection signal="hit_ball" from="Player 1" to="Ball" method="_on_Player_hit_ball"]
 [connection signal="meter_updated" from="Player 1" to="GUI" method="_on_Player_meter_updated"]

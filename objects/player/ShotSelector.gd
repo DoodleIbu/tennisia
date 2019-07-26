@@ -7,10 +7,10 @@ extends Node
 const Action = preload("res://enums/Common.gd").Action
 const Shot = preload("res://enums/Common.gd").Shot
 
-var _shot = null
+var _shot = Shot.NONE
 
 func clear():
-    _shot = null
+    _shot = Shot.NONE
 
 func input(input):
     match input:

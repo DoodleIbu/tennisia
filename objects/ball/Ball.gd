@@ -107,7 +107,7 @@ func _fire(max_power, max_spin, goal):
     var end_position = Vector3(goal.x, BALL_RADIUS, goal.z)
     var xz_direction = Vector2(end_position.x - start_position.x, end_position.z - start_position.z).normalized()
     var xz_distance_to_end = Vector2(start_position.x, start_position.z).distance_to(Vector2(end_position.x, end_position.z))
-    var xz_distance_to_net = (xz_direction * abs(start_position.z - NET_POSITION_Z) / xz_direction.y).length()
+    # var xz_distance_to_net = (xz_direction * abs(start_position.z - NET_POSITION_Z) / xz_direction.y).length()
 
     # Shoot the ball at max power and spin.
     var shot_power = max_power
@@ -204,11 +204,11 @@ func _simulate_ball_trajectory(old_position, old_velocity, old_spin, delta):
 
         current_step += 1
 
-func _process(delta):
+func _process(_unused):
     $Ball.position = Renderer.get_render_position(_position)
     $Shadow.position = Renderer.get_render_position(Vector3(_position.x, 0, _position.z))
 
-func _physics_process(delta):
+func _physics_process(_unused):
     if not _held:
         var result = _get_next_step(_position, _velocity, _spin, TimeStep.get_time_step())
         if result.has("bounce_position"):
@@ -249,5 +249,5 @@ func _on_Player_serve_ball_tossed(ball_position, ball_y_velocity):
     _velocity = Vector3(0, ball_y_velocity, 0)
     _spin = 0
 
-func _on_Main_point_started(serving_team, direction):
+func _on_Main_point_started(serving_team, _unused):
     _team_to_hit = serving_team

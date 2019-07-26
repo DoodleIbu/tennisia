@@ -27,7 +27,6 @@ func get_state_transition():
         return "Neutral"
 
 func process(delta):
-    owner.update_render_position()
     if owner.animation_player.get_current_animation_position() < 0.2:
         owner.hitbox_viewer.view(_hitbox)
     else:

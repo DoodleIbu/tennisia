@@ -20,7 +20,7 @@ func get_state_transition():
         return "ServeToss"
 
 func process(delta):
-    owner.update_render_position()
+    pass
 
 func physics_process(delta):
     owner.status.velocity = _get_desired_velocity()
