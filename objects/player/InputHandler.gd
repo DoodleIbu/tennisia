@@ -6,8 +6,6 @@ extends Node
 export (NodePath) var _player_path = NodePath()
 onready var _player = get_node(_player_path)
 
-var ID : int = -1
-
 const Action = preload("res://enums/Common.gd").Action
 
 const _ACTION_BINDINGS = {

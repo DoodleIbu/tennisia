@@ -1,5 +1,11 @@
 extends State
 
+export (NodePath) var _input_handler_path = NodePath()
+onready var _input_handler = get_node(_input_handler_path)
+
+export (NodePath) var _shot_calculator_path = NodePath()
+onready var _shot_calculator = get_node(_shot_calculator_path)
+
 export (NodePath) var _parameters_path = NodePath()
 onready var _parameters = get_node(_parameters_path)
 
@@ -12,9 +18,11 @@ onready var _animation_player = get_node(_animation_player_path)
 export (NodePath) var _hitbox_viewer_path = NodePath()
 onready var _hitbox_viewer = get_node(_hitbox_viewer_path)
 
-const Renderer = preload("res://utils/Renderer.gd")
+const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
+const Shot = preload("res://enums/Common.gd").Shot
 const Hitbox = preload("res://objects/player/Hitbox.gd")
+const Renderer = preload("res://utils/Renderer.gd")
 
 var _ball_hit
 var _hitbox
@@ -48,7 +56,7 @@ func physics_process(delta):
     #       This is fine for now, but loop back to this and create a class that ties hitboxes to animation.
     _hitbox = Hitbox.new(_status.position, _parameters.LUNGE_REACH, _parameters.LUNGE_STRETCH, _status.facing)
     if _animation_player.get_current_animation_position() < 0.2 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
-        owner.lunge()
+        _fire()
         _ball_hit = true
 
 func _get_velocity():
@@ -59,3 +67,17 @@ func _get_velocity():
             return Vector3(200, 0, 0)
     else:
         return Vector3(0, 0, 0)
+
+# TODO: Look into implementing a common class...
+func _fire():
+    var direction
+    if _input_handler.is_action_pressed(Action.LEFT):
+        direction = Direction.LEFT
+    elif _input_handler.is_action_pressed(Action.RIGHT):
+        direction = Direction.RIGHT
+    else:
+        direction = Direction.NONE
+
+    var result = _shot_calculator.calculate(Shot.LUNGE, owner.ball, _status.charge, direction)
+    owner.emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
+    _status.can_hit_ball = false

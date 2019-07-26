@@ -23,55 +23,24 @@ export var TEAM : int = 1
 export (NodePath) var _ball_path
 onready var ball = get_node(_ball_path)
 
-onready var input_handler = $InputHandler
-onready var shot_selector = $ShotSelector
-onready var shot_calculator = $ShotCalculator
-
-onready var state_machine = $StateMachine
-onready var status = $Status
-onready var parameters = $Parameters
-
-onready var animation_player = $AnimationPlayer
-onready var hitbox_viewer = $HitboxViewer
+onready var _input_handler = $InputHandler
+onready var _state_machine = $StateMachine
+onready var _status = $Status
 
 func get_position():
-    return status.position
-
-# TODO: There should be a better way to implement these.
-func _fire(shot):
-    var direction
-    if input_handler.is_action_pressed(Action.LEFT):
-        direction = Direction.LEFT
-    elif input_handler.is_action_pressed(Action.RIGHT):
-        direction = Direction.RIGHT
-    else:
-        direction = Direction.NONE
-
-    var result = shot_calculator.calculate(shot, ball, status.charge, direction)
-    emit_signal("hit_ball", result["power"], result["spin"], result["goal"])
-    status.can_hit_ball = false
-
-func fire():
-    _fire(shot_selector.get_shot())
-    status.meter += 10
-
-func lunge():
-    _fire(Shot.LUNGE)
-
-func update_render_position():
-    position = Renderer.get_render_position(status.position)
+    return _status.position
 
 # Processing
 func _process(delta):
-    state_machine.process(delta)
+    _state_machine.process(delta)
 
 func _physics_process(_unused):
-    input_handler.handle_inputs()
-    state_machine.physics_process(TimeStep.get_time_step())
+    _input_handler.handle_inputs()
+    _state_machine.physics_process(TimeStep.get_time_step())
 
 # Signals
 func _on_Ball_fired(team_to_hit):
-    status.can_hit_ball = (team_to_hit == TEAM)
+    _status.can_hit_ball = (team_to_hit == TEAM)
 
 func _on_Main_point_started(serving_team, serving_side):
     var x
@@ -93,24 +62,24 @@ func _on_Main_point_started(serving_team, serving_side):
     else:
         z = -20
 
-    status.position = Vector3(x, 0, z)
-    status.velocity = Vector3()
-    status.can_hit_ball = (TEAM == serving_team)
-    status.serving_side = serving_side
+    _status.position = Vector3(x, 0, z)
+    _status.velocity = Vector3()
+    _status.can_hit_ball = (TEAM == serving_team)
+    _status.serving_side = serving_side
 
-    if status.meter < 25:
-        status.meter = 25
+    if _status.meter < 25:
+        _status.meter = 25
 
     if TEAM == serving_team:
-        state_machine.set_state("ServeNeutral")
+        _state_machine.set_state("ServeNeutral")
     else:
-        state_machine.set_state("Neutral")
+        _state_machine.set_state("Neutral")
 
 func _on_Main_point_ended(scoring_team):
     if TEAM == scoring_team:
-        state_machine.set_state("Win")
+        _state_machine.set_state("Win")
     else:
-        state_machine.set_state("Lose")
+        _state_machine.set_state("Lose")
 
 func _on_Status_meter_updated(meter):
     emit_signal("meter_updated", ID, meter)
