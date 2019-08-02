@@ -19,12 +19,22 @@ const ShotCalculator = preload("ShotCalculator.gd")
 export var ID : int = 1
 export var TEAM : int = 1
 
-export (NodePath) var _ball_path = NodePath()
-onready var ball = get_node(_ball_path)
+# Paths exposed to children; can be accessed via owner.get_node(owner.<x>)
+# I'm not a huge fan of the syntax, but it is what it is.
+# These are paths instead of nodes since they can be defined before _ready() is called.
+# Children nodes will call _ready() first, so defining onready nodes means children nodes will get null.
+export (NodePath) var ball_path : NodePath = NodePath()
+var input_handler_path = "InputHandler"
+var shot_selector_path = "ShotSelector"
+var shot_calculator_path = "ShotCalculator"
+var parameters_path = "Parameters"
+var status_path = "Status"
+var animation_player_path = "AnimationPlayer"
+var hitbox_viewer_path = "HitboxViewer"
 
-onready var _input_handler = $InputHandler
-onready var _state_machine = $StateMachine
-onready var _status = $Status
+onready var _input_handler = get_node(input_handler_path)
+onready var _status = get_node(status_path)
+onready var _state_machine = get_node("StateMachine")
 
 func get_position():
     return _status.position

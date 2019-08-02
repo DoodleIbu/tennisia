@@ -5,17 +5,11 @@ extends State
 
 signal ball_tossed(ball_position, ball_y_velocity)
 
-export (NodePath) var _player_path = NodePath()
-onready var _player = get_node(_player_path)
-
-export (NodePath) var _input_handler_path = NodePath()
-onready var _input_handler = get_node(_input_handler_path)
-
-export (NodePath) var _status_path = NodePath()
-onready var _status = get_node(_status_path)
-
-export (NodePath) var _animation_player_path = NodePath()
-onready var _animation_player = get_node(_animation_player_path)
+onready var _player = owner
+onready var _ball = owner.get_node(owner.ball_path)
+onready var _input_handler = owner.get_node(owner.input_handler_path)
+onready var _status = owner.get_node(owner.status_path)
+onready var _animation_player = owner.get_node(owner.animation_player_path)
 
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
@@ -36,7 +30,7 @@ func exit():
     pass
 
 func get_state_transition():
-    if owner.ball.get_position().y < 40 and owner.ball.get_velocity().y < 0:
+    if _ball.get_position().y < 40 and _ball.get_velocity().y < 0:
         return "ServeNeutral"
     if _input_handler.is_shot_action_just_pressed():
         return "ServeHit"

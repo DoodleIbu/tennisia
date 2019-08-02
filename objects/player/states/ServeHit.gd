@@ -3,17 +3,10 @@ extends State
 
 signal ball_served(max_power, max_spin, goal)
 
-export (NodePath) var _player_path = NodePath()
-onready var _player = get_node(_player_path)
-
-export (NodePath) var _input_handler_path = NodePath()
-onready var _input_handler = get_node(_input_handler_path)
-
-export (NodePath) var _status_path = NodePath()
-onready var _status = get_node(_status_path)
-
-export (NodePath) var _animation_player_path = NodePath()
-onready var _animation_player = get_node(_animation_player_path)
+onready var _player = owner
+onready var _input_handler = owner.get_node(owner.input_handler_path)
+onready var _status = owner.get_node(owner.status_path)
+onready var _animation_player = owner.get_node(owner.animation_player_path)
 
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction

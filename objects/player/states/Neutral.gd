@@ -1,22 +1,12 @@
 extends State
 
-export (NodePath) var _player_path = NodePath()
-onready var _player = get_node(_player_path)
-
-export (NodePath) var _input_handler_path = NodePath()
-onready var _input_handler = get_node(_input_handler_path)
-
-export (NodePath) var _shot_selector_path = NodePath()
-onready var _shot_selector = get_node(_shot_selector_path)
-
-export (NodePath) var _parameters_path = NodePath()
-onready var _parameters = get_node(_parameters_path)
-
-export (NodePath) var _status_path = NodePath()
-onready var _status = get_node(_status_path)
-
-export (NodePath) var _animation_player_path = NodePath()
-onready var _animation_player = get_node(_animation_player_path)
+# For testing, we could also create setters to replace the following with mocks.
+onready var _player = owner
+onready var _input_handler = owner.get_node(owner.input_handler_path)
+onready var _shot_selector = owner.get_node(owner.shot_selector_path)
+onready var _parameters = owner.get_node(owner.parameters_path)
+onready var _status = owner.get_node(owner.status_path)
+onready var _animation_player = owner.get_node(owner.animation_player_path)
 
 const Renderer = preload("res://utils/Renderer.gd")
 const Action = preload("res://enums/Common.gd").Action

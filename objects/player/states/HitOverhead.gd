@@ -2,29 +2,15 @@ extends State
 
 signal ball_hit(max_power, max_spin, goal)
 
-export (NodePath) var _player_path = NodePath()
-onready var _player = get_node(_player_path)
-
-export (NodePath) var _input_handler_path = NodePath()
-onready var _input_handler = get_node(_input_handler_path)
-
-export (NodePath) var _shot_selector_path = NodePath()
-onready var _shot_selector = get_node(_shot_selector_path)
-
-export (NodePath) var _shot_calculator_path = NodePath()
-onready var _shot_calculator = get_node(_shot_calculator_path)
-
-export (NodePath) var _parameters_path = NodePath()
-onready var _parameters = get_node(_parameters_path)
-
-export (NodePath) var _status_path = NodePath()
-onready var _status = get_node(_status_path)
-
-export (NodePath) var _animation_player_path = NodePath()
-onready var _animation_player = get_node(_animation_player_path)
-
-export (NodePath) var _hitbox_viewer_path = NodePath()
-onready var _hitbox_viewer = get_node(_hitbox_viewer_path)
+onready var _player = owner
+onready var _ball = owner.get_node(owner.ball_path)
+onready var _input_handler = owner.get_node(owner.input_handler_path)
+onready var _shot_selector = owner.get_node(owner.shot_selector_path)
+onready var _shot_calculator = owner.get_node(owner.shot_calculator_path)
+onready var _parameters = owner.get_node(owner.parameters_path)
+onready var _status = owner.get_node(owner.status_path)
+onready var _animation_player = owner.get_node(owner.animation_player_path)
+onready var _hitbox_viewer = owner.get_node(owner.hitbox_viewer_path)
 
 const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
@@ -65,7 +51,7 @@ func process(delta):
         _hitbox_viewer.clear()
 
 func physics_process(delta):
-    if _animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(owner.ball) and not _ball_hit:
+    if _animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(_ball) and not _ball_hit:
         _fire()
         _ball_hit = true
 
@@ -79,6 +65,7 @@ func _fire():
     else:
         direction = Direction.NONE
 
-    var result = _shot_calculator.calculate(_shot_selector.get_shot(), owner.ball, _status.charge, direction)
+    var result = _shot_calculator.calculate(_shot_selector.get_shot(), _ball, _status.charge, direction)
     emit_signal("ball_hit", result["power"], result["spin"], result["goal"])
+    _status.meter += 5
     _status.can_hit_ball = false

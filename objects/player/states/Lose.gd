@@ -1,7 +1,6 @@
 extends State
 
-export (NodePath) var _animation_player_path = NodePath()
-onready var _animation_player = get_node(_animation_player_path)
+onready var _animation_player = owner.get_node(owner.animation_player_path)
 
 func enter(message = {}):
     _animation_player.play("lose")
