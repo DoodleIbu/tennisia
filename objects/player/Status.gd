@@ -3,11 +3,10 @@ Node storing all of the changeable values for the player.
 """
 extends Node
 
-export (NodePath) var _player_path = NodePath()
-onready var _player = get_node(_player_path)
-
 signal position_updated(position)
 signal meter_updated(meter)
+
+onready var _player = owner
 
 # Position of player on the court without transformations.
 # (0, 0, 0) = top left corner of court and (360, 0, 780) = bottom right corner of court

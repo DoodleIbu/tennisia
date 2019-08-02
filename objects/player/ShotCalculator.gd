@@ -3,11 +3,8 @@ Calculates the goal, max power and spin of the ball based on multiple parameters
 """
 extends Node
 
-export (NodePath) var _player_path = NodePath()
-onready var _player = get_node(_player_path)
-
-export (NodePath) var _parameters_path = NodePath()
-onready var _parameters = get_node(_parameters_path)
+onready var _player = owner
+onready var _parameters = owner.get_node(owner.parameters_path)
 
 const Direction = preload("res://enums/Common.gd").Direction
 const Shot = preload("res://enums/Common.gd").Shot

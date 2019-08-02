@@ -3,8 +3,7 @@ Maps key presses per player with different key bindings in mind, and also contai
 """
 extends Node
 
-export (NodePath) var _player_path = NodePath()
-onready var _player = get_node(_player_path)
+onready var _player = owner
 
 const Action = preload("res://enums/Common.gd").Action
 

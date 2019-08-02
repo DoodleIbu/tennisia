@@ -70,4 +70,3 @@ func _fire():
     emit_signal("ball_hit", result["power"], result["spin"], result["goal"])
     _status.meter += 5
     _status.can_hit_ball = false
-
