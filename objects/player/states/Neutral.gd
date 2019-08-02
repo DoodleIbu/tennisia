@@ -58,9 +58,9 @@ func _get_velocity(delta):
 
 func _update_animation():
     if _status.velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
-        if _player.TEAM == 1:
+        if _player.team == 1:
             _animation_player.play("idle_up")
-        elif _player.TEAM == 2:
+        elif _player.team == 2:
             _animation_player.play("idle_down")
     else:
         var velocity_2d = Vector2(_status.velocity.x, _status.velocity.z)

@@ -85,7 +85,7 @@ func physics_process(delta):
             _shot_selector.input(shot_action)
 
 func _update_animation():
-    if _player.TEAM == 1:
+    if _player.team == 1:
         if _status.facing == Direction.LEFT:
             _animation_player.play("charge_left")
         elif _status.facing == Direction.RIGHT:

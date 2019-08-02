@@ -17,10 +17,10 @@ const Direction = preload("res://enums/Common.gd").Direction
 func enter(message = {}):
     var x_offset
 
-    if _player.TEAM == 1:
+    if _player.team == 1:
         x_offset = 10
         _animation_player.play("serve_toss_right_up")
-    elif _player.TEAM == 2:
+    elif _player.team == 2:
         x_offset = -10
         _animation_player.play("serve_toss_left_down")
 

@@ -16,8 +16,8 @@ const TimeStep = preload("res://utils/TimeStep.gd")
 
 const ShotCalculator = preload("ShotCalculator.gd")
 
-export var ID : int = 1
-export var TEAM : int = 1
+export var id : int = 1
+export var team : int = 1
 
 # Paths exposed to children; can be accessed via owner.get_node(owner.<x>)
 # I'm not a huge fan of the syntax, but it is what it is.
@@ -49,13 +49,13 @@ func _physics_process(_unused):
 
 # External signals
 func _on_Ball_fired(team_to_hit):
-    _status.can_hit_ball = (team_to_hit == TEAM)
+    _status.can_hit_ball = (team_to_hit == team)
 
 func _on_Main_point_started(serving_team, serving_side):
     var x
     var z
 
-    if TEAM == serving_team:
+    if team == serving_team:
         if serving_side == Direction.LEFT:
             x = 140
         else:
@@ -66,33 +66,33 @@ func _on_Main_point_started(serving_team, serving_side):
         else:
             x = 140
 
-    if TEAM == 1:
+    if team == 1:
         z = 800
     else:
         z = -20
 
     _status.position = Vector3(x, 0, z)
     _status.velocity = Vector3()
-    _status.can_hit_ball = (TEAM == serving_team)
+    _status.can_hit_ball = (team == serving_team)
     _status.serving_side = serving_side
 
     if _status.meter < 25:
         _status.meter = 25
 
-    if TEAM == serving_team:
+    if team == serving_team:
         _state_machine.set_state("ServeNeutral")
     else:
         _state_machine.set_state("Neutral")
 
 func _on_Main_point_ended(scoring_team):
-    if TEAM == scoring_team:
+    if team == scoring_team:
         _state_machine.set_state("Win")
     else:
         _state_machine.set_state("Lose")
 
 # Internal signals
 func _on_Status_meter_updated(meter):
-    emit_signal("meter_updated", ID, meter)
+    emit_signal("meter_updated", id, meter)
 
 func _on_Status_position_updated(status_position):
     position = Renderer.get_render_position(status_position)

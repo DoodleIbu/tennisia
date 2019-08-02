@@ -16,9 +16,9 @@ var _ball_hit
 func enter(message = {}):
     _ball_hit = false
 
-    if _player.TEAM == 1:
+    if _player.team == 1:
         _animation_player.play("hit_overhead_right_long")
-    elif _player.TEAM == 2:
+    elif _player.team == 2:
         _animation_player.play("hit_overhead_left_long_down")
 
 func exit():
@@ -38,9 +38,9 @@ func physics_process(delta):
         var spin = 0
         var control = 50
 
-        if _player.TEAM == 1:
+        if _player.team == 1:
             depth = 210
-        elif _player.TEAM == 2:
+        elif _player.team == 2:
             depth = 570
 
         if _status.serving_side == Direction.LEFT:

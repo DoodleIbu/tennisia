@@ -26,12 +26,12 @@ func enter(message = {}):
                          _parameters.HIT_SIDE_STRETCH,
                          _status.facing)
 
-    if _player.TEAM == 1:
+    if _player.team == 1:
         if _status.facing == Direction.LEFT:
             _animation_player.play("hit_side_left_long")
         elif _status.facing == Direction.RIGHT:
             _animation_player.play("hit_side_right_long")
-    elif _player.TEAM == 2:
+    elif _player.team == 2:
         if _status.facing == Direction.LEFT:
             _animation_player.play("hit_side_left_long_down")
         elif _status.facing == Direction.RIGHT:

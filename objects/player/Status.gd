@@ -24,8 +24,8 @@ func set_meter(value):
 
 func set_position(value):
     position = value
-    if _player.TEAM == 1:
+    if _player.team == 1:
         position.z = max(position.z, 410)
-    elif _player.TEAM == 2:
+    elif _player.team == 2:
         position.z = min(position.z, 370)
     emit_signal("position_updated", position)

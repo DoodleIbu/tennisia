@@ -184,9 +184,9 @@ func calculate(shot, ball, charge, direction):
     var depth = _shot_parameters[shot]["depth"]
 
     var z
-    if _player.TEAM == 1:
+    if _player.team == 1:
         z = 390 - depth
-    elif _player.TEAM == 2:
+    elif _player.team == 2:
         z = 390 + depth
 
     if direction == Direction.LEFT:

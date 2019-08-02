@@ -15,9 +15,9 @@ const Direction = preload("res://enums/Common.gd").Direction
 func enter(message = {}):
     emit_signal("ball_held")
 
-    if _player.TEAM == 1:
+    if _player.team == 1:
         _animation_player.play("serve_neutral_right_up")
-    elif _player.TEAM == 2:
+    elif _player.team == 2:
         _animation_player.play("serve_neutral_left_down")
 
 func exit():
