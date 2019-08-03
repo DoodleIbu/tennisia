@@ -58,15 +58,7 @@ func physics_process(delta):
 
 # TODO: Look into implementing a common class...
 func _fire():
-    var direction
-    if _input_handler.is_action_pressed(Action.LEFT):
-        direction = Direction.LEFT
-    elif _input_handler.is_action_pressed(Action.RIGHT):
-        direction = Direction.RIGHT
-    else:
-        direction = Direction.NONE
-
-    var result = _shot_calculator.calculate(_shot_selector.get_shot(), _ball, _status.charge, direction)
+    var result = _shot_calculator.calculate(_shot_selector.get_shot())
     emit_signal("ball_hit", result["power"], result["spin"], result["goal"])
-    _status.meter += 5
+    _status.meter += result["meter_gain"]
     _status.can_hit_ball = false

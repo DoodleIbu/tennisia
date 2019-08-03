@@ -4,8 +4,12 @@ Calculates the goal, max power and spin of the ball based on multiple parameters
 extends Node
 
 onready var _player = owner
+onready var _ball = owner.get_node(owner.ball_path)
+onready var _input_handler = owner.get_node(owner.input_handler_path)
 onready var _parameters = owner.get_node(owner.parameters_path)
+onready var _status = owner.get_node(owner.status_path)
 
+const Action = preload("res://enums/Common.gd").Action
 const Direction = preload("res://enums/Common.gd").Direction
 const Shot = preload("res://enums/Common.gd").Shot
 
@@ -154,10 +158,16 @@ func _merge_dir(target, patch):
         else:
             target[key] = patch[key]
 
-# TODO: I could also inject the ball, status, input handler...
-#       What should I inject?
-func calculate(shot, ball, charge, direction):
-    var max_charge_percent = min(1, charge / 50.0)
+func calculate(shot):
+    var direction
+    if _input_handler.is_action_pressed(Action.LEFT):
+        direction = Direction.LEFT
+    elif _input_handler.is_action_pressed(Action.RIGHT):
+        direction = Direction.RIGHT
+    else:
+        direction = Direction.NONE
+
+    var max_charge_percent = min(1, _status.charge / 50.0)
 
     # POWER
     var power_base = _shot_parameters[shot]["power"]["base"]
@@ -169,7 +179,7 @@ func calculate(shot, ball, charge, direction):
 
     # Remove some power based on the ball's current velocity.
     var power = lerp(power_base, power_max, max_charge_percent)
-    power = power - ball.get_power() * power_reduction_with_charge
+    power = power - _ball.get_power() * power_reduction_with_charge
 
     # SPIN
     var spin_base = _shot_parameters[shot]["spin"]["base"]
@@ -196,8 +206,18 @@ func calculate(shot, ball, charge, direction):
     else:
         goal = Vector3(180, 0, z)
 
+    var meter_gain = 0
+    if shot != Shot.LUNGE:
+        if _status.charge >= 50:
+            meter_gain = 20
+        elif _status.charge >= 20:
+            meter_gain = 10
+        else:
+            meter_gain = 5
+
     return {
         "power": power,
         "spin": spin,
-        "goal": goal
+        "goal": goal,
+        "meter_gain": meter_gain
     }
