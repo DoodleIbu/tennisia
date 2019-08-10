@@ -13,6 +13,7 @@ onready var _player = owner
 var position : Vector3 setget set_position
 var velocity : Vector3
 var meter : int setget set_meter
+var meter_gain_next_hit : bool
 var charge : int
 var facing : int # Direction
 var serving_side : int # Direction
@@ -22,6 +23,10 @@ func set_meter(value):
     meter = clamp(value, 0, 100)
     emit_signal("meter_updated", meter)
 
+func use_meter(value):
+    set_meter(meter - value)
+    meter_gain_next_hit = false
+
 func set_position(value):
     position = value
     if _player.team == 1:
@@ -29,3 +34,8 @@ func set_position(value):
     elif _player.team == 2:
         position.z = min(position.z, 370)
     emit_signal("position_updated", position)
+
+func _on_ball_hit(shot, max_power, max_spin, goal, meter_gain):
+    if meter_gain_next_hit:
+        self.meter += meter_gain
+    meter_gain_next_hit = true

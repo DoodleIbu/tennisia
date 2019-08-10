@@ -24,9 +24,8 @@ func enter(message = {}):
 func exit():
     pass
 
-func get_state_transition():
-    if not _animation_player.is_playing():
-        return "Neutral"
+func handle_input():
+    pass
 
 func process(delta):
     pass
@@ -64,3 +63,6 @@ func physics_process(delta):
         _status.meter += 20
         _status.can_hit_ball = false
         _ball_hit = true
+
+    if not _animation_player.is_playing():
+        _state_machine.set_state("Neutral")

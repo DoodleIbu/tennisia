@@ -1,6 +1,6 @@
 extends State
 
-signal ball_hit(max_power, max_spin, goal)
+signal ball_hit(shot, max_power, max_spin, goal, meter_gain)
 
 onready var _ball = owner.get_node(owner.ball_path)
 onready var _input_handler = owner.get_node(owner.input_handler_path)
@@ -30,15 +30,11 @@ func exit():
     _status.velocity = Vector3(0, 0, 0)
     _hitbox_viewer.clear()
 
-func get_state_transition():
-    if not _animation_player.is_playing():
-        return "Neutral"
+func handle_input():
+    pass
 
 func process(delta):
-    if _animation_player.get_current_animation_position() < 0.2:
-        _hitbox_viewer.view(_hitbox)
-    else:
-        _hitbox_viewer.clear()
+    pass
 
 func physics_process(delta):
     _status.velocity = _get_velocity()
@@ -51,6 +47,14 @@ func physics_process(delta):
         _fire()
         _ball_hit = true
 
+    if _animation_player.get_current_animation_position() < 0.2:
+        _hitbox_viewer.view(_hitbox)
+    else:
+        _hitbox_viewer.clear()
+
+    if not _animation_player.is_playing():
+        _state_machine.set_state("Neutral")
+
 func _get_velocity():
     if _animation_player.get_current_animation_position() <= 0.4:
         if _status.facing == Direction.LEFT:
@@ -60,9 +64,6 @@ func _get_velocity():
     else:
         return Vector3(0, 0, 0)
 
-# TODO: Look into implementing a common class...
 func _fire():
     var result = _shot_calculator.calculate(Shot.LUNGE)
-    emit_signal("ball_hit", result["power"], result["spin"], result["goal"])
-    _status.meter += result["meter_gain"]
-    _status.can_hit_ball = false
+    emit_signal("ball_hit", Shot.LUNGE, result["power"], result["spin"], result["goal"], result["meter_gain"])

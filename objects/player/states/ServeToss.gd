@@ -29,14 +29,13 @@ func enter(message = {}):
 func exit():
     pass
 
-func get_state_transition():
-    if _ball.get_position().y < 40 and _ball.get_velocity().y < 0:
-        return "ServeNeutral"
+func handle_input():
     if _input_handler.is_shot_action_just_pressed():
-        return "ServeHit"
+        _state_machine.set_state("ServeHit")
 
 func process(delta):
     pass
 
 func physics_process(delta):
-    pass
+    if _ball.get_position().y < 40 and _ball.get_velocity().y < 0:
+        _state_machine.set_state("ServeNeutral")

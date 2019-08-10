@@ -35,41 +35,9 @@ func enter(message = {}):
 func exit():
     pass
 
-func get_state_transition():
-    # Handle inputs first...
+func handle_input():
     if _input_handler.is_action_just_pressed(Action.CANCEL_CHARGE):
-        return "Neutral"
-
-    # Then handle non-input state transitions.
-    var result = _get_activation_plane_intersection()
-    var frames_until_intersection = result["frames_until_intersection"]
-
-    # Lunge
-    if frames_until_intersection != -1 and frames_until_intersection <= 7:
-        var intersection_point = result["intersection_point"]
-        var horizontal_distance = abs(intersection_point.x - _status.position.x)
-        var vertical_distance = intersection_point.y
-
-        # Lunge if not in range of either the max horizontal range. Otherwise don't change state.
-        # Note that this can cause the overhead to whiff, but normally you wouldn't lunge at an overhead shot anyway.
-        if horizontal_distance <= _parameters.HIT_SIDE_REACH.x:
-            pass
-        else:
-            return "Lunge"
-
-    # Hit
-    if frames_until_intersection != -1 and frames_until_intersection <= 1:
-        var intersection_point = result["intersection_point"]
-        var horizontal_distance = abs(intersection_point.x - _status.position.x)
-        var vertical_distance = intersection_point.y
-
-        # Hit side if low enough, hit overhead if too high.
-        if vertical_distance <= _parameters.HIT_SIDE_REACH.y:
-            return "HitSide"
-        else:
-            return "HitOverhead"
-
-    return null
+        _state_machine.set_state("Neutral")
 
 func process(delta):
     _update_animation()
@@ -83,6 +51,8 @@ func physics_process(delta):
     for shot_action in shot_actions:
         if _input_handler.is_action_just_pressed(shot_action):
             _shot_selector.input(shot_action)
+
+    _check_activation_plane_intersection()
 
 func _update_animation():
     if _player.team == 1:
@@ -133,6 +103,35 @@ func _get_desired_velocity():
         desired_velocity.z -= 1
 
     return desired_velocity.normalized() * _parameters.MAX_CHARGE_SPEED
+
+func _check_activation_plane_intersection():
+    var result = _get_activation_plane_intersection()
+    var frames_until_intersection = result["frames_until_intersection"]
+
+    # Lunge
+    if frames_until_intersection != -1 and frames_until_intersection <= 7:
+        var intersection_point = result["intersection_point"]
+        var horizontal_distance = abs(intersection_point.x - _status.position.x)
+        var vertical_distance = intersection_point.y
+
+        # Lunge if not in range of either the max horizontal range. Otherwise don't change state.
+        # Note that this can cause the overhead to whiff, but normally you wouldn't lunge at an overhead shot anyway.
+        if horizontal_distance <= _parameters.HIT_SIDE_REACH.x:
+            pass
+        else:
+            _state_machine.set_state("Lunge")
+
+    # Hit
+    if frames_until_intersection != -1 and frames_until_intersection <= 1:
+        var intersection_point = result["intersection_point"]
+        var horizontal_distance = abs(intersection_point.x - _status.position.x)
+        var vertical_distance = intersection_point.y
+
+        # Hit side if low enough, hit overhead if too high.
+        if vertical_distance <= _parameters.HIT_SIDE_REACH.y:
+            _state_machine.set_state("HitSide")
+        else:
+            _state_machine.set_state("HitOverhead")
 
 # Count the number of frames until the ball passes the activation plane.
 # The player by default takes 2 frames to hit, but lunges can take more frames to hit.

@@ -11,7 +11,8 @@ onready var _animation_player = owner.get_node(owner.animation_player_path)
 const Renderer = preload("res://utils/Renderer.gd")
 const Action = preload("res://enums/Common.gd").Action
 
-const EPSILON = 1
+const _METER_CONSUMPTION = 0.05
+const _EPSILON = 1
 
 func enter(message = {}):
     _status.charge = 0
@@ -23,8 +24,8 @@ func exit():
 func handle_input():
     if _input_handler.is_shot_action_just_pressed() and _status.can_hit_ball:
         _state_machine.set_state("Charge")
-    if _input_handler.is_action_pressed(Action.UNIVERSAL) and _status.meter > 0:
-        _state_machine.set_state("Dash")
+    if not _input_handler.is_action_pressed(Action.UNIVERSAL):
+        _state_machine.set_state("Neutral")
 
 func process(_unused):
     pass
@@ -32,7 +33,11 @@ func process(_unused):
 func physics_process(delta):
     _status.velocity = _get_velocity(delta)
     _status.position += _status.velocity * delta
+    _status.use_meter(_METER_CONSUMPTION)
     _update_animation()
+
+    if _status.meter == 0:
+        _state_machine.set_state("Neutral")
 
 func _get_velocity(delta):
     var desired_velocity = _get_desired_velocity()
@@ -41,16 +46,9 @@ func _get_velocity(delta):
     var to_goal = desired_velocity - _status.velocity
     var accel_direction = to_goal.normalized()
 
-    # If the desired velocity is facing away from the current velocity, then use the pivot transition speed.
+    # Dash acceleration uses a single value instead of run/pivot/stop.
     var movement_dot = _status.velocity.dot(desired_velocity)
-    var velocity_delta
-
-    if desired_velocity.length() == 0:
-        velocity_delta = accel_direction * _parameters.STOP_ACCEL * delta
-    elif movement_dot >= 0:
-        velocity_delta = accel_direction * _parameters.RUN_ACCEL * delta
-    else:
-        velocity_delta = accel_direction * _parameters.PIVOT_ACCEL * delta
+    var velocity_delta = accel_direction * _parameters.DASH_ACCEL * delta
 
     # If the change in velocity takes the velocity past the goal, set velocity to the desired velocity.
     if velocity_delta.length() > to_goal.length():
@@ -59,7 +57,7 @@ func _get_velocity(delta):
         return _status.velocity + velocity_delta
 
 func _update_animation():
-    if _status.velocity.length() < EPSILON and _get_desired_velocity().length() == 0:
+    if _status.velocity.length() < _EPSILON and _get_desired_velocity().length() == 0:
         if _player.team == 1:
             _animation_player.play("idle_up")
         elif _player.team == 2:
@@ -98,4 +96,4 @@ func _get_desired_velocity():
     if _input_handler.is_action_pressed(Action.UP):
         desired_velocity.z -= 1
 
-    return desired_velocity.normalized() * _parameters.MAX_NEUTRAL_SPEED
+    return desired_velocity.normalized() * _parameters.MAX_DASH_SPEED

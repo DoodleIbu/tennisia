@@ -7,10 +7,14 @@ const Shot = preload("res://enums/Common.gd").Shot
 
 export var MAX_NEUTRAL_SPEED : int = 250
 export var MAX_CHARGE_SPEED : int = 20
+export var MAX_DASH_SPEED : int = 400
+
 export var SERVE_NEUTRAL_SPEED : int = 200
+
 export var PIVOT_ACCEL : int = 1000
 export var RUN_ACCEL : int = 800
 export var STOP_ACCEL : int = 800
+export var DASH_ACCEL : int = 2000
 
 # Define the hitbox of a shot via two parameters:
 # Reach: How far the character can reach from the exact middle of the character.

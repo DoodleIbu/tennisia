@@ -8,7 +8,7 @@ func enter(message = {}):
 func exit():
     pass
 
-func get_state_transition():
+func handle_input():
     pass
 
 func process(delta):

@@ -16,7 +16,5 @@ func process(delta):
     _state.process(delta)
 
 func physics_process(delta):
-    var new_state = _state.get_state_transition()
-    if new_state != null:
-        set_state(new_state)
+    _state.handle_input()
     _state.physics_process(delta)

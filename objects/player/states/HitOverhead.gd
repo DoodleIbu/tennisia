@@ -1,6 +1,6 @@
 extends State
 
-signal ball_hit(max_power, max_spin, goal)
+signal ball_hit(shot, max_power, max_spin, goal, meter_gain)
 
 onready var _player = owner
 onready var _ball = owner.get_node(owner.ball_path)
@@ -40,24 +40,25 @@ func enter(message = {}):
 func exit():
     _hitbox_viewer.clear()
 
-func get_state_transition():
-    if not _animation_player.is_playing():
-        return "Neutral"
+func handle_input():
+    pass
 
 func process(delta):
-    if _animation_player.get_current_animation_position() < 0.1:
-        _hitbox_viewer.view(_hitbox)
-    else:
-        _hitbox_viewer.clear()
+    pass
 
 func physics_process(delta):
     if _animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(_ball) and not _ball_hit:
         _fire()
         _ball_hit = true
 
-# TODO: Look into implementing a common class...
+    if _animation_player.get_current_animation_position() < 0.1:
+        _hitbox_viewer.view(_hitbox)
+    else:
+        _hitbox_viewer.clear()
+
+    if not _animation_player.is_playing():
+        _state_machine.set_state("Neutral")
+
 func _fire():
     var result = _shot_calculator.calculate(_shot_selector.get_shot())
-    emit_signal("ball_hit", result["power"], result["spin"], result["goal"])
-    _status.meter += result["meter_gain"]
-    _status.can_hit_ball = false
+    emit_signal("ball_hit", _shot_selector.get_shot(), result["power"], result["spin"], result["goal"], result["meter_gain"])

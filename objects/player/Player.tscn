@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=2]
+[gd_scene load_steps=54 format=2]
 
 [ext_resource path="res://objects/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://objects/player/InputHandler.gd" type="Script" id=2]
@@ -8,18 +8,19 @@
 [ext_resource path="res://objects/player/Status.gd" type="Script" id=6]
 [ext_resource path="res://objects/player/states/StateMachine.gd" type="Script" id=7]
 [ext_resource path="res://objects/player/states/Neutral.gd" type="Script" id=8]
-[ext_resource path="res://objects/player/states/Charge.gd" type="Script" id=9]
-[ext_resource path="res://objects/player/states/HitSide.gd" type="Script" id=10]
-[ext_resource path="res://objects/player/states/HitOverhead.gd" type="Script" id=11]
-[ext_resource path="res://objects/player/states/Lunge.gd" type="Script" id=12]
-[ext_resource path="res://objects/player/states/ServeNeutral.gd" type="Script" id=13]
-[ext_resource path="res://objects/player/states/ServeToss.gd" type="Script" id=14]
-[ext_resource path="res://objects/player/states/ServeHit.gd" type="Script" id=15]
-[ext_resource path="res://objects/player/states/Win.gd" type="Script" id=16]
-[ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=17]
-[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=18]
-[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=19]
-[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=20]
+[ext_resource path="res://objects/player/states/Dash.gd" type="Script" id=9]
+[ext_resource path="res://objects/player/states/Charge.gd" type="Script" id=10]
+[ext_resource path="res://objects/player/states/HitSide.gd" type="Script" id=11]
+[ext_resource path="res://objects/player/states/HitOverhead.gd" type="Script" id=12]
+[ext_resource path="res://objects/player/states/Lunge.gd" type="Script" id=13]
+[ext_resource path="res://objects/player/states/ServeNeutral.gd" type="Script" id=14]
+[ext_resource path="res://objects/player/states/ServeToss.gd" type="Script" id=15]
+[ext_resource path="res://objects/player/states/ServeHit.gd" type="Script" id=16]
+[ext_resource path="res://objects/player/states/Win.gd" type="Script" id=17]
+[ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=18]
+[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=19]
+[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=20]
+[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=21]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -1306,32 +1307,35 @@ _initial_state = NodePath("Neutral")
 [node name="Neutral" type="Node" parent="StateMachine"]
 script = ExtResource( 8 )
 
-[node name="Charge" type="Node" parent="StateMachine"]
+[node name="Dash" type="Node" parent="StateMachine"]
 script = ExtResource( 9 )
 
-[node name="HitSide" type="Node" parent="StateMachine"]
+[node name="Charge" type="Node" parent="StateMachine"]
 script = ExtResource( 10 )
 
-[node name="HitOverhead" type="Node" parent="StateMachine"]
+[node name="HitSide" type="Node" parent="StateMachine"]
 script = ExtResource( 11 )
 
-[node name="Lunge" type="Node" parent="StateMachine"]
+[node name="HitOverhead" type="Node" parent="StateMachine"]
 script = ExtResource( 12 )
 
-[node name="ServeNeutral" type="Node" parent="StateMachine"]
+[node name="Lunge" type="Node" parent="StateMachine"]
 script = ExtResource( 13 )
 
-[node name="ServeToss" type="Node" parent="StateMachine"]
+[node name="ServeNeutral" type="Node" parent="StateMachine"]
 script = ExtResource( 14 )
 
-[node name="ServeHit" type="Node" parent="StateMachine"]
+[node name="ServeToss" type="Node" parent="StateMachine"]
 script = ExtResource( 15 )
 
-[node name="Win" type="Node" parent="StateMachine"]
+[node name="ServeHit" type="Node" parent="StateMachine"]
 script = ExtResource( 16 )
 
-[node name="Lose" type="Node" parent="StateMachine"]
+[node name="Win" type="Node" parent="StateMachine"]
 script = ExtResource( 17 )
+
+[node name="Lose" type="Node" parent="StateMachine"]
+script = ExtResource( 18 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/charge_left = SubResource( 1 )
@@ -1366,21 +1370,23 @@ anims/serve_neutral_right_up = SubResource( 29 )
 anims/serve_toss_left_down = SubResource( 30 )
 anims/serve_toss_right_up = SubResource( 31 )
 anims/win = SubResource( 32 )
-script = ExtResource( 18 )
+script = ExtResource( 19 )
 
 [node name="HitboxViewer" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
-script = ExtResource( 19 )
+script = ExtResource( 20 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 3, -15 )
-texture = ExtResource( 20 )
+texture = ExtResource( 21 )
 hframes = 50
 frame = 23
 [connection signal="meter_updated" from="Status" to="." method="_on_Status_meter_updated"]
 [connection signal="position_updated" from="Status" to="." method="_on_Status_position_updated"]
 [connection signal="ball_hit" from="StateMachine/HitSide" to="." method="_on_ball_hit"]
+[connection signal="ball_hit" from="StateMachine/HitSide" to="Status" method="_on_ball_hit"]
 [connection signal="ball_hit" from="StateMachine/HitOverhead" to="." method="_on_ball_hit"]
+[connection signal="ball_hit" from="StateMachine/HitOverhead" to="Status" method="_on_ball_hit"]
 [connection signal="ball_hit" from="StateMachine/Lunge" to="." method="_on_ball_hit"]
 [connection signal="ball_held" from="StateMachine/ServeNeutral" to="." method="_on_ServeNeutral_ball_held"]
 [connection signal="ball_tossed" from="StateMachine/ServeToss" to="." method="_on_ServeToss_ball_tossed"]

@@ -75,6 +75,7 @@ func _on_Main_point_started(serving_team, serving_side):
     _status.velocity = Vector3()
     _status.can_hit_ball = (team == serving_team)
     _status.serving_side = serving_side
+    _status.meter_gain_next_hit = true
 
     if _status.meter < 25:
         _status.meter = 25
@@ -97,7 +98,7 @@ func _on_Status_meter_updated(meter):
 func _on_Status_position_updated(status_position):
     position = Renderer.get_render_position(status_position)
 
-func _on_ball_hit(max_power, max_spin, goal):
+func _on_ball_hit(shot, max_power, max_spin, goal, meter_gain):
     emit_signal("ball_hit", max_power, max_spin, goal)
 
 func _on_ServeHit_ball_served(max_power, max_spin, goal):

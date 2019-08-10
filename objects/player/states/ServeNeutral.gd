@@ -23,9 +23,9 @@ func enter(message = {}):
 func exit():
     _status.velocity = Vector3()
 
-func get_state_transition():
+func handle_input():
     if _input_handler.is_shot_action_just_pressed():
-        return "ServeToss"
+        _state_machine.set_state("ServeToss")
 
 func process(delta):
     pass
