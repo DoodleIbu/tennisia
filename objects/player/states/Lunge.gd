@@ -10,11 +10,11 @@ onready var _status = owner.get_node(owner.status_path)
 onready var _animation_player = owner.get_node(owner.animation_player_path)
 onready var _hitbox_viewer = owner.get_node(owner.hitbox_viewer_path)
 
-const Action = preload("res://enums/Common.gd").Action
-const Direction = preload("res://enums/Common.gd").Direction
-const Shot = preload("res://enums/Common.gd").Shot
+const Action = preload("res://common/Enum.gd").Action
+const Direction = preload("res://common/Enum.gd").Direction
+const Shot = preload("res://common/Enum.gd").Shot
 const Hitbox = preload("res://objects/player/Hitbox.gd")
-const Renderer = preload("res://utils/Renderer.gd")
+const Renderer = preload("res://common/Renderer.gd")
 
 var _ball_hit
 

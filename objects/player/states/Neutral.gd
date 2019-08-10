@@ -8,8 +8,8 @@ onready var _parameters = owner.get_node(owner.parameters_path)
 onready var _status = owner.get_node(owner.status_path)
 onready var _animation_player = owner.get_node(owner.animation_player_path)
 
-const Renderer = preload("res://utils/Renderer.gd")
-const Action = preload("res://enums/Common.gd").Action
+const Renderer = preload("res://common/Renderer.gd")
+const Action = preload("res://common/Enum.gd").Action
 
 const EPSILON = 1
 

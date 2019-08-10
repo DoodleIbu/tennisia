@@ -4,8 +4,8 @@ export (PackedScene) var Bounce
 signal point_ended(scoring_team)
 signal point_started(serving_team, direction)
 
-const Renderer = preload("res://utils/Renderer.gd")
-const Direction = preload("res://enums/Common.gd").Direction
+const Renderer = preload("res://common/Renderer.gd")
+const Direction = preload("res://common/Enum.gd").Direction
 
 const _BASE_Z_INDEX = 100
 const _POINT_ENDED_FRAMES = 180

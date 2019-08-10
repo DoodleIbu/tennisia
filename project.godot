@@ -36,8 +36,8 @@ config/name="Tennisia"
 
 [autoload]
 
-Logger="*res://utils/Logger.gd"
-DebugOptions="*res://utils/DebugOptions.gd"
+Logger="*res://singletons/Logger.gd"
+DebugOptions="*res://singletons/DebugOptions.gd"
 
 [display]
 

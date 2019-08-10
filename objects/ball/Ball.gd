@@ -3,9 +3,9 @@ extends Node2D
 signal bounced(bounce_position, bounce_velocity)
 signal fired(team_to_hit)
 
-const Renderer = preload("res://utils/Renderer.gd")
-const Integrator = preload("res://utils/Integrator.gd")
-const TimeStep = preload("res://utils/TimeStep.gd")
+const Renderer = preload("res://common/Renderer.gd")
+const Integrator = preload("res://common/Integrator.gd")
+const TimeStep = preload("res://common/TimeStep.gd")
 
 const NET_CLEARANCE = 40
 const NET_POSITION_Z = 390

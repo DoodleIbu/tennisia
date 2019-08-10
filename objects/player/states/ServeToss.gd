@@ -11,8 +11,8 @@ onready var _input_handler = owner.get_node(owner.input_handler_path)
 onready var _status = owner.get_node(owner.status_path)
 onready var _animation_player = owner.get_node(owner.animation_player_path)
 
-const Action = preload("res://enums/Common.gd").Action
-const Direction = preload("res://enums/Common.gd").Direction
+const Action = preload("res://common/Enum.gd").Action
+const Direction = preload("res://common/Enum.gd").Direction
 
 func enter(message = {}):
     var x_offset

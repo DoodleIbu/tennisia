@@ -5,7 +5,7 @@ extends Node
 
 onready var _player = owner
 
-const Action = preload("res://enums/Common.gd").Action
+const Action = preload("res://common/Enum.gd").Action
 
 const _ACTION_BINDINGS = {
     "p%d_up": Action.UP,

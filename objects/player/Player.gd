@@ -8,11 +8,11 @@ signal ball_tossed(ball_position, ball_y_velocity)
 signal ball_held()
 signal meter_updated(player_id, meter)
 
-const Action = preload("res://enums/Common.gd").Action
-const Direction = preload("res://enums/Common.gd").Direction
-const Shot = preload("res://enums/Common.gd").Shot
-const Renderer = preload("res://utils/Renderer.gd")
-const TimeStep = preload("res://utils/TimeStep.gd")
+const Action = preload("res://common/Enum.gd").Action
+const Direction = preload("res://common/Enum.gd").Direction
+const Shot = preload("res://common/Enum.gd").Shot
+const Renderer = preload("res://common/Renderer.gd")
+const TimeStep = preload("res://common/TimeStep.gd")
 
 const ShotCalculator = preload("ShotCalculator.gd")
 

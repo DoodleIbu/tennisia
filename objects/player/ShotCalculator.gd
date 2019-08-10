@@ -9,9 +9,9 @@ onready var _input_handler = owner.get_node(owner.input_handler_path)
 onready var _parameters = owner.get_node(owner.parameters_path)
 onready var _status = owner.get_node(owner.status_path)
 
-const Action = preload("res://enums/Common.gd").Action
-const Direction = preload("res://enums/Common.gd").Direction
-const Shot = preload("res://enums/Common.gd").Shot
+const Action = preload("res://common/Enum.gd").Action
+const Direction = preload("res://common/Enum.gd").Direction
+const Shot = preload("res://common/Enum.gd").Shot
 
 # Null parameters should always be provided by the player.
 var _shot_parameters = {

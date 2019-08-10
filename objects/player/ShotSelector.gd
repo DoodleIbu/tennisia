@@ -4,8 +4,8 @@ TODO: Look into GUT for testing
 """
 extends Node
 
-const Action = preload("res://enums/Common.gd").Action
-const Shot = preload("res://enums/Common.gd").Shot
+const Action = preload("res://common/Enum.gd").Action
+const Shot = preload("res://common/Enum.gd").Shot
 
 var _shot = Shot.NONE
 

@@ -1,7 +1,7 @@
 class_name Hitbox
 
-const Renderer = preload("res://utils/Renderer.gd")
-const Direction = preload("res://enums/Common.gd").Direction
+const Renderer = preload("res://common/Renderer.gd")
+const Direction = preload("res://common/Enum.gd").Direction
 
 var _aabb
 

@@ -1,9 +1,9 @@
 extends Node2D
 
-const Direction = preload("res://enums/Common.gd").Direction
-const Shot = preload("res://enums/Common.gd").Shot
+const Direction = preload("res://common/Enum.gd").Direction
+const Shot = preload("res://common/Enum.gd").Shot
 const Hitbox = preload("res://objects/player/Hitbox.gd")
-const Renderer = preload("res://utils/Renderer.gd")
+const Renderer = preload("res://common/Renderer.gd")
 
 enum State { STARTUP, ACTIVE }
 

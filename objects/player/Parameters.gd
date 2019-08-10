@@ -3,7 +3,7 @@ Node storing all of the fixed values for the character. Can be modified per char
 """
 extends Node
 
-const Shot = preload("res://enums/Common.gd").Shot
+const Shot = preload("res://common/Enum.gd").Shot
 
 export var MAX_NEUTRAL_SPEED : int = 250
 export var MAX_CHARGE_SPEED : int = 20
