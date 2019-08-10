@@ -22,7 +22,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "State",
 "language": "GDScript",
-"path": "res://objects/player/states/State.gd"
+"path": "res://common/state/State.gd"
 } ]
 _global_script_class_icons={
 "Hitbox": "",

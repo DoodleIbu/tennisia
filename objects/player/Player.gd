@@ -1,7 +1,5 @@
 extends Node2D
 
-class_name Player
-
 signal ball_hit(max_power, max_spin, goal)
 signal ball_served(max_power, max_spin, goal)
 signal ball_tossed(ball_position, ball_y_velocity)
