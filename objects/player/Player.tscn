@@ -21,7 +21,7 @@
 [ext_resource path="res://objects/player/states/Win.gd" type="Script" id=19]
 [ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=20]
 [ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=21]
-[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=22]
+[ext_resource path="res://common/hitbox/HitboxViewer.gd" type="Script" id=22]
 [ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=23]
 
 [sub_resource type="Animation" id=1]

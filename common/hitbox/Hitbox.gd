@@ -1,15 +1,26 @@
 const Renderer = preload("res://common/Renderer.gd")
 const Direction = preload("res://common/Enum.gd").Direction
 
+export var _REACH : Vector3 = Vector3()
+export var _STRETCH : Vector3 = Vector3()
+
+var _position
+var _direction
 var _aabb
 
-func _init(position, reach, stretch, direction):
+func set_position(value):
+    _position = value
+
+func set_direction(value):
+    _direction = value
+
+func create_aabb():
     var aabb_start
 
-    if direction == Direction.LEFT:
-        aabb_start = position - Vector3(reach.x, 0, reach.z) + Vector3(0, stretch.y, 0)
+    if _direction == Direction.LEFT:
+        aabb_start = _position - Vector3(reach.x, 0, reach.z) + Vector3(0, stretch.y, 0)
     else:
-        aabb_start = position + stretch
+        aabb_start = _position + stretch
 
     _aabb = AABB(aabb_start, reach - stretch)
 

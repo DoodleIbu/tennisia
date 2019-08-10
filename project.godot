@@ -9,24 +9,12 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Reference",
-"class": "Hitbox",
-"language": "GDScript",
-"path": "res://objects/player/Hitbox.gd"
-}, {
-"base": "Node2D",
-"class": "Player",
-"language": "GDScript",
-"path": "res://objects/player/Player.gd"
-}, {
 "base": "Node",
 "class": "State",
 "language": "GDScript",
 "path": "res://common/state/State.gd"
 } ]
 _global_script_class_icons={
-"Hitbox": "",
-"Player": "",
 "State": ""
 }
 
