@@ -16,7 +16,8 @@ const _ACTION_BINDINGS = {
     "p%d_slice": Action.SLICE,
     "p%d_flat": Action.FLAT,
     "p%d_cancel_charge": Action.CANCEL_CHARGE,
-    "p%d_universal": Action.UNIVERSAL
+    "p%d_universal": Action.UNIVERSAL,
+    "p%d_ability": Action.ABILITY
 }
 var _actions = {}
 

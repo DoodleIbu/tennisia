@@ -17,7 +17,6 @@ const Hitbox = preload("res://objects/player/Hitbox.gd")
 const Renderer = preload("res://utils/Renderer.gd")
 
 var _ball_hit
-var _hitbox
 
 func enter(message = {}):
     _ball_hit = false
@@ -42,13 +41,13 @@ func physics_process(delta):
 
     # TODO: There should be a better way to determine when the hitbox is active on the animation.
     #       This is fine for now, but loop back to this and create a class that ties hitboxes to animation.
-    _hitbox = Hitbox.new(_status.position, _parameters.LUNGE_REACH, _parameters.LUNGE_STRETCH, _status.facing)
-    if _animation_player.get_current_animation_position() < 0.2 and _hitbox.intersects_ball(_ball) and not _ball_hit:
+    var hitbox = Hitbox.new(_status.position, _parameters.LUNGE_REACH, _parameters.LUNGE_STRETCH, _status.facing)
+    if _animation_player.get_current_animation_position() < 0.2 and hitbox.intersects_ball(_ball) and not _ball_hit:
         _fire()
         _ball_hit = true
 
     if _animation_player.get_current_animation_position() < 0.2:
-        _hitbox_viewer.view(_hitbox)
+        _hitbox_viewer.view(hitbox)
     else:
         _hitbox_viewer.clear()
 

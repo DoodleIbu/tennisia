@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=2]
+[gd_scene load_steps=56 format=2]
 
 [ext_resource path="res://objects/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://objects/player/InputHandler.gd" type="Script" id=2]
@@ -16,11 +16,13 @@
 [ext_resource path="res://objects/player/states/ServeNeutral.gd" type="Script" id=14]
 [ext_resource path="res://objects/player/states/ServeToss.gd" type="Script" id=15]
 [ext_resource path="res://objects/player/states/ServeHit.gd" type="Script" id=16]
-[ext_resource path="res://objects/player/states/Win.gd" type="Script" id=17]
-[ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=18]
-[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=19]
-[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=20]
-[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=21]
+[ext_resource path="res://objects/player/states/Ability1.gd" type="Script" id=17]
+[ext_resource path="res://objects/player/abilities/tornado/Tornado.tscn" type="PackedScene" id=18]
+[ext_resource path="res://objects/player/states/Win.gd" type="Script" id=19]
+[ext_resource path="res://objects/player/states/Lose.gd" type="Script" id=20]
+[ext_resource path="res://objects/player/AnimationPlayer.gd" type="Script" id=21]
+[ext_resource path="res://objects/player/HitboxViewer.gd" type="Script" id=22]
+[ext_resource path="res://assets/graphics/characters/yoshi/yoshi.png" type="Texture" id=23]
 
 [sub_resource type="Animation" id=1]
 resource_name = "charge_left"
@@ -1331,11 +1333,19 @@ script = ExtResource( 15 )
 [node name="ServeHit" type="Node" parent="StateMachine"]
 script = ExtResource( 16 )
 
-[node name="Win" type="Node" parent="StateMachine"]
+[node name="Ability1" type="Node" parent="StateMachine"]
 script = ExtResource( 17 )
+Tornado = ExtResource( 18 )
+
+[node name="Ability2" type="Node" parent="StateMachine"]
+
+[node name="Ability3" type="Node" parent="StateMachine"]
+
+[node name="Win" type="Node" parent="StateMachine"]
+script = ExtResource( 19 )
 
 [node name="Lose" type="Node" parent="StateMachine"]
-script = ExtResource( 18 )
+script = ExtResource( 20 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/charge_left = SubResource( 1 )
@@ -1370,15 +1380,15 @@ anims/serve_neutral_right_up = SubResource( 29 )
 anims/serve_toss_left_down = SubResource( 30 )
 anims/serve_toss_right_up = SubResource( 31 )
 anims/win = SubResource( 32 )
-script = ExtResource( 19 )
+script = ExtResource( 21 )
 
 [node name="HitboxViewer" type="ColorRect" parent="."]
 color = Color( 1, 0, 0, 0.392157 )
-script = ExtResource( 20 )
+script = ExtResource( 22 )
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 3, -15 )
-texture = ExtResource( 21 )
+texture = ExtResource( 23 )
 hframes = 50
 frame = 23
 [connection signal="meter_updated" from="Status" to="." method="_on_Status_meter_updated"]

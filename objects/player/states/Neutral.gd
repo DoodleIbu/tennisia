@@ -25,6 +25,8 @@ func handle_input():
         _state_machine.set_state("Charge")
     if _input_handler.is_action_pressed(Action.UNIVERSAL) and _status.meter > 0:
         _state_machine.set_state("Dash")
+    if _input_handler.is_action_pressed(Action.ABILITY) and _status.meter >= 25:
+        _state_machine.set_state("Ability1")
 
 func process(_unused):
     pass
