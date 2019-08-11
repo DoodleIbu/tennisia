@@ -25,12 +25,10 @@ position = Vector2( 49, 115 )
 z_index = 100
 
 [node name="Player 1" parent="." instance=ExtResource( 6 )]
-position = Vector2( 0, 0 )
 z_index = 100
 ball_path = NodePath("../Ball")
 
 [node name="Player 2" parent="." instance=ExtResource( 6 )]
-position = Vector2( 0, 0 )
 id = 2
 team = 2
 ball_path = NodePath("../Ball")
@@ -41,14 +39,14 @@ ball_path = NodePath("../Ball")
 stream = ExtResource( 8 )
 volume_db = -10.0
 autoplay = true
-[connection signal="point_ended" from="." to="Player 1" method="_on_Main_point_ended"]
 [connection signal="point_ended" from="." to="Player 2" method="_on_Main_point_ended"]
-[connection signal="point_started" from="." to="Player 1" method="_on_Main_point_started"]
-[connection signal="point_started" from="." to="Ball" method="_on_Main_point_started"]
+[connection signal="point_ended" from="." to="Player 1" method="_on_Main_point_ended"]
 [connection signal="point_started" from="." to="Player 2" method="_on_Main_point_started"]
+[connection signal="point_started" from="." to="Ball" method="_on_Main_point_started"]
+[connection signal="point_started" from="." to="Player 1" method="_on_Main_point_started"]
 [connection signal="bounced" from="Ball" to="." method="_on_Ball_bounced"]
-[connection signal="fired" from="Ball" to="Player 1" method="_on_Ball_fired"]
 [connection signal="fired" from="Ball" to="Player 2" method="_on_Ball_fired"]
+[connection signal="fired" from="Ball" to="Player 1" method="_on_Ball_fired"]
 [connection signal="ball_held" from="Player 1" to="Ball" method="_on_Player_ball_held"]
 [connection signal="ball_hit" from="Player 1" to="." method="_on_Player_ball_hit"]
 [connection signal="ball_hit" from="Player 1" to="Ball" method="_on_Player_ball_hit"]

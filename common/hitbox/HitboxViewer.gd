@@ -24,22 +24,23 @@ func set_frame(value):
 func _render_rects():
     for hitbox in _hitboxes:
         if hitbox.is_active(_frame):
-            Logger.info("yes")
             var render_position = hitbox.get_render_position(_position, _facing)
             var rect = ColorRect.new()
+            add_child(rect)
+
             rect.set_frame_color(Color(1, 0, 0, 0.3))
             rect.set_global_position(render_position["position"])
             rect.set_size(render_position["size"])
-            add_child(rect)
 
     for hurtbox in _hurtboxes:
         if hurtbox.is_active(_frame):
             var render_position = hurtbox.get_render_position(_position, _facing)
             var rect = ColorRect.new()
+            add_child(rect)
+
             rect.set_frame_color(Color(0, 1, 0, 0.3))
             rect.set_global_position(render_position["position"])
             rect.set_size(render_position["size"])
-            add_child(rect)
 
 func _clear_rects():
     for child in get_children():

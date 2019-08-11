@@ -29,6 +29,7 @@ func is_active(frame):
 
 func intersects(entity_position, entity_facing, ray_start, ray_end):
     var aabb = _get_aabb(entity_position, entity_facing)
+    Logger.info(aabb.position)
     return aabb.intersects_segment(ray_start, ray_end)
 
 func get_render_position(entity_position, entity_facing):
@@ -43,8 +44,8 @@ func get_render_position(entity_position, entity_facing):
 
 func _get_aabb(entity_position, entity_facing):
     if entity_facing == Direction.LEFT:
-        return AABB(entity_position - (_offset + _size), _size)
+        return AABB(entity_position - Vector3(_size.x, 0, 0), _size)
     elif entity_facing == Direction.RIGHT:
-        return AABB(entity_position + _offset, _size)
+        return AABB(entity_position, _size)
     else:
         assert(false)

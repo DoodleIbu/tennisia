@@ -19,9 +19,12 @@ var _ball_hit
 
 func enter(message = {}):
     var _HITBOXES = [
-        Hitbox.new(_parameters.HIT_SIDE_STRETCH, _parameters.HIT_SIDE_REACH - _parameters.HIT_SIDE_STRETCH, 0, 5)
+        Hitbox.new(Vector3(), _parameters.HIT_SIDE_REACH, 0, 5)
     ]
+    _hitbox_manager.set_position(_status.position)
+    _hitbox_manager.set_facing(_status.facing)
     _hitbox_manager.set_data(_HITBOXES, [])
+    _hitbox_manager.start()
     _ball_hit = false
 
     if _player.team == 1:
