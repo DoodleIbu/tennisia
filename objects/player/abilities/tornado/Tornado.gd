@@ -2,7 +2,6 @@ extends Node2D
 
 const Direction = preload("res://common/Enum.gd").Direction
 const Shot = preload("res://common/Enum.gd").Shot
-const Hitbox = preload("res://objects/player/Hitbox.gd")
 const Renderer = preload("res://common/Renderer.gd")
 
 enum State { STARTUP, ACTIVE }
@@ -50,8 +49,8 @@ func _handle_state_transition():
 
 # TODO: Modify hitbox properties...
 func _handle_hitbox():
-    var hitbox = Hitbox.new(_position, _REACH, _STRETCH, Direction.RIGHT)
-    if hitbox.intersects_ball(_ball):
-        Logger.info("tornado intersects ball")
+    pass
+#    var hitbox = Hitbox.new(_position, _REACH, _STRETCH, Direction.RIGHT)
+#    if hitbox.intersects_ball(_ball):
+#        Logger.info("tornado intersects ball")
         # emit_signal("hit_ball", Shot.SLICE, 1000, 80)
-

@@ -10,21 +10,21 @@ onready var _shot_calculator = owner.get_node(owner.shot_calculator_path)
 onready var _parameters = owner.get_node(owner.parameters_path)
 onready var _status = owner.get_node(owner.status_path)
 onready var _animation_player = owner.get_node(owner.animation_player_path)
-onready var _hitbox_viewer = owner.get_node(owner.hitbox_viewer_path)
+onready var _hitbox_manager = owner.get_node(owner.hitbox_manager_path)
 
 const Action = preload("res://common/Enum.gd").Action
 const Direction = preload("res://common/Enum.gd").Direction
-const Hitbox = preload("res://objects/player/Hitbox.gd")
 
 var _ball_hit
-var _hitbox
 
 func enter(message = {}):
+    var _HITBOXES = [
+        Hitbox.new(_parameters.HIT_OVERHEAD_REACH, _parameters.HIT_OVERHEAD_REACH - _parameters.HIT_OVERHEAD_STRETCH, 0, 5)
+    ]
+
+    _hitbox_manager.set_data(_HITBOXES, [])
+    _hitbox_manager.start()
     _ball_hit = false
-    _hitbox = Hitbox.new(_status.position,
-                         _parameters.HIT_OVERHEAD_REACH,
-                         _parameters.HIT_OVERHEAD_STRETCH,
-                         _status.facing)
 
     if _player.team == 1:
         if _status.facing == Direction.LEFT:
@@ -38,7 +38,7 @@ func enter(message = {}):
             _animation_player.play("hit_overhead_right_long_down")
 
 func exit():
-    _hitbox_viewer.clear()
+    _hitbox_manager.clear_data()
 
 func handle_input():
     pass
@@ -47,14 +47,11 @@ func process(delta):
     pass
 
 func physics_process(delta):
-    if _animation_player.get_current_animation_position() < 0.1 and _hitbox.intersects_ball(_ball) and not _ball_hit:
+    _hitbox_manager.set_position(_status.position)
+    _hitbox_manager.set_facing(_status.facing)
+    if _hitbox_manager.intersects_hitbox(_status.position, _ball.get_previous_position(), _ball.get_position()) and not _ball_hit:
         _fire()
         _ball_hit = true
-
-    if _animation_player.get_current_animation_position() < 0.1:
-        _hitbox_viewer.view(_hitbox)
-    else:
-        _hitbox_viewer.clear()
 
     if not _animation_player.is_playing():
         _state_machine.set_state("Neutral")

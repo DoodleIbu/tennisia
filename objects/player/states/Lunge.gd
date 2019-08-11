@@ -8,26 +8,30 @@ onready var _shot_calculator = owner.get_node(owner.shot_calculator_path)
 onready var _parameters = owner.get_node(owner.parameters_path)
 onready var _status = owner.get_node(owner.status_path)
 onready var _animation_player = owner.get_node(owner.animation_player_path)
-onready var _hitbox_viewer = owner.get_node(owner.hitbox_viewer_path)
+onready var _hitbox_manager = owner.get_node(owner.hitbox_manager_path)
 
 const Action = preload("res://common/Enum.gd").Action
 const Direction = preload("res://common/Enum.gd").Direction
 const Shot = preload("res://common/Enum.gd").Shot
-const Hitbox = preload("res://objects/player/Hitbox.gd")
-const Renderer = preload("res://common/Renderer.gd")
 
 var _ball_hit
 
 func enter(message = {}):
+    var _HITBOXES = [
+        Hitbox.new(_parameters.LUNGE_REACH, _parameters.LUNGE_REACH - _parameters.LUNGE_STRETCH, 0, 11)
+    ]
+    _hitbox_manager.set_data(_HITBOXES, [])
+    _hitbox_manager.start()
     _ball_hit = false
+
     if _status.facing == Direction.LEFT:
         _animation_player.play("lunge_left")
     elif _status.facing == Direction.RIGHT:
         _animation_player.play("lunge_right")
 
 func exit():
+    _hitbox_manager.clear_data()
     _status.velocity = Vector3(0, 0, 0)
-    _hitbox_viewer.clear()
 
 func handle_input():
     pass
@@ -39,17 +43,11 @@ func physics_process(delta):
     _status.velocity = _get_velocity()
     _status.position += _status.velocity * delta
 
-    # TODO: There should be a better way to determine when the hitbox is active on the animation.
-    #       This is fine for now, but loop back to this and create a class that ties hitboxes to animation.
-    var hitbox = Hitbox.new(_status.position, _parameters.LUNGE_REACH, _parameters.LUNGE_STRETCH, _status.facing)
-    if _animation_player.get_current_animation_position() < 0.2 and hitbox.intersects_ball(_ball) and not _ball_hit:
+    _hitbox_manager.set_position(_status.position)
+    _hitbox_manager.set_facing(_status.facing)
+    if _hitbox_manager.intersects_hitbox(_ball.get_previous_position(), _ball.get_position()) and not _ball_hit:
         _fire()
         _ball_hit = true
-
-    if _animation_player.get_current_animation_position() < 0.2:
-        _hitbox_viewer.view(hitbox)
-    else:
-        _hitbox_viewer.clear()
 
     if not _animation_player.is_playing():
         _state_machine.set_state("Neutral")

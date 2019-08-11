@@ -28,7 +28,7 @@ var shot_calculator_path = "ShotCalculator"
 var parameters_path = "Parameters"
 var status_path = "Status"
 var animation_player_path = "AnimationPlayer"
-var hitbox_viewer_path = "HitboxViewer"
+var hitbox_manager_path = "HitboxManager"
 
 onready var _input_handler = get_node(input_handler_path)
 onready var _status = get_node(status_path)
