@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://common/hitbox/Hitbox.gd"
 }, {
+"base": "State",
+"class": "PlayerState",
+"language": "GDScript",
+"path": "res://objects/player/states/PlayerState.gd"
+}, {
 "base": "Node",
 "class": "State",
 "language": "GDScript",
@@ -21,6 +26,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Hitbox": "",
+"PlayerState": "",
 "State": ""
 }
 

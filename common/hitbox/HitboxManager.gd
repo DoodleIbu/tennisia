@@ -41,7 +41,6 @@ func set_facing(value):
     _facing = value
     $HitboxViewer.set_facing(value)
 
-# Parse through hitbox and hurtbox animation data.
 func set_data(hitboxes, hurtboxes):
     _hitboxes = hitboxes
     _hurtboxes = hurtboxes

@@ -1,4 +1,4 @@
-extends State
+extends PlayerState
 
 signal ball_hit(shot, max_power, max_spin, goal, meter_gain)
 
@@ -8,23 +8,18 @@ onready var _input_handler = owner.get_node(owner.input_handler_path)
 onready var _shot_selector = owner.get_node(owner.shot_selector_path)
 onready var _shot_calculator = owner.get_node(owner.shot_calculator_path)
 onready var _parameters = owner.get_node(owner.parameters_path)
-onready var _status = owner.get_node(owner.status_path)
 onready var _animation_player = owner.get_node(owner.animation_player_path)
-onready var _hitbox_manager = owner.get_node(owner.hitbox_manager_path)
 
 const Action = preload("res://common/Enum.gd").Action
 const Direction = preload("res://common/Enum.gd").Direction
 
 var _ball_hit
 
-func enter(message = {}):
+func _enter(message = {}):
     var _HITBOXES = [
         Hitbox.new(Vector3(), _parameters.HIT_SIDE_REACH, 0, 5)
     ]
-    _hitbox_manager.set_position(_status.position)
-    _hitbox_manager.set_facing(_status.facing)
     _hitbox_manager.set_data(_HITBOXES, [])
-    _hitbox_manager.start()
     _ball_hit = false
 
     if _player.team == 1:
@@ -38,8 +33,8 @@ func enter(message = {}):
         elif _status.facing == Direction.RIGHT:
             _animation_player.play("hit_side_right_long_down")
 
-func exit():
-    _hitbox_manager.clear_data()
+func _exit():
+    pass
 
 func handle_input():
     pass
