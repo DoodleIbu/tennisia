@@ -8,7 +8,7 @@ extends State
 class_name PlayerState
 
 onready var _hitbox_manager = owner.get_node(owner.hitbox_manager_path)
-onready var _status = owner.get_node(owner.status)
+onready var _status = owner.get_node(owner.status_path)
 
 func enter(message = {}):
     _hitbox_manager.set_position(_status.position)

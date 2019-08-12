@@ -45,7 +45,7 @@ func process(delta):
 func physics_process(delta):
     _hitbox_manager.set_position(_status.position)
     _hitbox_manager.set_facing(_status.facing)
-    if _hitbox_manager.intersects_hitbox(_status.position, _ball.get_previous_position(), _ball.get_position()) and not _ball_hit:
+    if _hitbox_manager.intersects_hitbox(_ball.get_previous_position(), _ball.get_position()) and not _ball_hit:
         _fire()
         _ball_hit = true
 
